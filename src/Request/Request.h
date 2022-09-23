@@ -6,10 +6,9 @@ using namespace std;
 
 
 class Request{
-    int id;
-    const int start_time;
-    Node source, destination;
-    Path paths[5];
+    int waiting_time, time_limit, success_cnt;
+    Node* source, destination;
+    vector<Path> paths;
 public:
-    Request(const int &id, const Node &source, const Node &destination, const int &start_time);
+    Request(const Node& source, const Node& destination, const int& time_limit);
 };

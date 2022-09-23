@@ -1,5 +1,6 @@
 #include "../Node/Node.h"
 #include "../Channel/Channel.h"
+#include <vector>
 #include <functional>
 
 

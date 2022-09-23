@@ -3,7 +3,7 @@
 #include"../Channel/Channel.h"
 using namespace std;
 
-struct Edge{
+class Edge{
     Node node1, node2;
     vector<Channel> channels;
     double entangle_prob;
