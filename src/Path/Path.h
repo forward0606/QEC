@@ -1,14 +1,18 @@
+#include <vector>
 #include "../Node/Node.h"
 #include "../Channel/Channel.h"
-#include <vector>
-#include <functional>
+#include "../Edge/Edge.h"
 
 
 class Path{
+    vector<Node*> nodes;
+    vector<Channel*> channels;
+    bool entangle_succ, swap_succ;
 public:
-    vector<reference_wrapper(Node)> nodes;
-    vector<reference_wrapper(Channel)> channels;
-    bool entangle();//true->entangle success
-    bool swap();    //true->swapped success
-	Path();
+	Path(vector<Node*> nodes, vector<Channel*> channels);
+    bool entangle();        //true->entangle success
+    bool get_entangle_succ();
+    bool swap();            //true->swapped success
+    bool get_swap_succ();
+    void release();
 };

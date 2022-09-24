@@ -16,10 +16,12 @@ class Graph{
 
 
     vector<Node> nodes;
-    map<Node, vector<Edge>> edges;
+    map<pair<const Node, const Node>, vector<Channel>> channels;
 public:
     //Graph(vector<Node> nodes, map<node, vector<Edge>> edges);
     Graph(string filename, int num_of_node, double swap_prob, double entangle_alpha);
 	// waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1), metric=None, seed=None)
-	void generate(int, string);
+	void generate(string, int);
+	void refresh();
+	void release();
 };

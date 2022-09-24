@@ -4,6 +4,7 @@
 Node::Node(int memory_cnt, int time_limit, double pos_x, double pos_y, double swap_prob):
     swap_prob(swap_prob), memory_cnt(memory_cnt), time_limit(time_limit), remain(memory_cnt){
     pos = make_pair(pos_x, pos_y);
+    cout<<"new node"<<endl;
 }
 
 bool Node::swap(){
@@ -21,43 +22,60 @@ bool Node::operator==(const Node &right)const{
     return pos == right.pos;
 }
 
-bool operator!=(const Node &right)const{
-    return !(this == right);
+bool Node::operator!=(const Node &right)const{
+    return !(*this == right);
 }
 
-bool operator<(const Node &right)const{
-    return pos < right;
+bool Node::operator<(const Node &right)const{
+    return pos < right.pos;
 }
 
-bool operator<=(const Node &right)const{
-    return pos <= right;
+bool Node::operator<=(const Node &right)const{
+    return pos <= right.pos;
 }
 
-bool operator>(const Node &right)const{
-    return !(this <= right);
+bool Node::operator>(const Node &right)const{
+    return !(*this <= right);
 }
 
-bool operator>=(const Node &right)const{
-    return !(this < right);
+bool Node::operator>=(const Node &right)const{
+    return !(*this < right);
 }
 
-bool is_assignable()const{
+bool Node::is_assignable()const{
     return remain > 0;
 }
 
-const Node operator--(int){
+const Node Node::operator--(int){
     if(!is_assignable()){
+        cerr<<"error:\tmemory is not sufficient!"<<endl;
         exit(1);
     }
+    Node tmp = *this;
     remain--;
+    return tmp;
 }
 
-void refresh(){
+void Node::release(){
     remain = memory_cnt;
 }
 
-double distance(const Node &right)const{
+double Node::distance(const Node &right)const{
     double delta_x = pos.first - right.pos.first;
     double delta_y = pos.second - right.pos.second;
-    return delta_x * delta_x + delta_y * delta_y;
+    return sqrt(delta_x * delta_x + delta_y * delta_y);
+}
+
+int Node::get_remain()const{
+    return remain;
+}
+
+const Node Node::operator++(int){
+    if(remain >= memory_cnt){
+        cerr<<"error:\tmemory is out of maximum value, maybe release twice occurs"<<endl;
+        exit(1);
+    }
+    Node tmp = *this;
+    remain++;
+    return tmp;
 }

@@ -7,8 +7,12 @@ using namespace std;
 
 class Request{
     int waiting_time, time_limit, success_cnt;
-    Node* source, destination;
-    vector<Path> paths;
+    Node *source, *destination;
+    vector<Path *> paths;
 public:
-    Request(const Node& source, const Node& destination, const int& time_limit);
+    Request(Node *source, Node *destination, const int& time_limit);
+    bool operator+=(Path *path);
+    void entangle();
+    void swap();
+    bool next_timeslot();
 };
