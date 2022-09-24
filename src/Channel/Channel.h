@@ -2,8 +2,12 @@
 using namespace std;
 
 class Channel{
+    Node *node1_ptr, *node2_ptr;
+    double entangle_prob;
     bool used, entangled;
-    Node node1, node2;
 public:
-    Channel(Node node1, Node node2);
+    Channel(Node* node1, Node* node2, double entangle_prob);
+    bool entangle();
+    bool is_assignable();
+    void assign();
 };

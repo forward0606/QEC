@@ -4,9 +4,9 @@
 using namespace std;
 
 class Edge{
-    Node node1, node2;
+    Node *node1_ptr, *node2_ptr;
+    int channel_cnt;
     vector<Channel> channels;
-    double entangle_prob;
 public:
-	Edge(Node node1, Node node2, vector<Channel> channels);
+	Edge(Node* node1_ptr, Node* node2_ptr, int channel_cnt, double entangle_alpha);
 };
