@@ -11,6 +11,7 @@ class Request{
     vector<Path *> paths;
 public:
     Request(Node *source, Node *destination, const int& time_limit);
+    ~Request(void);
     bool operator+=(Path *path);
     void entangle();
     void swap();

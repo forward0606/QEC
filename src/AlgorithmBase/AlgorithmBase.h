@@ -9,6 +9,8 @@ class AlgorithmBase{
     Graph graph;
     vector<Request*> requests;
 public:
+    AlgorithmBase();
+    ~AlgorithmBase();
     void entangle();
     void swap();
     void next_time_slot();

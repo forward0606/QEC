@@ -21,7 +21,10 @@ public:
     //Graph(vector<Node> nodes, map<node, vector<Edge>> edges);
     Graph(string filename, int num_of_node, double swap_prob, double entangle_alpha);
 	// waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1), metric=None, seed=None)
+	~Graph(void);
 	void generate(string, int);
 	void refresh();
 	void release();
+	Channel* get_channel(int node_id1, int node_id2);
+	int remain_resource_cnt(int node_id1, int node_id2);	//the resource width between node1 and node2
 };

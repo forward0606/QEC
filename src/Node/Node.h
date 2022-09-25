@@ -15,6 +15,7 @@ class Node{
     pair<double, double> pos;   //唯一決定一個 node
 public:
     Node(int memory_cnt, int time_limit, double pos_x, double pos_y, double swap_prob);
+    ~Node(void){};
     bool swap();
     bool operator==(const Node &right)const;
     bool operator!=(const Node &right)const;

@@ -9,6 +9,7 @@ class Edge{
     vector<Channel> channels;
 public:
 	Edge(Node* node1_ptr, Node* node2_ptr, int channel_cnt, double entangle_alpha);
+    ~Edge(void);
     void refresh();
     void release(int width);
     bool has_empty_channel()const;
