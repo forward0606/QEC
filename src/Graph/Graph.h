@@ -32,6 +32,7 @@ public:
 	void generate(string, int);
 	void refresh();
 	void release();
+	void set_weight(int node1_id, int node2_id, double value);
 	int remain_resource_cnt(int node1_id, int node2_id);	//the resource width between node1 and node2
 	Path *build_path(vector<int> nodes_id);
 };

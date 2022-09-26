@@ -1,7 +1,7 @@
 #include"Channel.h"
 
 Channel::Channel(Node *node1_ptr, Node *node2_ptr, double entangle_prob)
-	:node1_ptr(node1_ptr), node2_ptr(node2_ptr), entangle_prob(entangle_prob), used(0), entangled(CHANNEL_UNENTANGLE), weight(1){
+	:node1_ptr(node1_ptr), node2_ptr(node2_ptr), entangle_prob(entangle_prob), used(0), entangled(CHANNEL_UNENTANGLE), weight(entangle_prob){
 	if((*node1_ptr) == (*node2_ptr)){
 		cerr<<"error:\texist an edge with same node!"<<endl;
 		exit(1);

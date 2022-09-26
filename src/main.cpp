@@ -45,6 +45,11 @@ int main(){
         }
         cout<<'\n';
     }
+    if(dis[destination] == 0){
+        cout<<"no path to the destination"<<endl;
+        return 0;
+    }
+
     vector<int> path;
     int tmp = destination;
     while(tmp != source){

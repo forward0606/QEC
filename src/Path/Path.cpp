@@ -36,7 +36,7 @@ bool Path::swap(){
         cerr<<"error:\tcan't swap on a path with fail entanglement!"<<endl;
     }
     swap_succ = true;
-    for(int i=1;i<nodes.size()-1;i++){
+    for(int i=1;i<(int)nodes.size()-1;i++){
         Node* node = nodes[i];
         swap_succ &= node->swap();
     }

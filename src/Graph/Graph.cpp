@@ -67,7 +67,7 @@ void Graph::generate(string filename, int num_of_node){
     for(int i = 0; i < num_of_node; i++){
 		graph_input >> pos_x >> pos_y;
 		int memory_cnt = unif(generator) % (max_memory_cnt-min_memory_cnt) + min_memory_cnt;
-		nodes.emplace_back(memory_cnt, time_limit, pos_x, pos_y, swap_prob);
+        nodes.emplace_back(memory_cnt, time_limit, pos_x, pos_y, swap_prob);
 	}
     
     // input of edges
@@ -127,6 +127,18 @@ void Graph::release(){ //clean all assigned resource(node and channel)
         }
     }
 }
+
+void Graph::set_weight(int node1_id, int node2_id, double value){
+    if(nodes[node1_id] > nodes[node2_id]){
+        swap(node1_id, node2_id);
+    }
+    const Node &node1 = nodes[node1_id];
+    const Node &node2 = nodes[node2_id];
+    for(Channel channel: channels[make_pair(node1, node2)]){
+        channel.set_weight(value);
+    }
+}
+
 
 int Graph::remain_resource_cnt(int node1_id, int node2_id){
     if(nodes[node1_id] > nodes[node2_id]){
