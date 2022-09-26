@@ -1,18 +1,62 @@
 #include <iostream>
-#include "Edge/Edge.h"
+#include <queue>
+#include<algorithm>
+#include "Graph/Graph.h"
 using namespace std;
 
+double dis[26];
+int parent[26];
 
 int main(){
-    cout<<"Hello c++!"<<endl;
+    cout<<"Hello Dijkstra!"<<endl;
 
-    // Node(int memory_cnt, int time_limit, double pos_x, double pos_y, double swap_prob);
-    Node node1(2, 7, 0, 0, 0.4); 
-    Node node2(3, 7, 1, 1, 0.9);
-
-    // Edge(Node* node1_ptr, Node* node2_ptr, int channel_cnt, double entangle_alpha);
-    Edge edge(&node1, &node2, 3, 3);
-
-
+    Graph graph("input.txt", 5, 0.9, 0.0064);
+    priority_queue<pair<double, int>> pq;
+    int source = 0, destination = 4;
+    pq.emplace(1, source);
+    dis[source] = 1;
+    int node;
+    double distance;
+    vector<int> neightbors;
+    cout<<"dijkstra begin!"<<endl;
+    while(!pq.empty()){
+        node = pq.top().second;
+        distance = pq.top().first;
+        pq.pop();
+        cout<<node<<" "<<distance<<endl;
+        if(node == destination){
+            break;
+        }
+        if(dis[node] < distance){
+            continue;
+        }
+        neightbors = graph.get_neighbors_id(node);
+        cout<<"neightbor:\t";
+        for(int ele:neightbors){
+            cout<<ele<<" ";
+            if(graph.remain_resource_cnt(node, ele) == 0){
+                continue;
+            }
+            if(dis[node] * graph.get_channel_weight(node, ele) > dis[ele]){
+                dis[ele] = dis[node] * graph.get_channel_weight(node, ele);
+                parent[ele] = node;
+                pq.emplace(dis[ele], ele);
+            }
+        }
+        cout<<'\n';
+    }
+    vector<int> path;
+    int tmp = destination;
+    while(tmp != source){
+        path.emplace_back(tmp);
+        tmp = parent[tmp];
+    }
+    path.emplace_back(tmp);
+    reverse(path.begin(), path.end());
+    for(int i=0;i<path.size();i++){
+        cout<<path[i]<<" ";
+    }
+    cout<<endl;
+    Path *path_ptr = graph.build_path(path);
     return 0;
 }

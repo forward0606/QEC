@@ -1,11 +1,29 @@
 #include"Channel.h"
 
 Channel::Channel(Node *node1_ptr, Node *node2_ptr, double entangle_prob)
-	:node1_ptr(node1_ptr), node2_ptr(node2_ptr), entangle_prob(entangle_prob), used(0), entangled(CHANNEL_UNENTANGLE){
+	:node1_ptr(node1_ptr), node2_ptr(node2_ptr), entangle_prob(entangle_prob), used(0), entangled(CHANNEL_UNENTANGLE), weight(1){
 	if((*node1_ptr) == (*node2_ptr)){
 		cerr<<"error:\texist an edge with same node!"<<endl;
 		exit(1);
 	}
+	cerr<<"New channel!"<<endl;
+}
+
+Channel::~Channel(){
+
+}
+
+void Channel::set_weight(double _weight){
+	weight = _weight;
+	return;
+}
+
+double Channel::get_weight(){
+	return weight;
+}
+
+double Channel::get_entangle_prob(){
+	return entangle_prob;
 }
 
 bool Channel::is_assignable(){

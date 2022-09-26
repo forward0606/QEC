@@ -1,10 +1,22 @@
 #include"Node.h"
 
 
+
+
+
 Node::Node(int memory_cnt, int time_limit, double pos_x, double pos_y, double swap_prob):
     swap_prob(swap_prob), memory_cnt(memory_cnt), time_limit(time_limit), remain(memory_cnt){
     pos = make_pair(pos_x, pos_y);
-    cout<<"new node"<<endl;
+    cerr<<"new node"<<endl;
+}
+
+
+Node::~Node(){
+
+}
+
+double Node::get_swap_prob(){
+    return swap_prob;
 }
 
 bool Node::swap(){
@@ -17,6 +29,25 @@ bool Node::swap(){
     }
     return false;
 }
+
+double Node::distance(const Node &right)const{
+    double delta_x = pos.first - right.pos.first;
+    double delta_y = pos.second - right.pos.second;
+    return sqrt(delta_x * delta_x + delta_y * delta_y);
+}
+
+void Node::release(){
+    remain = memory_cnt;
+}
+
+bool Node::is_assignable()const{
+    return remain > 0;
+}
+
+int Node::get_remain()const{
+    return remain;
+}
+
 
 bool Node::operator==(const Node &right)const{
     return pos == right.pos;
@@ -42,9 +73,6 @@ bool Node::operator>=(const Node &right)const{
     return !(*this < right);
 }
 
-bool Node::is_assignable()const{
-    return remain > 0;
-}
 
 const Node Node::operator--(int){
     if(!is_assignable()){
@@ -56,19 +84,6 @@ const Node Node::operator--(int){
     return tmp;
 }
 
-void Node::release(){
-    remain = memory_cnt;
-}
-
-double Node::distance(const Node &right)const{
-    double delta_x = pos.first - right.pos.first;
-    double delta_y = pos.second - right.pos.second;
-    return sqrt(delta_x * delta_x + delta_y * delta_y);
-}
-
-int Node::get_remain()const{
-    return remain;
-}
 
 const Node Node::operator++(int){
     if(remain >= memory_cnt){

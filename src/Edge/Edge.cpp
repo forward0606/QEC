@@ -18,6 +18,10 @@ Edge::Edge(Node* node1_ptr, Node* node2_ptr, int channel_cnt, double entangle_al
 	}
 }
 
+Edge::~Edge(){
+
+}
+
 bool Edge::has_empty_channel()const{
 	return remain > 0;
 }

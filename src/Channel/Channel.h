@@ -18,8 +18,16 @@ class Channel{
     double entangle_prob;
     bool used; // assigned to path or not
     int entangled; // -1: CHANNEL_ENTANGLE_FAIL, 0: CHANNEL_UNENTANGLE, 1: CHANNEL_ENTANGLE_SUCC
+    double weight;
 public:
+    
     Channel(Node* node1, Node* node2, double entangle_prob);
+    ~Channel();
+
+    void set_weight(double _weight);
+    double get_weight();
+    double get_entangle_prob();
+
     bool is_assignable();
     void assign();
     bool entangle();

@@ -5,6 +5,14 @@ Request::Request(Node* source, Node* destination, const int& time_limit)
 
 }
 
+Request::~Request(void){
+    for(int i=0;i<paths.size();i++){
+        delete paths[i];
+        paths[i] = nullptr;
+    }
+}
+
+
 void Request::entangle(){
     for(auto &path:paths){
         path->entangle();

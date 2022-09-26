@@ -2,10 +2,18 @@
 
 Path::Path(vector<Node*> nodes, vector<Channel*> channels)
     :nodes(nodes), channels(channels), entangle_succ(false), swap_succ(false){
-
+        prob = 1;
+        for(auto channel:channels){
+            prob *= channel->get_entangle_prob();
+        }
+        for(int i = 1; i < (int)nodes.size()-1; i++){ // source and destination no swap
+            prob *= nodes[i]->get_swap_prob();
+        }
 }
 
-
+Path::~Path(){
+    release();
+}
 
 bool Path::entangle(){
     if(channels.size() == 0 || nodes.size() >1){

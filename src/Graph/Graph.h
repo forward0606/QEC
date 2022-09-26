@@ -2,7 +2,7 @@
 #include <vector>
 #include <map>
 #include "../Node/Node.h"
-#include "../Edge/Edge.h"
+#include "../Path/Path.h"
 using namespace std;
 
 class Graph{
@@ -14,17 +14,30 @@ class Graph{
 	pair<double, double> min_pos, max_pos; // rectangle's left up, right down
 	double average_distance;
 
-
     vector<Node> nodes;
     map<pair<const Node, const Node>, vector<Channel>> channels;
+	vector<vector<int>> neighbor;
+
+	Channel* assign_channel(Node node1, Node node2);	//in algorithm we use this function to find a channel, then collect a sequence of channels. Finally, construct them to be a Path.
 public:
     //Graph(vector<Node> nodes, map<node, vector<Edge>> edges);
     Graph(string filename, int num_of_node, double swap_prob, double entangle_alpha);
 	// waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1), metric=None, seed=None)
 	~Graph(void);
+
+	int get_size();											//return |V|
+	vector<int> get_neighbors_id(int node1_id);				//int get_neighbor_size(int node_id); int get_neighbor_id(int node1_id, int nth);
+	double get_channel_weight(int node1_id, int node2_id);	//return the average weight of channel between node1 and node2
+
 	void generate(string, int);
 	void refresh();
 	void release();
-	Channel* get_channel(int node_id1, int node_id2);
-	int remain_resource_cnt(int node_id1, int node_id2);	//the resource width between node1 and node2
+	int remain_resource_cnt(int node1_id, int node2_id);	//the resource width between node1 and node2
+	Path *build_path(vector<int> nodes_id);
 };
+
+
+
+
+
+
