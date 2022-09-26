@@ -52,3 +52,7 @@ void Path::release(){
         channel->release();
     }
 }
+
+double compute_weight(){
+    
+}

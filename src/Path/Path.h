@@ -17,4 +17,5 @@ public:
     bool swap();            //true->swapped success
     bool get_swap_succ();
     void release();
+    virtual double compute_weight();
 };
