@@ -12,8 +12,9 @@ class Request{
 public:
     Request(Node *source, Node *destination, const int& time_limit);
     ~Request(void);
-    bool operator+=(Path *path);
+    int get_waiting_time();
     void entangle();
     void swap();
     bool next_timeslot();
+    bool operator+=(Path *path);
 };
