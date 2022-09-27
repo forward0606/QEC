@@ -1,7 +1,7 @@
 #include <vector>
-#include "../Node/Node.h"
-#include "../Channel/Channel.h"
-#include "../Edge/Edge.h"
+#include "../Network/Node/Node.h"
+#include "../Network/Channel/Channel.h"
+
 
 
 class Path{
@@ -17,5 +17,5 @@ public:
     bool swap();            //true->swapped success
     bool get_swap_succ();
     void release();
-    virtual double compute_weight();
+    //virtual double compute_weight();
 };

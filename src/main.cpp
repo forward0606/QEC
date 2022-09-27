@@ -1,7 +1,7 @@
 #include <iostream>
 #include <queue>
 #include<algorithm>
-#include "Graph/Graph.h"
+#include "Network/Graph/Graph.h"
 using namespace std;
 
 double dis[26];
@@ -58,7 +58,7 @@ int main(){
     }
     path.emplace_back(tmp);
     reverse(path.begin(), path.end());
-    for(int i=0;i<path.size();i++){
+    for(int i=0;i<(int)path.size();i++){
         cout<<path[i]<<" ";
     }
     cout<<endl;

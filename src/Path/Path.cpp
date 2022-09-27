@@ -11,12 +11,12 @@ Path::Path(vector<Node*> nodes, vector<Channel*> channels)
         }
 }
 
-Path::~Path(){
+Path::~Path(void){
     release();
 }
 
 bool Path::entangle(){
-    if(channels.size() == 0 || nodes.size() >1){
+    if(channels.size() == 0 || nodes.size() < 1){
         cerr << "error:\tWTF" << endl;
         exit(1);
     }
@@ -53,6 +53,6 @@ void Path::release(){
     }
 }
 
-double compute_weight(){
+// double compute_weight(){
     
-}
+// }

@@ -2,7 +2,7 @@
 #include <vector>
 #include <map>
 #include "../Node/Node.h"
-#include "../Path/Path.h"
+#include "../../Path/Path.h"
 using namespace std;
 
 class Graph{
