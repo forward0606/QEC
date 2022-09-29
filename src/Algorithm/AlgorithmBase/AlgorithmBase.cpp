@@ -1,0 +1,49 @@
+#include "AlgorithmBase.h"
+#include <stdlib.h> /* 亂數相關函數 */
+#include <time.h>   /* 時間相關函數 */
+#include <random>
+#include <ctime>
+
+
+AlgorithmBase::AlgorithmBase()
+    :timeslot(0), waiting_time(0), throughputs(0), new_request_min(0), new_request_max(5), graph(Graph("input.txt", 500, 1, 1)), time_limit(7){
+    
+}
+
+Request* AlgorithmBase::generate_new_request(){
+    //亂數引擎 
+    random_device rd;
+    default_random_engine generator = default_random_engine(rd());
+    uniform_int_distribution<int> unif(0, graph.get_size()-1);
+    
+    return new Request(graph.Node_id2ptr(unif(generator)), graph.Node_id2ptr(unif(generator)), time_limit);
+}
+
+void AlgorithmBase::next_time_slot(){
+    graph.refresh();
+    for(auto request: requests){
+        request->next_timeslot();
+    }
+
+    // generate new requests for next time slot
+    //亂數引擎 
+    random_device rd;
+    default_random_engine generator = default_random_engine(rd());
+    uniform_int_distribution<int> unif(new_request_min,new_request_max);
+    int request_cnt = unif(generator);
+    for(int i = 0; i < request_cnt; i++){
+        requests.push_back(generate_new_request());
+    }
+}
+
+void AlgorithmBase::entangle(){
+    for(int i=0;i<requests.size();i++){
+        requests[i] -> entangle();
+    }
+}
+
+void AlgorithmBase::swap(){
+    for(int i=0;i<requests.size();i++){
+        requests[i] -> swap();
+    }
+}

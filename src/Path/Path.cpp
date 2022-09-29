@@ -16,7 +16,7 @@ Path::~Path(void){
 }
 
 bool Path::entangle(){
-    if(channels.size() == 0 || nodes.size() < 1){
+    if(channels.size() == 0 || nodes.size() <= 1){
         cerr << "error:\tWTF" << endl;
         exit(1);
     }

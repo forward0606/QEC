@@ -28,6 +28,7 @@ public:
 	int get_size();											//return |V|
 	vector<int> get_neighbors_id(int node1_id);				//int get_neighbor_size(int node_id); int get_neighbor_id(int node1_id, int nth);
 	double get_channel_weight(int node1_id, int node2_id);	//return the average weight of channel between node1 and node2
+	Node* Node_id2ptr(int id);
 
 	void generate(string, int);
 	void refresh();

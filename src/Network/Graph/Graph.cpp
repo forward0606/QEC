@@ -42,6 +42,14 @@ vector<int> Graph::get_neighbors_id(int node1_id){
     return neighbor[node1_id];
 }
 
+Node* Graph::Node_id2ptr(int id){
+    if(id >= nodes.size() || id < 0){
+        cerr<<"err:\t in Graph::Node_id2ptr() id is out of range"<<endl;
+        exit(1);
+    }
+    return &nodes[id];
+}
+
 /*
 c++ call system to run python (waxman)
 python generate graph, and then write to file
@@ -57,7 +65,8 @@ void Graph::generate(string filename, int num_of_node){
     //亂數引擎 
     random_device rd;
     default_random_engine generator = default_random_engine(rd());
-    uniform_int_distribution<int> unif(0,2147483647);
+    uniform_int_distribution<int> memgen(min_memory_cnt,max_memory_cnt);
+    uniform_int_distribution<int> changen(min_channel,max_channel);
     
     ifstream graph_input;
     graph_input.open (filename);
@@ -66,7 +75,7 @@ void Graph::generate(string filename, int num_of_node){
     double pos_x, pos_y;
     for(int i = 0; i < num_of_node; i++){
 		graph_input >> pos_x >> pos_y;
-		int memory_cnt = unif(generator) % (max_memory_cnt-min_memory_cnt) + min_memory_cnt;
+		int memory_cnt = memgen(generator) ;
         nodes.emplace_back(memory_cnt, time_limit, pos_x, pos_y, swap_prob);
 	}
     
@@ -82,7 +91,7 @@ void Graph::generate(string filename, int num_of_node){
         Node &node1 = nodes[node_id1];
         Node &node2 = nodes[node_id2];
         
-        int channel_cnt = unif(generator) % (max_channel-min_channel) + min_channel;
+        int channel_cnt = changen(generator);
         if(node1 == node2){
             cerr<<"error:\texist an edge with same node!"<<endl;
             exit(1);
