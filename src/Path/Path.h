@@ -1,8 +1,9 @@
+#ifndef __PATH_H
+#define __PATH_H
+
 #include <vector>
 #include "../Network/Node/Node.h"
 #include "../Network/Channel/Channel.h"
-
-
 
 class Path{
     vector<Node*> nodes;
@@ -19,3 +20,5 @@ public:
     void release();
     //virtual double compute_weight();
 };
+
+#endif

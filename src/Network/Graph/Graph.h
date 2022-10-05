@@ -1,3 +1,5 @@
+#ifndef __GRAPH_H
+#define __GRAPH_H
 #include <iostream>
 #include <vector>
 #include <map>
@@ -21,7 +23,7 @@ class Graph{
 	Channel* assign_channel(Node node1, Node node2);	//in algorithm we use this function to find a channel, then collect a sequence of channels. Finally, construct them to be a Path.
 public:
     //Graph(vector<Node> nodes, map<node, vector<Edge>> edges);
-    Graph(string filename, int num_of_node, double swap_prob, double entangle_alpha);
+    Graph(string filename, int num_of_node, int min_channel, int max_channel, int min_memory_cnt, int max_memory_cnt, int time_limit, double swap_prob, double entangle_alpha);
 	// waxman_graph(n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1), metric=None, seed=None)
 	~Graph(void);
 
@@ -39,7 +41,7 @@ public:
 };
 
 
-
+#endif
 
 
 

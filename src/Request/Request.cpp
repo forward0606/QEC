@@ -1,17 +1,26 @@
 #include"Request.h"
 
-Request::Request(Node* source, Node* destination, const int& time_limit)
-    :source(source), destination(destination), time_limit(time_limit){
+Request::Request(int source, int destination, const int& time_limit)
+    :source(source), destination(destination), waiting_time(0), time_limit(time_limit), success_cnt(0){
 
 }
 
 Request::~Request(void){
-    for(int i=0;i<paths.size();i++){
+    for(int i=0;i<(int)paths.size();i++){
         delete paths[i];
         paths[i] = nullptr;
     }
 }
 
+int Request::get_waiting_time(){
+    return waiting_time;
+}
+int Request::get_source(){
+    return source;
+}
+int Request::get_destination(){
+    return destination;
+}
 
 void Request::entangle(){
     for(auto &path:paths){
@@ -34,6 +43,6 @@ bool Request::next_timeslot(){
     return (time_limit == 0) && (success_cnt > 0);
 }
 
-bool Request::operator+=(Path *path){
+void Request::operator+=(Path *path){
     paths.emplace_back(path);
 }

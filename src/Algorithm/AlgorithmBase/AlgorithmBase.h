@@ -1,3 +1,6 @@
+#ifndef __ALGORITHMBASE_H
+#define __ALGORITHMBASE_H
+
 #include<iostream>
 #include<vector>
 #include "../../Network/Graph/Graph.h"
@@ -8,16 +11,19 @@ using namespace std;
 class AlgorithmBase{
     int timeslot, waiting_time;
     int throughputs;
-    int new_request_min, new_request_max;
-    Graph graph;
-    vector<Request*> requests;
     int time_limit;
+    double swap_prob;
     Request* generate_new_request();
 public:
-    AlgorithmBase();
-    ~AlgorithmBase();
-    virtual void path_assignment() = 0;
+    vector<Request> requests;
+    Graph graph;
+    AlgorithmBase(Graph graph, int time_limit, double swap_prob);
+    //~AlgorithmBase();
+    double get_swap_prob();
+    virtual void path_assignment(){};
     void entangle();
     void swap();
     void next_time_slot();
 };
+
+#endif

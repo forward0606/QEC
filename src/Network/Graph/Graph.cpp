@@ -3,9 +3,9 @@
 #include <ctime>
 #include "Graph.h"
 
-Graph::Graph(string filename, int num_of_node, double swap_prob, double entangle_alpha)
-	:min_channel(3), max_channel(7),
-     min_memory_cnt(10), max_memory_cnt(14), time_limit(7), swap_prob(swap_prob), entangle_alpha(entangle_alpha){
+Graph::Graph(string filename, int num_of_node, int min_channel, int max_channel, int min_memory_cnt, int max_memory_cnt, int time_limit, double swap_prob, double entangle_alpha)
+	:min_channel(min_channel), max_channel(max_channel),
+     min_memory_cnt(min_memory_cnt), max_memory_cnt(max_memory_cnt), time_limit(time_limit), swap_prob(swap_prob), entangle_alpha(entangle_alpha){
     neighbor.resize(num_of_node);
     generate(filename, num_of_node);
 }
@@ -43,7 +43,7 @@ vector<int> Graph::get_neighbors_id(int node1_id){
 }
 
 Node* Graph::Node_id2ptr(int id){
-    if(id >= nodes.size() || id < 0){
+    if(id >= (int)nodes.size() || id < 0){
         cerr<<"err:\t in Graph::Node_id2ptr() id is out of range"<<endl;
         exit(1);
     }
