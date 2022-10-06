@@ -15,6 +15,14 @@ Path::~Path(void){
     release();
 }
 
+int Path::get_len(){
+    return channels.size();
+}
+
+vector<Node*> Path::get_nodes(){
+    return nodes;
+}
+
 bool Path::entangle(){
     if(channels.size() == 0 || nodes.size() <= 1){
         cerr << "error:\tWTF" << endl;

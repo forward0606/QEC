@@ -6,7 +6,7 @@ Channel::Channel(Node *node1_ptr, Node *node2_ptr, double entangle_prob)
 		cerr<<"error:\texist an edge with same node!"<<endl;
 		exit(1);
 	}
-	cerr<<"New channel!"<<endl;
+	cerr<<"New channel!"<<node1_ptr->get_id() << " " << node2_ptr->get_id() << endl;
 }
 
 Channel::~Channel(){
@@ -88,6 +88,10 @@ void Channel::refresh(){
 }
 
 void Channel::release(){
+	if(used){
+		(*node1_ptr)++;
+		(*node2_ptr)++;
+	}
 	used = false;
 	entangled = CHANNEL_UNENTANGLE;
 }

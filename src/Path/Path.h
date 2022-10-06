@@ -13,6 +13,8 @@ class Path{
 public:
 	Path(vector<Node*> nodes, vector<Channel*> channels);
     ~Path(void);
+    int get_len();
+    vector<Node*> get_nodes();
     bool entangle();        //true->entangle success
     bool get_entangle_succ();
     bool swap();            //true->swapped success

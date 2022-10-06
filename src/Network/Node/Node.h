@@ -9,14 +9,16 @@ using namespace std;
 
 
 class Node{
+    int id;
     const double swap_prob;
     int memory_cnt, time_limit;
     int remain;                 //remain qubit
     pair<double, double> pos;   //唯一決定一個 node
 public:
-    Node(int memory_cnt, int time_limit, double pos_x, double pos_y, double swap_prob);
+    Node(int id, int memory_cnt, int time_limit, double pos_x, double pos_y, double swap_prob);
     ~Node();
     
+    int get_id();
     double get_swap_prob();
 
     bool swap();                 //release one remain memory

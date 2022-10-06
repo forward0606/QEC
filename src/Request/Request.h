@@ -15,6 +15,7 @@ public:
     int get_waiting_time();
     int get_source();
     int get_destination();
+    vector<Path *> get_paths();
     void entangle();
     void swap();
     bool next_timeslot();

@@ -14,6 +14,10 @@ Graph::~Graph(void){
 
 }
 
+int Graph::get_size(){
+    return (int)nodes.size();
+}
+
 Channel* Graph::assign_channel(Node node1, Node node2){
     
     //I'm sorry for this code. = =|||
@@ -76,7 +80,7 @@ void Graph::generate(string filename, int num_of_node){
     for(int i = 0; i < num_of_node; i++){
 		graph_input >> pos_x >> pos_y;
 		int memory_cnt = memgen(generator) ;
-        nodes.emplace_back(memory_cnt, time_limit, pos_x, pos_y, swap_prob);
+        nodes.emplace_back(i, memory_cnt, time_limit, pos_x, pos_y, swap_prob);
 	}
     
     // input of edges
@@ -127,9 +131,6 @@ void Graph::refresh(){ // refresh all channel entangle status
 }
 
 void Graph::release(){ //clean all assigned resource(node and channel)
-    for(int i = 0; i < (int)nodes.size(); i++){
-        nodes[i].release();
-    }
     for(auto &chans:channels){
         for(auto &e:chans.second){
             e.release();
@@ -149,9 +150,10 @@ void Graph::set_weight(int node1_id, int node2_id, double value){
 }
 
 
-int Graph::remain_resource_cnt(int node1_id, int node2_id){
+int Graph::remain_resource_cnt(int node1_id, int node2_id, bool is1_repeater /*= true*/, bool is2_repeater /*= true*/){
     if(nodes[node1_id] > nodes[node2_id]){
         swap(node1_id, node2_id);
+        swap(is1_repeater, is2_repeater);
     }
     const Node &node1 = nodes[node1_id];
     const Node &node2 = nodes[node2_id];
@@ -161,15 +163,18 @@ int Graph::remain_resource_cnt(int node1_id, int node2_id){
             cnt++;
         }
     }
-    return min(cnt, min(node1.get_remain(), node2.get_remain()));
+    int node1_use = 1, node2_use = 1;
+    if(is1_repeater)node1_use++;
+    if(is2_repeater)node2_use++;
+    return min(cnt, min(node1.get_remain() / node1_use, node2.get_remain() / node2_use));
 }
 
 
 Path* Graph::build_path(vector<int> nodes_id){
-    vector<Node*> path_nodes;
+    vector<Node *> path_nodes;
     vector<Channel*> path_channels;
     for(auto node_id: nodes_id){
-        path_nodes.push_back(&(nodes[node_id]));
+        path_nodes.push_back(&nodes[nodes_id[node_id]]);
     }
     for(int i = 0; i < (int)nodes_id.size()-1; i++){
         Node &node1 = nodes[nodes_id[i]];

@@ -25,6 +25,7 @@ double AlgorithmBase::get_swap_prob(){
 
 void AlgorithmBase::next_time_slot(){
     graph.refresh();
+    graph.release();
     for(auto &request: requests){
         request.next_timeslot();
     }
@@ -50,4 +51,11 @@ void AlgorithmBase::swap(){
     for(int i=0;i<(int)requests.size();i++){
         requests[i].swap();
     }
+}
+
+
+void AlgorithmBase::run(){
+    path_assignment();
+    entangle();
+    swap();
 }

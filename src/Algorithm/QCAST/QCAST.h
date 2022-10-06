@@ -1,5 +1,7 @@
 #include    <iostream>
 #include    <cmath>
+#include <algorithm>
+#include <queue>
 #include    "../AlgorithmBase/AlgorithmBase.h"
 #include    "../../Network/Graph/Graph.h"
 using namespace std;
@@ -14,12 +16,16 @@ Step2)  選最大 EXT 的 path，分配資源後更新為 residual graph
 (先不用recovery path)
 */ 
 class QCAST:public AlgorithmBase{
+    map<pair<Request*,Path*>,vector<Path*>> recovery_paths;
     double EXT(vector<double> path, int w);
     map<pair<int, int>, double> combination;
     double C(int n, int m);
     int find_width(vector<int> path);
-    void assign_resource(vector<int> path, int reqno);                   //assign one path's resource to requests[reqno]
+    void assign_resource(vector<int> path, int reqno);                   //assign path's resource to requests[reqno]
 public:
     QCAST(AlgorithmBase base);
     void path_assignment();
+    void find_recovery_path(int R);
+    void p4();
+    Path* BFS(int source, int destination); // no connect return NULL
 };

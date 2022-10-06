@@ -13,7 +13,7 @@ class AlgorithmBase{
     int throughputs;
     int time_limit;
     double swap_prob;
-    Request* generate_new_request();
+    //Request* generate_new_request();
 public:
     vector<Request> requests;
     Graph graph;
@@ -24,6 +24,7 @@ public:
     void entangle();
     void swap();
     void next_time_slot();
+    void run();
 };
 
 #endif

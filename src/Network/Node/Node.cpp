@@ -4,17 +4,19 @@
 
 
 
-Node::Node(int memory_cnt, int time_limit, double pos_x, double pos_y, double swap_prob):
-    swap_prob(swap_prob), memory_cnt(memory_cnt), time_limit(time_limit), remain(memory_cnt){
+Node::Node(int id, int memory_cnt, int time_limit, double pos_x, double pos_y, double swap_prob):
+    id(id), swap_prob(swap_prob), memory_cnt(memory_cnt), time_limit(time_limit), remain(memory_cnt){
     pos = make_pair(pos_x, pos_y);
-    cerr<<"new node"<<endl;
+    cerr<<"new node"<<id <<endl;
 }
 
 
 Node::~Node(){
 
 }
-
+int Node::get_id(){
+    return id;
+}
 double Node::get_swap_prob(){
     return swap_prob;
 }

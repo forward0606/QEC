@@ -21,6 +21,9 @@ int Request::get_source(){
 int Request::get_destination(){
     return destination;
 }
+vector<Path *> Request::get_paths(){
+    return paths;
+}
 
 void Request::entangle(){
     for(auto &path:paths){
@@ -36,6 +39,10 @@ void Request::swap(){
 }
 
 bool Request::next_timeslot(){
+    for(auto path_ptr:paths){
+        delete path_ptr;
+    }
+    paths.clear();
     waiting_time++;
     if(success_cnt > 0){
         time_limit--;
