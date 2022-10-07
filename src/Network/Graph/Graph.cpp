@@ -96,11 +96,13 @@ void Graph::generate(string filename, int num_of_node){
         Node &node2 = nodes[node_id2];
         
         int channel_cnt = changen(generator);
+        cerr<<"channel cnt:\t"<<channel_cnt<<endl;
         if(node1 == node2){
             cerr<<"error:\texist an edge with same node!"<<endl;
             exit(1);
 	    }
         double entangle_prob = exp(-entangle_alpha * (node1.distance(node2))); // e^( -alpha * dis(node1, node2) )
+        cerr<<"entangle_prob:\t"<<entangle_prob<<endl;
         for(int i = 0; i < channel_cnt; i++){
             channels[make_pair(node1, node2)].emplace_back(&node1, &node2, entangle_prob);
         }
@@ -174,7 +176,7 @@ Path* Graph::build_path(vector<int> nodes_id){
     vector<Node *> path_nodes;
     vector<Channel*> path_channels;
     for(auto node_id: nodes_id){
-        path_nodes.push_back(&nodes[nodes_id[node_id]]);
+        path_nodes.push_back(&nodes[node_id]);
     }
     for(int i = 0; i < (int)nodes_id.size()-1; i++){
         Node &node1 = nodes[nodes_id[i]];

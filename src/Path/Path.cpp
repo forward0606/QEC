@@ -61,6 +61,23 @@ void Path::release(){
     }
 }
 
+void Path::print(){
+    cerr<<"this is a Path"<<endl;
+    cerr<<"\tentangle_succ = "<<entangle_succ<<endl;
+    cerr<<"\tswap_succ = "<<swap_succ<<endl;
+    cerr<<"\t the node in path is:";
+    for(auto n:nodes){
+        cerr<<n->get_id()<<" ";
+    }
+    cerr<<endl;
+    cerr<<"\t the channel in path is:";
+    for(auto c:channels){
+        cerr<<c<<" ";
+    }
+    cerr<<endl;
+}
+
+
 // double compute_weight(){
     
 // }

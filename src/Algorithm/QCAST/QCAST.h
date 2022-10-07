@@ -28,4 +28,5 @@ public:
     void find_recovery_path(int R);
     void p4();
     Path* BFS(int source, int destination); // no connect return NULL
+    double demoEXT(vector<double> path, int w);
 };

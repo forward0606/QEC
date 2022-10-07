@@ -20,4 +20,5 @@ public:
     void swap();
     bool next_timeslot();
     void operator+=(Path *path);
+    void print();
 };

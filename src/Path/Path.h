@@ -20,6 +20,7 @@ public:
     bool swap();            //true->swapped success
     bool get_swap_succ();
     void release();
+    void print();
     //virtual double compute_weight();
 };
 

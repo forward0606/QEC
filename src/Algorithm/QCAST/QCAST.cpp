@@ -72,7 +72,16 @@ int QCAST::find_width(vector<int> path){
 void QCAST::assign_resource(vector<int> path, int reqno){
     
     int width = find_width(path);
-    while(width-->0){
+    if(width == 0x3f3f3f3f){
+        cerr<<"error:\twidth = INF"<<endl;
+        exit(1);
+    }
+    cerr<<"find a path! with width:\t"<<width<<endl;
+    for(auto ele:path){
+        cerr<<ele<<" ";
+    }
+    cerr<<endl;
+    while(width-- > 0){
         requests[reqno] += graph.build_path(path);
     }
 }
@@ -111,29 +120,46 @@ struct CandPath{
         }
         return false;
     }
+    void print(){
+        //demo
+        cerr<<id<<":"<<endl;
+        cerr<<"\t"<<source<<"\t"<<destination<<endl;
+        cerr<<"\tpath:\t";
+        for(int ele:path){
+            cerr<<ele<<" ";
+        }
+        cerr<<endl<<"\tp\t";
+        for(double ele:p){
+            cerr<<ele<<" ";
+        }
+        cerr<<endl;
+        cerr<<"\tusable = "<<useable<<endl;
+    }
 };
 
 
 
 void QCAST::path_assignment(){
-    vector<CandPath> candiate;
+    vector<CandPath> candidate;
     for(int i=0;i<(int)requests.size();i++){
-        candiate.emplace_back(i, requests[i].get_source(), requests[i].get_destination());
+        candidate.emplace_back(i, requests[i].get_source(), requests[i].get_destination());
     }
-    int find_path_cnt = 0;
+    int find_path_cnt = 0, round = 0;
     vector<int> neightbors;
     while(find_path_cnt < 100){
         //find the path with biggest EXT
-        int mxi = -1, mxv = 0, width;
-        for(int i = 0;i<(int)candiate.size();i++){
-            if(!candiate[i].useable)    continue;
-            width = find_width(candiate[i].path);
-            if(width == 0 || candiate[i].path.size() >= 200){
-                candiate[i].useable = false;
+        round++;
+        int mxi = -1, width;
+        double mxv = 0;
+        for(int i = 0;i<(int)candidate.size();i++){
+            if(!candidate[i].useable)    continue;
+            width = find_width(candidate[i].path);
+            if(width == 0 || candidate[i].path.size() >= 200){
+                candidate[i].useable = false;
                 continue;
             }
-            double ext = EXT(candiate[i].p, width);
-            if(ext > mxv){
+            double ext = EXT(candidate[i].p, width);
+            if(ext - mxv > 0){
                 mxv = ext;
                 mxi = i;
             }
@@ -142,64 +168,70 @@ void QCAST::path_assignment(){
             //all path is used
             break;
         }
-        if(candiate[mxi].destination == candiate[mxi].path.back()){
+        if(candidate[mxi].destination == candidate[mxi].path.back()){
             //find new paths
-            find_path_cnt += find_width(candiate[mxi].path);
-            assign_resource(candiate[mxi].path, candiate[mxi].id);
+            find_path_cnt += find_width(candidate[mxi].path);
+            assign_resource(candidate[mxi].path, candidate[mxi].id);
         }else{
             //go one step next
-            int node = candiate[mxi].path.back();
+            int node = candidate[mxi].path.back();
             neightbors = graph.get_neighbors_id(node);
             for(int ele:neightbors){
                 //cout<<ele<<" ";
-                bool node1_is_repeater = !(node == candiate[mxi].source || node == candiate[mxi].destination);
-                bool node2_is_repeater = !(ele == candiate[mxi].source || ele == candiate[mxi].destination);
+                bool node1_is_repeater = !(node == candidate[mxi].source || node == candidate[mxi].destination);
+                bool node2_is_repeater = !(ele == candidate[mxi].source || ele == candidate[mxi].destination);
                 if(graph.remain_resource_cnt(node, ele, node1_is_repeater, node2_is_repeater) == 0){
                     continue;
                 }
-                if(candiate[mxi].vis(ele)){
+                if(candidate[mxi].vis(ele)){
                     continue;
                 } 
             
-                candiate[mxi].path.emplace_back(ele);
-                candiate[mxi].p.emplace_back(graph.get_channel_weight(node, ele));
-                candiate.emplace_back(candiate[mxi]);
-                candiate[mxi].path.pop_back();
-                candiate[mxi].p.pop_back();
+                candidate[mxi].path.emplace_back(ele);
+                candidate[mxi].p.emplace_back(graph.get_channel_weight(node, ele));
+                candidate.emplace_back(candidate[mxi]);
+                candidate[mxi].path.pop_back();
+                candidate[mxi].p.pop_back();
             }
         }
-        candiate[mxi].useable = false;
+        candidate[mxi].useable = false;
         //remove used path
         int l = 0;
-        for(int i = 0;i<(int)candiate.size();i++){
-            if(candiate[i].useable){
-                candiate[l] = candiate[i];
+        for(int i = 0;i<(int)candidate.size();i++){
+            if(candidate[i].useable){
+                candidate[l] = candidate[i];
                 l++;
             }
         }
-        candiate.resize(l);
+        candidate.resize(l);
     }
+    for(int i=0;i<(int)requests.size();i++){
+        cerr<<"in request "<<i<<endl;
+        for(auto p :requests[i].get_paths()){
+            p->print();
+        }
+    }
+    find_recovery_path(3);                  //demo
 }
 
 void QCAST::find_recovery_path(int R){ // R: max amount of recovery path for any node x 
     for(auto &request: requests){
         for(auto path_ptr: request.get_paths()){
             Path path = *path_ptr;
-                vector<Node*> path_nodes = path.get_nodes();
-                for(int i = 0; i < (int)path_nodes.size(); i++){
-                    int recovery_path_cnt = 0;
-                    Path *recovery_path_ptr = nullptr;
-                    for(int hop = 1; hop <= path.get_len(); hop++){
-                        while(recovery_path_cnt < R){
-                            recovery_path_ptr = BFS(path_nodes[i]->get_id(), path_nodes[i+hop]->get_id());
-                            if(recovery_path_ptr == nullptr) break;
-                            recovery_paths[make_pair(&request, path_ptr)].push_back(recovery_path_ptr);
-                            recovery_path_cnt++;
-                            recovery_path_ptr = nullptr;
-                        }
+            vector<Node*> path_nodes = path.get_nodes();
+            for(int i = 0; i < (int)path_nodes.size(); i++){
+                int recovery_path_cnt = 0;
+                Path *recovery_path_ptr = nullptr;
+                for(int hop = 1; i + hop <= path.get_len(); hop++){
+                    while(recovery_path_cnt < R){
+                        recovery_path_ptr = BFS(path_nodes[i]->get_id(), path_nodes[i+hop]->get_id());
+                        if(recovery_path_ptr == nullptr) break;
+                        recovery_paths[make_pair(&request, path_ptr)].push_back(recovery_path_ptr);
+                        recovery_path_cnt++;
+                        recovery_path_ptr = nullptr;
                     }
                 }
-            
+            }
         }
     }
 }
@@ -261,4 +293,8 @@ Path* QCAST::BFS(int source, int destination){
     }
     reverse(path_nodes.begin(), path_nodes.end());
     return graph.build_path(path_nodes);
+}
+
+double QCAST::demoEXT(vector<double> path, int w){
+    return EXT(path, w);
 }
