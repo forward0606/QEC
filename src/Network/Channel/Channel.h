@@ -27,7 +27,9 @@ public:
     void set_weight(double _weight);
     double get_weight();
     double get_entangle_prob();
-
+    Node* get_node1_ptr();
+    Node* get_node2_ptr();
+    
     bool is_assignable();
     void assign();
     bool entangle();

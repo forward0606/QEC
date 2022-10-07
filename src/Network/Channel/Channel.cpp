@@ -6,7 +6,7 @@ Channel::Channel(Node *node1_ptr, Node *node2_ptr, double entangle_prob)
 		cerr<<"error:\texist an edge with same node!"<<endl;
 		exit(1);
 	}
-	cerr<<"New channel!"<<node1_ptr->get_id() << " " << node2_ptr->get_id() << endl;
+	cerr<<"New channel!"<<node1_ptr->get_id() << " " << node2_ptr->get_id() << ", entangle_prob = " << entangle_prob << endl;
 }
 
 Channel::~Channel(){
@@ -24,6 +24,14 @@ double Channel::get_weight(){
 
 double Channel::get_entangle_prob(){
 	return entangle_prob;
+}
+
+Node* Channel::get_node1_ptr(){
+	return node1_ptr;
+}
+
+Node* Channel::get_node2_ptr(){
+	return node2_ptr;
 }
 
 bool Channel::is_assignable(){

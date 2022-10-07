@@ -6,8 +6,8 @@
 #include "Algorithm/QCAST/QCAST.h"
 using namespace std;
 
-double dis[26];
-int parent[26];
+// double dis[26];
+// int parent[26];
 
 Request generate_new_request(int num_of_node, int time_limit){
     //亂數引擎 
@@ -29,7 +29,7 @@ int main(){
     int num_of_node = 5;
     int min_channel = 1, max_channel = 1;
     int min_memory_cnt = 10, max_memory_cnt = 14;
-    int swap_prob = 1, entangle_alpha = 1;
+    double swap_prob = 1, entangle_alpha = 0;
     int node_time_limit = 7;
 
     int new_request_min = 1, new_request_max = 1;
@@ -56,16 +56,12 @@ int main(){
         //     cout<<new_request.get_source()<<" "<<new_request.get_destination()<<endl;
         //     qcast.requests.push_back(new_request);
         // }
-        Request new_request = generate_new_request(0, 2, request_time_limit);           //demo
-        qcast.requests.push_back(new_request);
-        new_request = generate_new_request(2, 4, request_time_limit);           //demo
-        qcast.requests.push_back(new_request);
-        new_request = generate_new_request(0, 4, request_time_limit);           //demo
+        Request new_request = generate_new_request(0, 3, request_time_limit);           //demo
         qcast.requests.push_back(new_request);
         qcast.run();
 
         qcast.next_time_slot();
     }
-
+    cout<<"total throughput = "<<qcast.total_throughput()<<endl;
     return 0;
 }

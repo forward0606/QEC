@@ -59,3 +59,11 @@ void AlgorithmBase::run(){
     entangle();
     swap();
 }
+
+int AlgorithmBase::total_throughput(){
+    int sum = 0;
+    for(auto request:requests){
+        sum += request.get_throughput();
+    }
+    return sum;
+}

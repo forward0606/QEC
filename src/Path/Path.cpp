@@ -9,11 +9,17 @@ Path::Path(vector<Node*> nodes, vector<Channel*> channels)
         for(int i = 1; i < (int)nodes.size()-1; i++){ // source and destination no swap
             prob *= nodes[i]->get_swap_prob();
         }
+        cerr<<"new assigned path"<<endl;
 }
+
+// Path::Path(vector<Node*> nodes)
+//     :nodes(nodes), entangle_succ(true), swap_succ(false){
+//         cerr<<"new entangled path"<<endl;
+// }
 
 Path::~Path(void){
     cerr<<"delete Path"<<endl;
-    release();
+    //release();
 }
 
 int Path::get_len(){
@@ -22,6 +28,10 @@ int Path::get_len(){
 
 vector<Node*> Path::get_nodes(){
     return nodes;
+}
+
+vector<Channel*> Path::get_channels(){
+    return channels;
 }
 
 bool Path::entangle(){
@@ -60,6 +70,7 @@ bool Path::get_swap_succ(){
 }
 
 void Path::release(){
+    cerr<<"release()"<<endl;
     for(auto &channel:channels){
         channel->release();
     }

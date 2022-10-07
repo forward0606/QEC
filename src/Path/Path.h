@@ -12,9 +12,11 @@ class Path{
     double prob;
 public:
 	Path(vector<Node*> nodes, vector<Channel*> channels);
+    //Path(vector<Node*> nodes);                        zzzz
     ~Path(void);
     int get_len();
     vector<Node*> get_nodes();
+    vector<Channel*> get_channels();
     bool entangle();        //true->entangle success
     bool get_entangle_succ();
     bool swap();            //true->swapped success

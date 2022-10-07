@@ -217,6 +217,7 @@ void QCAST::path_assignment(){
         cerr<<"in request "<<i<<endl;
         for(auto p :requests[i].get_paths()){
             p->print();
+            cerr << "\trecovery" << endl;
             for(auto rp:recovery_paths[make_pair(&requests[i], p)]){
                 rp->print();
             }
@@ -262,7 +263,7 @@ void QCAST::entangle(){
 
 
 void QCAST::p4(){
-    
+    cerr<<"in qcast p4()"<<endl;
     //delete unsuccess recovery path
     for(auto &recs:recovery_paths){
         int l = 0;
@@ -276,10 +277,83 @@ void QCAST::p4(){
             }
         }
     }
-    for(int i=0;i<(int)requests.size();i++){
+    for(auto &request:requests){
+        for(auto path:request.get_paths()){
+            //find swaping path
+            vector<vector<int>> adj(graph.get_size());
+            
+            for(auto& c:path->get_channels()){
+                if(c->is_entangled()){
+                    Node *node1 = c->get_node1_ptr(), *node2 = c->get_node2_ptr();
+                    adj[node1->get_id()].emplace_back(node2->get_id());
+                    adj[node2->get_id()].emplace_back(node1->get_id());
+                }
+            }
+            
+            for(auto rec:recovery_paths[make_pair(&request, path)]){
+                vector<Node*> recn = rec->get_nodes();
+                Node *node1 = recn.back(), *node2 = recn[0];
+                adj[node1->get_id()].emplace_back(node2->get_id());
+                adj[node2->get_id()].emplace_back(node1->get_id());
+            }
+            
+            vector<bool> vis(graph.get_size());
+            vector<int> parent(graph.get_size());
+            stack<int> st;
+            for(int i=0;i<graph.get_size();i++){
+                vis[i] = false;
+                parent[i] = -1;
+            }
+            int source = request.get_source(), destination = request.get_destination();
+            st.push(source);
+            vis[source] = true;
+            while (!st.empty()){
+                int now = st.top();
+                st.pop();
+                for(auto neighbor: adj[now]){
+                    if(vis[neighbor]) continue;
+                    parent[neighbor] = now;
+                    st.push(neighbor);
+                    vis[neighbor] = true;
+                }
+            }
+            cout << endl;
+            cerr<<"parent["<<destination<<"] = "<<parent[destination]<<endl;
+            if(parent[destination] == -1) continue;
 
+            vector<int> path_nodes;
+            int now = destination;
+            while(now != -1){
+                path_nodes.push_back(now); 
+                now = parent[now];
+            }
+            reverse(path_nodes.begin(), path_nodes.end());
+            
+            vector<Node *> nodes;
+            cerr << "path to swap in P4: ";
+            for(int i:path_nodes){
+                nodes.emplace_back(graph.Node_id2ptr(path_nodes[i]));
+                cerr <<  path_nodes[i] << ' ';
+            }
+            cerr << '\n';
+
+            //swap path
+            bool swap_succ = true;
+            for(int i=1;i<(int)nodes.size()-1;i++){
+                Node* node = nodes[i];
+                swap_succ &= node->swap();
+            }
+            if(swap_succ){
+                request.add_one_throughput();
+            }
+        }
     }
 }
+
+void QCAST::swap(){
+    p4();
+}
+
 
 Path* QCAST::BFS(int source, int destination){
     bool vis[graph.get_size()];
@@ -297,7 +371,7 @@ Path* QCAST::BFS(int source, int destination){
         q.pop();
         vector<int> neighbors = graph.get_neighbors_id(now);
         for(auto neighbor: neighbors){
-            if(vis[now]) continue;
+            if(vis[neighbor]) continue;
             bool is1_repeater = true, is2_repeater = true;
             if(now == source) is1_repeater = false;
             if(neighbor == destination) is2_repeater = false;

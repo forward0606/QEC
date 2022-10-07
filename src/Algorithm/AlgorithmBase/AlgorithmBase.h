@@ -22,9 +22,10 @@ public:
     double get_swap_prob();
     virtual void path_assignment(){};
     virtual void entangle();
-    void swap();
+    virtual void swap();
     void next_time_slot();
     void run();
+    int total_throughput();
 };
 
 #endif

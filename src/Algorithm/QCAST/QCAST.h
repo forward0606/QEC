@@ -1,7 +1,8 @@
 #include    <iostream>
 #include    <cmath>
-#include <algorithm>
-#include <queue>
+#include    <algorithm>
+#include    <queue>
+#include    <stack>
 #include    "../AlgorithmBase/AlgorithmBase.h"
 #include    "../../Network/Graph/Graph.h"
 using namespace std;
@@ -22,12 +23,13 @@ class QCAST:public AlgorithmBase{
     double C(int n, int m);
     int find_width(vector<int> path);
     void assign_resource(vector<int> path, int reqno);                   //assign path's resource to requests[reqno]
+    void p4();
 public:
     QCAST(AlgorithmBase base);
     void path_assignment();
     void find_recovery_path(int R);
     void entangle();
-    void p4();
+    void swap();
     Path* BFS(int source, int destination); // no connect return NULL
     double demoEXT(vector<double> path, int w);
 };
