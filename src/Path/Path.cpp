@@ -12,6 +12,7 @@ Path::Path(vector<Node*> nodes, vector<Channel*> channels)
 }
 
 Path::~Path(void){
+    cerr<<"delete Path"<<endl;
     release();
 }
 
@@ -24,12 +25,15 @@ vector<Node*> Path::get_nodes(){
 }
 
 bool Path::entangle(){
+    cerr<<"entangle path :"<<endl;
+    this->print();
     if(channels.size() == 0 || nodes.size() <= 1){
         cerr << "error:\tWTF" << endl;
         exit(1);
     }
     entangle_succ = true;
     for(auto &channel:channels){
+        cerr<<"entangle channel : ";
         entangle_succ &= channel->entangle();
     }
     return entangle_succ;

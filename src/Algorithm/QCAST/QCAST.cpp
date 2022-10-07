@@ -212,13 +212,28 @@ void QCAST::path_assignment(){
         }
     }
     find_recovery_path(3);                  //demo
+    cerr<<"recovery path"<<endl;
+    for(int i=0;i<(int)requests.size();i++){
+        cerr<<"in request "<<i<<endl;
+        for(auto p :requests[i].get_paths()){
+            p->print();
+            for(auto rp:recovery_paths[make_pair(&requests[i], p)]){
+                rp->print();
+            }
+        }
+    }
 }
 
 void QCAST::find_recovery_path(int R){ // R: max amount of recovery path for any node x 
     for(auto &request: requests){
         for(auto path_ptr: request.get_paths()){
-            Path path = *path_ptr;
+            Path &path = *path_ptr;
             vector<Node*> path_nodes = path.get_nodes();
+            for(auto ele:path_nodes) cout << ele << ' ';
+            cout << endl;
+            // vector<Node*> bad_path_nodes = bad_path.get_nodes();
+            // for(auto ele:bad_path_nodes) cout << ele << ' ';
+            // cout << endl;
             for(int i = 0; i < (int)path_nodes.size(); i++){
                 int recovery_path_cnt = 0;
                 Path *recovery_path_ptr = nullptr;
@@ -235,6 +250,16 @@ void QCAST::find_recovery_path(int R){ // R: max amount of recovery path for any
         }
     }
 }
+
+void QCAST::entangle(){
+    AlgorithmBase::entangle();
+    for(auto rps:recovery_paths){
+        for(auto p:rps.second){
+            p->entangle();
+        }
+    }
+}
+
 
 void QCAST::p4(){
     

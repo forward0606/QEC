@@ -26,6 +26,7 @@ public:
     QCAST(AlgorithmBase base);
     void path_assignment();
     void find_recovery_path(int R);
+    void entangle();
     void p4();
     Path* BFS(int source, int destination); // no connect return NULL
     double demoEXT(vector<double> path, int w);

@@ -52,7 +52,7 @@ int Node::get_remain()const{
 
 
 bool Node::operator==(const Node &right)const{
-    return pos == right.pos;
+    return id == right.id;
 }
 
 bool Node::operator!=(const Node &right)const{
@@ -60,11 +60,11 @@ bool Node::operator!=(const Node &right)const{
 }
 
 bool Node::operator<(const Node &right)const{
-    return pos < right.pos;
+    return id < right.id;
 }
 
 bool Node::operator<=(const Node &right)const{
-    return pos <= right.pos;
+    return id <= right.id;
 }
 
 bool Node::operator>(const Node &right)const{

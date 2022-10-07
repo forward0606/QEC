@@ -21,7 +21,7 @@ public:
     //~AlgorithmBase();
     double get_swap_prob();
     virtual void path_assignment(){};
-    void entangle();
+    virtual void entangle();
     void swap();
     void next_time_slot();
     void run();

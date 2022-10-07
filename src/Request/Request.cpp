@@ -6,6 +6,7 @@ Request::Request(int source, int destination, const int& time_limit)
 }
 
 Request::~Request(void){
+    cerr<<"delete Request"<<endl;
     for(int i=0;i<(int)paths.size();i++){
         delete paths[i];
         paths[i] = nullptr;
