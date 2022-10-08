@@ -38,6 +38,13 @@ Channel* Graph::assign_channel(Node node1, Node node2){
     }
     
     cerr << "err:\tassign channel but no channel is assignable." << endl;
+    cerr<< "---------show graph in assign channel----------" << endl;
+    for(auto n:nodes){
+        node_ptr = graph.Node_id2ptr(i);
+        node_ptr->print();
+    }
+    cerr<< "---------show graph in main.cpp----------end" << endl;
+    AlgorithmBase base(graph, request_time_limit, swap_prob);
     exit(1);
     return nullptr;
 }

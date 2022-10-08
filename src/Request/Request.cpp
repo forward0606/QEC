@@ -2,7 +2,7 @@
 
 Request::Request(int source, int destination, const int& time_limit)
     :source(source), destination(destination), waiting_time(0), time_limit(time_limit), success_cnt(0), throughput(0){
-
+    cerr<<"new Request"<<endl;
 }
 
 Request::~Request(void){

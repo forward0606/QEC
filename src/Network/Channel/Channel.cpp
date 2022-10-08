@@ -6,11 +6,11 @@ Channel::Channel(Node *node1_ptr, Node *node2_ptr, double entangle_prob)
 		cerr<<"error:\texist an edge with same node!"<<endl;
 		exit(1);
 	}
-	cerr<<"New channel!"<<node1_ptr->get_id() << " " << node2_ptr->get_id() << ", entangle_prob = " << entangle_prob << endl;
+	//cerr<<"New channel!"<<node1_ptr->get_id() << " " << node2_ptr->get_id() << ", entangle_prob = " << entangle_prob << endl;
 }
 
 Channel::~Channel(){
-
+	//cerr<<"delete channel:"<<node1_ptr->get_id()<<" "<<node2_ptr->get_id()<<endl;
 }
 
 void Channel::set_weight(double _weight){
@@ -92,10 +92,12 @@ bool Channel::is_entangled(){
 }
 
 void Channel::refresh(){
+	cerr<<"channel refresh "<<endl;
 	entangled = CHANNEL_UNENTANGLE;
 }
 
 void Channel::release(){
+	cerr<<"channel release "<<endl;
 	if(used){
 		(*node1_ptr)++;
 		(*node2_ptr)++;

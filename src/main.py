@@ -42,10 +42,9 @@ number_of_node = int(sys.argv[1])
 filename = sys.argv[2]
 
 while True:
-    G = nx.waxman_graph(number_of_node, beta=0.85, alpha=0.1, domain=(0, 0, 0.5, 1))
-    # print(G.edges)
-    # print(G.nodes)
-    # break
+    # G = nx.waxman_graph(number_of_node, beta=0.85, alpha=0.1, domain=(0, 0, 0.5, 1))
+    G = nx.waxman_graph(number_of_node, beta=0.85, alpha=10, domain=(0, 0, 0.5, 1))
+    
     if is_connect():
         path = filename             #get from argv
         f = open(path, 'w') 
@@ -62,26 +61,3 @@ while True:
     
 print("graph generate finished!")
 
-
-
-
-# def generate(n, q, k, a, degree, density, L):
-#     checker = TopoConnectionChecker()
-#
-
-#     # establish social table
-#     generator = socialGenerator()
-#     generator.setTopo(topo)
-#     generator.genSocialRelationship()
-
-#     # establish Path table
-#     # topo.genShortestPathTable('New')
-
-#     # establish expect table
-#     # topo.genExpectTable()
-
-#     return topo
-
-# check connected
-# _positions[_node] = (p1 * 2000, p2 * 2000)
-# _neighbors[_node] = list(nx.neighbors(G,_node))

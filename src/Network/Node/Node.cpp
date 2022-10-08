@@ -7,12 +7,11 @@
 Node::Node(int id, int memory_cnt, int time_limit, double pos_x, double pos_y, double swap_prob):
     id(id), swap_prob(swap_prob), memory_cnt(memory_cnt), time_limit(time_limit), remain(memory_cnt){
     pos = make_pair(pos_x, pos_y);
-    cerr<<"new node"<<id <<endl;
 }
 
 
 Node::~Node(){
-
+    //cerr<<"delete node "<<id<<endl;
 }
 int Node::get_id(){
     return id;
@@ -39,6 +38,7 @@ double Node::distance(const Node &right)const{
 }
 
 void Node::release(){
+    cout<<"Node release "<<id<<endl;
     remain = memory_cnt;
 }
 
@@ -75,12 +75,12 @@ bool Node::operator>=(const Node &right)const{
     return !(*this < right);
 }
 
-
 const Node Node::operator--(int){
     if(!is_assignable()){
         cerr<<"error:\tmemory is not sufficient!"<<endl;
         exit(1);
     }
+    //cerr<<"node-- : "<<id<<endl;
     Node tmp = *this;
     remain--;
     return tmp;
@@ -92,7 +92,18 @@ const Node Node::operator++(int){
         cerr<<"error:\tmemory is out of maximum value, maybe release twice occurs"<<endl;
         exit(1);
     }
+    //cerr<<"node++ : "<<id<<endl;
     Node tmp = *this;
     remain++;
     return tmp;
+}
+
+void Node::print()const{
+    cerr << "this is a Node" << endl;
+    cerr << "\tid = " << id << endl;
+    cerr << "\tswap_prob = " << swap_prob << endl;
+    cerr << "\tmemory_cnt = " << memory_cnt << endl;
+    cerr << "\ttime_limit = " << time_limit << endl;
+    cerr << "\tremain = " << remain << endl;
+    cerr<<endl;
 }

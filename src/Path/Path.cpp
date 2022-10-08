@@ -9,7 +9,7 @@ Path::Path(vector<Node*> nodes, vector<Channel*> channels)
         for(int i = 1; i < (int)nodes.size()-1; i++){ // source and destination no swap
             prob *= nodes[i]->get_swap_prob();
         }
-        cerr<<"new assigned path"<<endl;
+        cerr<<"new Path"<<endl;
 }
 
 // Path::Path(vector<Node*> nodes)

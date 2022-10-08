@@ -8,12 +8,14 @@
 using namespace std;
 
 
+
 class Node{
     int id;
     const double swap_prob;
     int memory_cnt, time_limit;
     int remain;                 //remain qubit
     pair<double, double> pos;   //唯一決定一個 node
+    void release();                              //clean assign status
 public:
     Node(int id, int memory_cnt, int time_limit, double pos_x, double pos_y, double swap_prob);
     ~Node();
@@ -23,9 +25,9 @@ public:
 
     bool swap();                 //release one remain memory
     double distance(const Node &right)const;     //return the distance of two node
-    void release();                              //clean assign status
     bool is_assignable()const;                   //return if we can use this node to build an entangle or not
     int get_remain()const;                       //return the number of qubit is not used 
+    void print()const;
     
     bool operator==(const Node &right)const;
     bool operator!=(const Node &right)const;

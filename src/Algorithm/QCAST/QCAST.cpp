@@ -2,7 +2,7 @@
 
 QCAST::QCAST(AlgorithmBase base)
     :AlgorithmBase(base){
-    
+    cerr<<"new QCAST"<<endl;
 }
 
 double QCAST::EXT(vector<double> path, int w){
@@ -60,6 +60,9 @@ int QCAST::find_width(vector<int> path){
     if(path.size() < 2){
         return 0x3f3f3f3f;
     }
+    if(path.size() == 2){
+        return graph.remain_resource_cnt(path[0], path[1], false, false);
+    }
     int path_size = (int)path.size();
     int width = graph.remain_resource_cnt(path[0], path[1], false);
     for(int i=2;i<path_size-1;i++){
@@ -71,167 +74,167 @@ int QCAST::find_width(vector<int> path){
 
 void QCAST::assign_resource(vector<int> path, int reqno){
     
+    cerr<< "---------QCAST::assign_resource----------" << endl;
     int width = find_width(path);
+    cerr<<"find a path to build! with width:    "<<width<<endl;
+    for(auto ele:path){
+        cerr<<ele<<" ";
+    }
+    cerr << endl;
     if(width == 0x3f3f3f3f){
         cerr<<"error:\twidth = INF"<<endl;
         exit(1);
     }
-    cerr<<"find a path! with width:\t"<<width<<endl;
-    for(auto ele:path){
-        cerr<<ele<<" ";
-    }
-    cerr<<endl;
     while(width-- > 0){
         requests[reqno] += graph.build_path(path);
     }
+    cerr<< "-----------------------------------------" << endl;
 }
 
 
 
 struct CandPath{
-    int id, source, destination;
-    vector<double> p;
     vector<int> path;
-    bool useable;
-    CandPath(int id, int s, int d, vector<double> p, vector<int> path):
-        id(id), source(s), destination(d), p(p), path(path), useable(true){}
-    CandPath(int id, int s, int d):
-        id(id), source(s), destination(d), useable(true){
-            path.emplace_back(s);
-    }
-    CandPath(){};
-    CandPath(const CandPath& copy){
-        *this = copy;
-    }
-    CandPath& operator=(const CandPath& copy){
-        id = copy.id;
-        source = copy.source;
-        destination = copy.destination;
-        p = copy.p;
-        path = copy.path;
-        useable = copy.useable;
-        return *this;
-    }
-    bool vis(int node){
-        for(int i=0;i<(int)path.size();i++){
-            if(path[i] == node){
-                return true;
-            }
-        }
-        return false;
+    double ext;
+    CandPath(vector<int> path, double ext):
+        path(path), ext(ext){}
+    CandPath():ext(0){}
+    bool operator<(const CandPath& right)const{
+        return ext < right.ext;
     }
     void print(){
         //demo
-        cerr<<id<<":"<<endl;
-        cerr<<"\t"<<source<<"\t"<<destination<<endl;
         cerr<<"\tpath:\t";
         for(int ele:path){
             cerr<<ele<<" ";
         }
-        cerr<<endl<<"\tp\t";
-        for(double ele:p){
-            cerr<<ele<<" ";
-        }
         cerr<<endl;
-        cerr<<"\tusable = "<<useable<<endl;
+        cerr<<"\text = "<<ext<<endl;
     }
 };
 
 
-
 void QCAST::path_assignment(){
-    vector<CandPath> candidate;
-    for(int i=0;i<(int)requests.size();i++){
-        candidate.emplace_back(i, requests[i].get_source(), requests[i].get_destination());
-    }
-    int find_path_cnt = 0, round = 0;
-    vector<int> neightbors;
-    while(find_path_cnt < 100){
-        //find the path with biggest EXT
-        round++;
-        int mxi = -1, width;
-        double mxv = 0;
-        for(int i = 0;i<(int)candidate.size();i++){
-            if(!candidate[i].useable)    continue;
-            width = find_width(candidate[i].path);
-            if(width == 0 || candidate[i].path.size() >= 200){
-                candidate[i].useable = false;
+    const int maximum_major_path_per_request = 200;
+    const int maximum_path_length = 200;
+    const int maximum_total_number_of_path = 200;
+    int total = 0;
+    while(total < maximum_total_number_of_path){
+        vector<CandPath> candidate(requests.size());
+        double dis[graph.get_size()];
+        int parent[graph.get_size()];
+        vector<int> neighbors;
+        for(int reqno = 0;reqno<(int)requests.size();reqno++){   //find the best path for every request
+            Request &request = requests[reqno];
+            if(request.get_paths().size() > maximum_major_path_per_request){
+                //force to find no path
+                candidate[reqno] = CandPath();
                 continue;
             }
-            double ext = EXT(candidate[i].p, width);
-            if(ext - mxv > 0){
-                mxv = ext;
-                mxi = i;
+            for(int i=0;i<(int)graph.get_size();i++){//initialize the distance
+                dis[i] = -1;
+                parent[i] = -1;
             }
-        }
-        if(mxi == -1){
-            //all path is used
-            break;
-        }
-        if(candidate[mxi].destination == candidate[mxi].path.back()){
-            //find new paths
-            find_path_cnt += find_width(candidate[mxi].path);
-            assign_resource(candidate[mxi].path, candidate[mxi].id);
-        }else{
-            //go one step next
-            int node = candidate[mxi].path.back();
-            neightbors = graph.get_neighbors_id(node);
-            for(int ele:neightbors){
-                //cout<<ele<<" ";
-                bool node1_is_repeater = !(node == candidate[mxi].source || node == candidate[mxi].destination);
-                bool node2_is_repeater = !(ele == candidate[mxi].source || ele == candidate[mxi].destination);
-                if(graph.remain_resource_cnt(node, ele, node1_is_repeater, node2_is_repeater) == 0){
+            priority_queue<pair<double, int>> pq;
+            pq.emplace(0x3f3f3f3f, request.get_source());
+            dis[request.get_source()] = 0x3f3f3f3f;
+            int node = -1;
+            double distance = 0;
+            while(!pq.empty()){
+                node = pq.top().second;
+                distance = pq.top().first;
+                pq.pop();
+                if(node == request.get_destination()){
+                    //find the Best path of request
+                    break;
+                }
+                if(dis[node] > distance){
                     continue;
                 }
-                if(candidate[mxi].vis(ele)){
+                
+                //find the path, width, ext
+                vector<int> path_nodes;
+                vector<double> path_prob;
+                int now = node;
+                while(now != -1){
+                    // cout<<"in find path: now = "<<now<<endl;
+                    path_nodes.push_back(now); 
+                    if(now != request.get_source()){
+                        path_prob.emplace_back(graph.get_channel_weight(parent[now], now));
+                    }
+                    now = parent[now];
+                }
+                reverse(path_nodes.begin(), path_nodes.end());
+                reverse(path_prob.begin(), path_prob.end());
+                if(path_nodes.size() > maximum_path_length){
                     continue;
-                } 
-            
-                candidate[mxi].path.emplace_back(ele);
-                candidate[mxi].p.emplace_back(graph.get_channel_weight(node, ele));
-                candidate.emplace_back(candidate[mxi]);
-                candidate[mxi].path.pop_back();
-                candidate[mxi].p.pop_back();
+                }
+                neighbors = graph.get_neighbors_id(node);
+                for(int ele:neighbors){
+                    //cout<<ele<<" ";
+                    bool node1_is_repeater = !(node == request.get_source() || node == request.get_destination());
+                    bool node2_is_repeater = !(ele == request.get_source() || ele == request.get_destination());
+                    if(graph.remain_resource_cnt(node, ele, node1_is_repeater, node2_is_repeater) == 0){
+                        continue;
+                    }
+                    path_nodes.emplace_back(ele);
+                    path_prob.emplace_back(graph.get_channel_weight(node, ele));
+                    int width = find_width(path_nodes);
+                    double ext = EXT(path_prob, width);
+                    if(dis[ele] < ext){
+                        dis[ele] = ext;
+                        parent[ele] = node;
+                        pq.emplace(ext, ele);
+                    }
+                    path_nodes.pop_back();
+                    path_prob.pop_back();
+                }
+            }
+            if(node != request.get_destination()){
+                //path is not found
+                candidate[reqno] = CandPath();
+                break;
+            }
+            //find the path, width, ext
+            //path
+            vector<int> path_nodes;
+            int now = node;
+            while(now != -1){
+                path_nodes.push_back(now); 
+                now = parent[now];
+            }
+            reverse(path_nodes.begin(), path_nodes.end());
+            candidate[reqno] = CandPath(path_nodes, distance);
+        }
+        //find the best path in requests
+        CandPath mx = CandPath();
+        int mx_reqno = -1;
+        for(int reqno=0;reqno<(int)requests.size();reqno++){
+            if(mx < candidate[reqno]){
+                mx = candidate[reqno];
+                mx_reqno = reqno;
             }
         }
-        candidate[mxi].useable = false;
-        //remove used path
-        int l = 0;
-        for(int i = 0;i<(int)candidate.size();i++){
-            if(candidate[i].useable){
-                candidate[l] = candidate[i];
-                l++;
-            }
+
+        if(mx_reqno == -1){//no path found
+            break;
         }
-        candidate.resize(l);
+        total += find_width(candidate[mx_reqno].path);
+        assign_resource(candidate[mx_reqno].path, mx_reqno);
     }
-    for(int i=0;i<(int)requests.size();i++){
-        cerr<<"in request "<<i<<endl;
-        for(auto p :requests[i].get_paths()){
-            p->print();
-        }
-    }
-    find_recovery_path(3);                  //demo
-    cerr<<"recovery path"<<endl;
-    for(int i=0;i<(int)requests.size();i++){
-        cerr<<"in request "<<i<<endl;
-        for(auto p :requests[i].get_paths()){
-            p->print();
-            cerr << "\trecovery" << endl;
-            for(auto rp:recovery_paths[make_pair(&requests[i], p)]){
-                rp->print();
-            }
-        }
-    }
+
+    find_recovery_path(3);
 }
+
+
+
+
 
 void QCAST::find_recovery_path(int R){ // R: max amount of recovery path for any node x 
     for(auto &request: requests){
         for(auto path_ptr: request.get_paths()){
             Path &path = *path_ptr;
             vector<Node*> path_nodes = path.get_nodes();
-            for(auto ele:path_nodes) cout << ele << ' ';
-            cout << endl;
             // vector<Node*> bad_path_nodes = bad_path.get_nodes();
             // for(auto ele:bad_path_nodes) cout << ele << ' ';
             // cout << endl;
@@ -263,7 +266,7 @@ void QCAST::entangle(){
 
 
 void QCAST::p4(){
-    cerr<<"in qcast p4()"<<endl;
+    cerr<<"--------QCAST::p4--------"<<endl;
     //delete unsuccess recovery path
     for(auto &recs:recovery_paths){
         int l = 0;
@@ -317,7 +320,6 @@ void QCAST::p4(){
                     vis[neighbor] = true;
                 }
             }
-            cout << endl;
             cerr<<"parent["<<destination<<"] = "<<parent[destination]<<endl;
             if(parent[destination] == -1) continue;
 
@@ -332,8 +334,8 @@ void QCAST::p4(){
             vector<Node *> nodes;
             cerr << "path to swap in P4: ";
             for(int i:path_nodes){
-                nodes.emplace_back(graph.Node_id2ptr(path_nodes[i]));
-                cerr <<  path_nodes[i] << ' ';
+                nodes.emplace_back(graph.Node_id2ptr(i));
+                cerr <<  i << ' ';
             }
             cerr << '\n';
 
@@ -348,6 +350,7 @@ void QCAST::p4(){
             }
         }
     }
+    cerr<<"---------------------------"<<endl;
 }
 
 void QCAST::swap(){
