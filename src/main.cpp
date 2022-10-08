@@ -29,11 +29,8 @@ int main(){
     time_t now = time(0);
     char* dt = ctime(&now);
     cerr  << "時間 " << dt << endl << endl; 
+    cout  << "時間 " << dt << endl << endl; 
 
-
-    int num_of_node = 5;
-    int min_channel = 2, max_channel = 2;
-    int min_memory_cnt = 3, max_memory_cnt = 3;
     double swap_prob = 1, entangle_alpha = 0;
     int node_time_limit = 7;
 
@@ -41,16 +38,21 @@ int main(){
     int request_time_limit = 7;
     int total_time_slot = 1;
 
-    Graph graph("input.txt", num_of_node, min_channel, max_channel, min_memory_cnt, max_memory_cnt, node_time_limit, swap_prob, entangle_alpha, true);
-    cerr<< "---------show graph in main.cpp----------" << endl;
-    Node* node_ptr;
-    for(int i = 0; i < num_of_node; i++){
-        node_ptr = graph.Node_id2ptr(i);
-        node_ptr->print();
+    bool debug = false;
+    // python generate graph
+    string filename = "input.txt";
+    if(debug) filename = "debug_graph.txt";
+    string command = "python3 main.py ";
+    if(system((command + filename).c_str()) != 0){
+        cerr<<"error:\tsystem proccess python error"<<endl;
+        exit(1);
     }
-    cerr<< "---------show graph in main.cpp----------end" << endl;
-    AlgorithmBase base(graph, request_time_limit, swap_prob);
-    QCAST qcast(base);
+
+    //Graph graph("input.txt", num_of_node, min_channel, max_channel, min_memory_cnt, max_memory_cnt, node_time_limit, swap_prob, entangle_alpha, true);
+    QCAST qcast(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
+    for(int i = 0; i < 5; i++){
+        (qcast.graph.Node_id2ptr(i))->print();
+    }
     
     for(int t = 0; t < total_time_slot; t++){
         //亂數引擎, to decide how many requests received in this timeslot 
@@ -71,6 +73,7 @@ int main(){
         qcast.run();
         qcast.next_time_slot();
     }
+    cout << endl;
     cout<<"total throughput = "<<qcast.total_throughput()<<endl;
     return 0;
 }

@@ -3,35 +3,38 @@
 #include <ctime>
 #include "Graph.h"
 
-Graph::Graph(string filename, int num_of_node, int min_channel, int max_channel, int min_memory_cnt, int max_memory_cnt, int time_limit, double swap_prob, double entangle_alpha)
-	:min_channel(min_channel), max_channel(max_channel),
-     min_memory_cnt(min_memory_cnt), max_memory_cnt(max_memory_cnt), time_limit(time_limit), swap_prob(swap_prob), entangle_alpha(entangle_alpha){
-    neighbor.resize(num_of_node);
-    generate(filename, num_of_node);
+Graph::Graph(string filename, int time_limit, double swap_prob, double entangle_alpha)
+	:time_limit(time_limit), swap_prob(swap_prob), entangle_alpha(entangle_alpha){
+    generate(filename);
+    cerr<<"new Graph"<<endl;
 }
 
 Graph::~Graph(void){
-
+    cerr<<"delete Graph"<<endl;
 }
 
 int Graph::get_size(){
     return (int)nodes.size();
 }
 
-Channel* Graph::assign_channel(Node node1, Node node2){
+Channel* Graph::assign_channel(Node &node1, Node &node2){
     
     //I'm sorry for this code. = =|||
     if(node1 > node2){
         for(auto& channel: channels[make_pair(node2, node1)]){
             if(channel.is_assignable()){
+            	cerr << "before:   node " << node1.get_id() << " remains " << node1.get_remain() << ", node " << node2.get_id() << " remains " << node2.get_remain() << endl;
                 channel.assign();
+	            cerr << "after:   node " << node1.get_id() << " remains " << node1.get_remain() << ", node " << node2.get_id() << " remains " << node2.get_remain() << endl;
                 return &channel;
             }
         }
     }else{
         for(auto& channel: channels[make_pair(node1, node2)]){
             if(channel.is_assignable()){
+            	cerr << "before:   node " << node1.get_id() << " remains " << node1.get_remain() << ", node " << node2.get_id() << " remains " << node2.get_remain() << endl;
                 channel.assign();
+	            cerr << "after:   node " << node1.get_id() << " remains " << node1.get_remain() << ", node " << node2.get_id() << " remains " << node2.get_remain() << endl;
                 return &channel;
             }
         }
@@ -39,12 +42,10 @@ Channel* Graph::assign_channel(Node node1, Node node2){
     
     cerr << "err:\tassign channel but no channel is assignable." << endl;
     cerr<< "---------show graph in assign channel----------" << endl;
-    for(auto n:nodes){
-        node_ptr = graph.Node_id2ptr(i);
-        node_ptr->print();
+    for(auto& n:nodes){
+        n.print();
     }
     cerr<< "---------show graph in main.cpp----------end" << endl;
-    AlgorithmBase base(graph, request_time_limit, swap_prob);
     exit(1);
     return nullptr;
 }
@@ -66,34 +67,25 @@ c++ call system to run python (waxman)
 python generate graph, and then write to file
 c++ read file to get the nodes and edges
 */
-void Graph::generate(string filename, int num_of_node){
-	string command = "python3 main.py ";
-    if(system((command + to_string(num_of_node) + " " + filename).c_str()) != 0){
-        cerr<<"error:\tsystem proccess python error"<<endl;
-        exit(1);
-    }
-	
-    //亂數引擎 
-    random_device rd;
-    default_random_engine generator = default_random_engine(rd());
-    uniform_int_distribution<int> memgen(min_memory_cnt,max_memory_cnt);
-    uniform_int_distribution<int> changen(min_channel,max_channel);
-    
+void Graph::generate(string filename){
     ifstream graph_input;
     graph_input.open (filename);
 
+    graph_input >> num_of_node;
+    neighbor.resize(num_of_node);
     // input of nodes
     double pos_x, pos_y;
+    int memory_cnt;
     for(int i = 0; i < num_of_node; i++){
-		graph_input >> pos_x >> pos_y;
-		int memory_cnt = memgen(generator) ;
+		graph_input >> pos_x >> pos_y >> memory_cnt;
         nodes.emplace_back(i, memory_cnt, time_limit, pos_x, pos_y, swap_prob);
 	}
     
     // input of edges
     //Node node1, node2;
     int node_id1, node_id2;
-    while(graph_input >> node_id1 >> node_id2){
+    int channel_cnt;
+    while(graph_input >> node_id1 >> node_id2 >> channel_cnt){
         neighbor[node_id1].emplace_back(node_id2);
         neighbor[node_id2].emplace_back(node_id1);
         if(nodes[node_id1] > nodes[node_id2]){
@@ -102,7 +94,6 @@ void Graph::generate(string filename, int num_of_node){
         Node &node1 = nodes[node_id1];
         Node &node2 = nodes[node_id2];
         
-        int channel_cnt = changen(generator);
         cerr<<"channel cnt:\t"<<channel_cnt<<endl;
         if(node1 == node2){
             cerr<<"error:\texist an edge with same node!"<<endl;
@@ -112,6 +103,7 @@ void Graph::generate(string filename, int num_of_node){
         cerr<<"entangle_prob:\t"<<entangle_prob<<endl;
         for(int i = 0; i < channel_cnt; i++){
             channels[make_pair(node1, node2)].emplace_back(&node1, &node2, entangle_prob);
+            // cout << "two nodes in channel: " << &node1 << " " << &node2 << endl;
         }
         //edges[make_pair(node1, node2)] = &(Edge(&node1, &node2, channel_cnt, entangle_alpha));
     }
@@ -167,7 +159,7 @@ int Graph::remain_resource_cnt(int node1_id, int node2_id, bool is1_repeater /*=
     const Node &node1 = nodes[node1_id];
     const Node &node2 = nodes[node2_id];
     int cnt = 0;
-    for(Channel channel: channels[make_pair(node1, node2)]){
+    for(Channel &channel: channels[make_pair(node1, node2)]){
         if(channel.is_assignable()){
             cnt++;
         }
@@ -175,6 +167,7 @@ int Graph::remain_resource_cnt(int node1_id, int node2_id, bool is1_repeater /*=
     int node1_use = 1, node2_use = 1;
     if(is1_repeater)node1_use++;
     if(is2_repeater)node2_use++;
+    // cout << node1_id << "remains: " << node1.get_remain() << ", " << node2_id << "remains: " << node2.get_remain() << endl;
     return min(cnt, min(node1.get_remain() / node1_use, node2.get_remain() / node2_use));
 }
 
@@ -188,7 +181,7 @@ Path* Graph::build_path(vector<int> nodes_id){
     for(int i = 0; i < (int)nodes_id.size()-1; i++){
         Node &node1 = nodes[nodes_id[i]];
         Node &node2 = nodes[nodes_id[i+1]];
-        path_channels.push_back(assign_channel(node1, node2));
+        path_channels.emplace_back(assign_channel(node1, node2));
     }
     return new Path(path_nodes, path_channels);
 }

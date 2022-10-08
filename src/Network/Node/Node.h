@@ -19,7 +19,7 @@ class Node{
 public:
     Node(int id, int memory_cnt, int time_limit, double pos_x, double pos_y, double swap_prob);
     ~Node();
-    
+    Node():swap_prob(0){}
     int get_id();
     double get_swap_prob();
 

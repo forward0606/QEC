@@ -1,7 +1,7 @@
 #include "QCAST.h"
 
-QCAST::QCAST(AlgorithmBase base)
-    :AlgorithmBase(base){
+QCAST::QCAST(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha)
+    :AlgorithmBase(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha){
     cerr<<"new QCAST"<<endl;
 }
 
@@ -88,7 +88,7 @@ void QCAST::assign_resource(vector<int> path, int reqno){
     while(width-- > 0){
         requests[reqno] += graph.build_path(path);
     }
-    cerr<< "-----------------------------------------" << endl;
+    cerr<< "---------QCAST::assign_resource----------end" << endl;
 }
 
 
@@ -115,6 +115,7 @@ struct CandPath{
 
 
 void QCAST::path_assignment(){
+    cerr<< "---------QCAST::path_assignment----------end" << endl;
     const int maximum_major_path_per_request = 200;
     const int maximum_path_length = 200;
     const int maximum_total_number_of_path = 200;
@@ -224,6 +225,7 @@ void QCAST::path_assignment(){
     }
 
     find_recovery_path(3);
+    cerr<< "---------QCAST::path_assignment----------end" << endl;
 }
 
 

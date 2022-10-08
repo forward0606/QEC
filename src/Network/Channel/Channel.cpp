@@ -10,7 +10,7 @@ Channel::Channel(Node *node1_ptr, Node *node2_ptr, double entangle_prob)
 }
 
 Channel::~Channel(){
-	//cerr<<"delete channel:"<<node1_ptr->get_id()<<" "<<node2_ptr->get_id()<<endl;
+	cerr<<"delete channel:"<<node1_ptr->get_id()<<" "<<node2_ptr->get_id()<<endl;
 }
 
 void Channel::set_weight(double _weight){
@@ -44,8 +44,10 @@ bool Channel::is_assignable(){
 }
 
 void Channel::assign(){
+	cerr << "--------------Channel::assign--------------" << endl;
 	Node &node1 = *node1_ptr;
 	Node &node2 = *node2_ptr;
+	cerr << "before:   node " << node1_ptr->get_id() << " remains " << node1_ptr->get_remain() << ", node " << node2_ptr->get_id() << " remains " << node2_ptr->get_remain() << endl;
 	if(!is_assignable()){
 		cerr << "error:\tassign Channel but is NOT assignable" << endl;
 		exit(1);
@@ -53,6 +55,8 @@ void Channel::assign(){
 	used = true;
 	entangled = CHANNEL_UNENTANGLE;
 	node1--, node2--;
+	cerr << "after:   node " << node1_ptr->get_id() << " remains " << node1_ptr->get_remain() << ", node " << node2_ptr->get_id() << " remains " << node2_ptr->get_remain() << endl;
+	cerr << "--------------Channel::assign--------------end" << endl;
 }
 
 bool Channel::entangle(){

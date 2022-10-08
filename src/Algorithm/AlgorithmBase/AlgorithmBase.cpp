@@ -5,8 +5,8 @@
 #include <ctime>
 
 
-AlgorithmBase::AlgorithmBase(Graph graph, int time_limit, double swap_prob)
-    :timeslot(0), waiting_time(0), throughputs(0), time_limit(time_limit), swap_prob(swap_prob), graph(graph){
+AlgorithmBase::AlgorithmBase(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha)
+    :timeslot(0), waiting_time(0), throughputs(0), time_limit(request_time_limit), swap_prob(swap_prob), graph(Graph(filename, node_time_limit, swap_prob, entangle_alpha)){
     
 }
 
