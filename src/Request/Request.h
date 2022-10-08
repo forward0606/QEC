@@ -1,13 +1,17 @@
+#ifndef __REQUEST_H
+#define __REQUEST_H
+
 #include<iostream>
 #include<vector>
 #include"../Network/Node/Node.h"
 #include"../Path/Path.h"
+#include "../config.h"
 using namespace std;
 
 
 class Request{
     int source, destination;
-    int waiting_time, time_limit, success_cnt;
+    int waiting_time, time_limit;
     int throughput;
     vector<Path *> paths;                                       //休學
 public:
@@ -26,3 +30,5 @@ public:
     void operator+=(Path *path);
     void print();
 };
+
+#endif

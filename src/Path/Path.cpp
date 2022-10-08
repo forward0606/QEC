@@ -9,7 +9,7 @@ Path::Path(vector<Node*> nodes, vector<Channel*> channels)
         for(int i = 1; i < (int)nodes.size()-1; i++){ // source and destination no swap
             prob *= nodes[i]->get_swap_prob();
         }
-        cerr<<"new Path"<<endl;
+        if(DEBUG)cerr<<"new Path"<<endl;
 }
 
 // Path::Path(vector<Node*> nodes)
@@ -18,7 +18,7 @@ Path::Path(vector<Node*> nodes, vector<Channel*> channels)
 // }
 
 Path::~Path(void){
-    cerr<<"delete Path"<<endl;
+    if(DEBUG)cerr<<"delete Path"<<endl;
     //release();
 }
 
@@ -35,7 +35,7 @@ vector<Channel*> Path::get_channels(){
 }
 
 bool Path::entangle(){
-    cerr<<"entangle path :"<<endl;
+    if(DEBUG)cerr<<"entangle path :"<<endl;
     this->print();
     if(channels.size() == 0 || nodes.size() <= 1){
         cerr << "error:\tWTF" << endl;
@@ -43,7 +43,7 @@ bool Path::entangle(){
     }
     entangle_succ = true;
     for(auto &channel:channels){
-        cerr<<"entangle channel : ";
+        if(DEBUG)cerr<<"entangle channel : ";
         entangle_succ &= channel->entangle();
     }
     return entangle_succ;
@@ -70,13 +70,14 @@ bool Path::get_swap_succ(){
 }
 
 void Path::release(){
-    cerr<<"release()"<<endl;
+    if(DEBUG)cerr<<"release()"<<endl;
     for(auto &channel:channels){
         channel->release();
     }
 }
 
 void Path::print(){
+    if(!DEBUG)  return;
     cerr<<"this is a Path"<<endl;
     cerr<<"\tentangle_succ = "<<entangle_succ<<endl;
     cerr<<"\tswap_succ = "<<swap_succ<<endl;

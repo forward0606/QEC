@@ -88,4 +88,4 @@ for e in G.edges():
     if e[0] != e[1]:#file 
         print(str(e[0]) + ' ' + str(e[1]) + " " + str(ceil(random.random()*(max_channel_cnt-min_channel_cnt)) + min_channel_cnt), file=f)
 print("----------graph generate finished!----------", file=sys.stderr)
-
+print("----------graph generate finished!----------")

@@ -1,36 +1,41 @@
 all: a.out
 
-a.out: main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/QCAST/QCAST.o Request/Request.o
-	g++ -g -Wall -Wextra main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/QCAST/QCAST.o Request/Request.o
+a.out: main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o
+	g++ -g -Wall -Wextra main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o
 # qcast.out: Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o
-Network/Node/Node.o: Network/Node/Node.cpp Network/Node/Node.h
-	g++ -c -g -Wall -Wextra Network/Node/Node.cpp Network/Node/Node.h
+Network/Node/Node.o: Network/Node/Node.cpp Network/Node/Node.h config.h
+	g++ -c -g -Wall -Wextra Network/Node/Node.cpp Network/Node/Node.h config.h
 	mv Node.o Network/Node/Node.o
 
-Network/Channel/Channel.o: Network/Channel/Channel.h Network/Channel/Channel.cpp
-	g++ -c -g -Wall -Wextra Network/Channel/Channel.h Network/Channel/Channel.cpp
-	mv Channel.o Network/Channel/Channel.o
+Network/Channel/Channel.o: Network/Channel/Channel.h Network/Channel/Channel.cpp config.h
+	g++ -c -g -Wall -Wextra Network/Channel/Channel.h Network/Channel/Channel.cpp config.h
+	mv Channel.o Network/Channel/Channel.o 
 
-Path/Path.o: Path/Path.cpp Path/Path.h
-	g++ -c -g -Wall -Wextra Path/Path.cpp Path/Path.h
+Path/Path.o: Path/Path.cpp Path/Path.h config.h
+	g++ -c -g -Wall -Wextra Path/Path.cpp Path/Path.h config.h
 	mv Path.o Path/Path.o
 
-Network/Graph/Graph.o: Network/Graph/Graph.cpp Network/Graph/Graph.h
-	g++ -c -g -Wall -Wextra Network/Graph/Graph.cpp Network/Graph/Graph.h
+Network/Graph/Graph.o: Network/Graph/Graph.cpp Network/Graph/Graph.h config.h
+	g++ -c -g -Wall -Wextra Network/Graph/Graph.cpp Network/Graph/Graph.h config.h
 	mv Graph.o Network/Graph/Graph.o
 
-Request/Request.o: Request/Request.cpp Request/Request.h
-	g++ -c -g -Wall -Wextra Request/Request.cpp Request/Request.h
+Request/Request.o: Request/Request.cpp Request/Request.h config.h
+	g++ -c -g -Wall -Wextra Request/Request.cpp Request/Request.h config.h
 	mv Request.o Request/Request.o
 
-Algorithm/AlgorithmBase/AlgorithmBase.o: Algorithm/AlgorithmBase/AlgorithmBase.h Algorithm/AlgorithmBase/AlgorithmBase.cpp
-	g++ -c -g -Wall -Wextra Algorithm/AlgorithmBase/AlgorithmBase.h Algorithm/AlgorithmBase/AlgorithmBase.cpp
+Algorithm/AlgorithmBase/AlgorithmBase.o: Algorithm/AlgorithmBase/AlgorithmBase.h Algorithm/AlgorithmBase/AlgorithmBase.cpp config.h
+	g++ -c -g -Wall -Wextra Algorithm/AlgorithmBase/AlgorithmBase.h Algorithm/AlgorithmBase/AlgorithmBase.cpp config.h
 	mv AlgorithmBase.o Algorithm/AlgorithmBase/AlgorithmBase.o
 
-Algorithm/QCAST/QCAST.o: Algorithm/QCAST/QCAST.h Algorithm/QCAST/QCAST.cpp
-	g++ -c -g -Wall -Wextra Algorithm/QCAST/QCAST.h Algorithm/QCAST/QCAST.cpp
-	mv QCAST.o Algorithm/QCAST/QCAST.o
+Algorithm/Greedy/Greedy.o: Algorithm/Greedy/Greedy.h Algorithm/Greedy/Greedy.cpp config.h
+	g++ -c -g -Wall -Wextra Algorithm/Greedy/Greedy.h Algorithm/Greedy/Greedy.cpp config.h
+	mv Greedy.o Algorithm/Greedy/Greedy.o
 
+Algorithm/QCAST/QCAST.o: Algorithm/QCAST/QCAST.h Algorithm/QCAST/QCAST.cpp config.h
+	g++ -c -g -Wall -Wextra Algorithm/QCAST/QCAST.h Algorithm/QCAST/QCAST.cpp config.h
+	mv QCAST.o Algorithm/QCAST/QCAST.o
+config.o:	config.h config.cpp
+	g++ -c -g config.h config.cpp
 check_node: Node/Node.o Node/Node_test.cpp
 	g++ -g -Wall -Wextra Node/Node_test.cpp Node/Node.o -o node_check.out
 

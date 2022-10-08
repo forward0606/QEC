@@ -7,12 +7,12 @@
 Node::Node(int id, int memory_cnt, int time_limit, double pos_x, double pos_y, double swap_prob):
     id(id), swap_prob(swap_prob), memory_cnt(memory_cnt), time_limit(time_limit), remain(memory_cnt){
     pos = make_pair(pos_x, pos_y);
-    cerr<<"new Node "<<id<<endl;
+    if(DEBUG)cerr<<"new Node "<<id<<endl;
 }
 
 
 Node::~Node(){
-    cerr<<"delete Node "<<id<<endl;
+    if(DEBUG)cerr<<"delete Node "<<id<<endl;
 }
 int Node::get_id(){
     return id;
@@ -100,6 +100,7 @@ const Node Node::operator++(int){
 }
 
 void Node::print()const{
+    if(!DEBUG)  return;
     cerr << "this is a Node" << endl;
     cerr << "\tid = " << id << endl;
     cerr << "\tswap_prob = " << swap_prob << endl;

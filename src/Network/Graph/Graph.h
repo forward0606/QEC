@@ -3,8 +3,10 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <fstream>
 #include "../Node/Node.h"
 #include "../../Path/Path.h"
+#include "../../config.h"
 using namespace std;
 
 class Graph{

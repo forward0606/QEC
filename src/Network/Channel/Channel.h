@@ -5,6 +5,7 @@
 #include <iostream>
 #include <random>
 #include "../Node/Node.h"
+#include "../../config.h"
 using namespace std;
 
 //use for entangled

@@ -1,16 +1,13 @@
-#include <fstream>
-#include <random>
-#include <ctime>
 #include "Graph.h"
 
 Graph::Graph(string filename, int time_limit, double swap_prob, double entangle_alpha)
 	:time_limit(time_limit), swap_prob(swap_prob), entangle_alpha(entangle_alpha){
     generate(filename);
-    cerr<<"new Graph"<<endl;
+    if(DEBUG)cerr<<"new Graph"<<endl;
 }
 
 Graph::~Graph(void){
-    cerr<<"delete Graph"<<endl;
+    if(DEBUG)cerr<<"delete Graph"<<endl;
 }
 
 int Graph::get_size(){
@@ -23,29 +20,28 @@ Channel* Graph::assign_channel(Node &node1, Node &node2){
     if(node1 > node2){
         for(auto& channel: channels[make_pair(node2, node1)]){
             if(channel.is_assignable()){
-            	cerr << "before:   node " << node1.get_id() << " remains " << node1.get_remain() << ", node " << node2.get_id() << " remains " << node2.get_remain() << endl;
                 channel.assign();
-	            cerr << "after:   node " << node1.get_id() << " remains " << node1.get_remain() << ", node " << node2.get_id() << " remains " << node2.get_remain() << endl;
                 return &channel;
             }
         }
     }else{
         for(auto& channel: channels[make_pair(node1, node2)]){
             if(channel.is_assignable()){
-            	cerr << "before:   node " << node1.get_id() << " remains " << node1.get_remain() << ", node " << node2.get_id() << " remains " << node2.get_remain() << endl;
                 channel.assign();
-	            cerr << "after:   node " << node1.get_id() << " remains " << node1.get_remain() << ", node " << node2.get_id() << " remains " << node2.get_remain() << endl;
                 return &channel;
             }
         }
     }
-    
+
     cerr << "err:\tassign channel but no channel is assignable." << endl;
-    cerr<< "---------show graph in assign channel----------" << endl;
-    for(auto& n:nodes){
-        n.print();
+    if(DEBUG){
+        cerr<< "---------show graph in assign channel----------" << endl;
+        for(auto& n:nodes){
+            n.print();
+        }
+        cerr<< "---------show graph in main.cpp----------end" << endl;
     }
-    cerr<< "---------show graph in main.cpp----------end" << endl;
+    
     exit(1);
     return nullptr;
 }
@@ -94,20 +90,20 @@ void Graph::generate(string filename){
         Node &node1 = nodes[node_id1];
         Node &node2 = nodes[node_id2];
         
-        cerr<<"channel cnt:\t"<<channel_cnt<<endl;
+        if(DEBUG) cerr<<"channel cnt:\t"<<channel_cnt<<endl;
         if(node1 == node2){
             cerr<<"error:\texist an edge with same node!"<<endl;
             exit(1);
 	    }
         double entangle_prob = exp(-entangle_alpha * (node1.distance(node2))); // e^( -alpha * dis(node1, node2) )
-        cerr<<"entangle_prob:\t"<<entangle_prob<<endl;
+        if(DEBUG) cerr<<"entangle_prob:\t"<<entangle_prob<<endl;
         for(int i = 0; i < channel_cnt; i++){
             channels[make_pair(node1, node2)].emplace_back(&node1, &node2, entangle_prob);
             // cout << "two nodes in channel: " << &node1 << " " << &node2 << endl;
         }
         //edges[make_pair(node1, node2)] = &(Edge(&node1, &node2, channel_cnt, entangle_alpha));
     }
-    cerr<<"new graph!"<<endl;
+    if(DEBUG)cerr<<"new graph!"<<endl;
 }
 
 double Graph::get_channel_weight(int node1_id, int node2_id){
@@ -173,6 +169,7 @@ int Graph::remain_resource_cnt(int node1_id, int node2_id, bool is1_repeater /*=
 
 
 Path* Graph::build_path(vector<int> nodes_id){
+    if(nodes_id.size() < 2) cerr << "err:\ttry to build a path with len < 2\n";
     vector<Node *> path_nodes;
     vector<Channel*> path_channels;
     for(auto node_id: nodes_id){

@@ -5,9 +5,8 @@
 #include <random>
 #include <ctime>
 #include <cmath>
+#include "../../config.h"
 using namespace std;
-
-
 
 class Node{
     int id;

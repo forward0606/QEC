@@ -2,7 +2,7 @@
 
 QCAST::QCAST(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha)
     :AlgorithmBase(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha){
-    cerr<<"new QCAST"<<endl;
+    if(DEBUG) cerr<<"new QCAST"<<endl;
 }
 
 double QCAST::EXT(vector<double> path, int w){
@@ -56,43 +56,6 @@ double QCAST::C(int n, int m){
     return combination[make_pair(n, m)];
 }
 
-int QCAST::find_width(vector<int> path){
-    if(path.size() < 2){
-        return 0x3f3f3f3f;
-    }
-    if(path.size() == 2){
-        return graph.remain_resource_cnt(path[0], path[1], false, false);
-    }
-    int path_size = (int)path.size();
-    int width = graph.remain_resource_cnt(path[0], path[1], false);
-    for(int i=2;i<path_size-1;i++){
-        width = min(width, graph.remain_resource_cnt(path[i-1], path[i]));
-    }
-    width = min(width, graph.remain_resource_cnt(path[path_size-2], path[path_size-1], true, false));
-    return width;
-}
-
-void QCAST::assign_resource(vector<int> path, int reqno){
-    
-    cerr<< "---------QCAST::assign_resource----------" << endl;
-    int width = find_width(path);
-    cerr<<"find a path to build! with width:    "<<width<<endl;
-    for(auto ele:path){
-        cerr<<ele<<" ";
-    }
-    cerr << endl;
-    if(width == 0x3f3f3f3f){
-        cerr<<"error:\twidth = INF"<<endl;
-        exit(1);
-    }
-    while(width-- > 0){
-        requests[reqno] += graph.build_path(path);
-    }
-    cerr<< "---------QCAST::assign_resource----------end" << endl;
-}
-
-
-
 struct CandPath{
     vector<int> path;
     double ext;
@@ -115,7 +78,7 @@ struct CandPath{
 
 
 void QCAST::path_assignment(){
-    cerr<< "---------QCAST::path_assignment----------end" << endl;
+    if(DEBUG) cerr<< "---------QCAST::path_assignment----------end" << endl;
     const int maximum_major_path_per_request = 200;
     const int maximum_path_length = 200;
     const int maximum_total_number_of_path = 200;
@@ -225,7 +188,7 @@ void QCAST::path_assignment(){
     }
 
     find_recovery_path(3);
-    cerr<< "---------QCAST::path_assignment----------end" << endl;
+    if(DEBUG) cerr<< "---------QCAST::path_assignment----------end" << endl;
 }
 
 
@@ -243,9 +206,14 @@ void QCAST::find_recovery_path(int R){ // R: max amount of recovery path for any
             for(int i = 0; i < (int)path_nodes.size(); i++){
                 int recovery_path_cnt = 0;
                 Path *recovery_path_ptr = nullptr;
+                vector<int> bfs_path;
                 for(int hop = 1; i + hop <= path.get_len(); hop++){
                     while(recovery_path_cnt < R){
-                        recovery_path_ptr = BFS(path_nodes[i]->get_id(), path_nodes[i+hop]->get_id());
+                        bfs_path = BFS(path_nodes[i]->get_id(), path_nodes[i+hop]->get_id());
+                        if(bfs_path.size() == 0){
+                            break;
+                        }
+                        recovery_path_ptr = graph.build_path(bfs_path);
                         if(recovery_path_ptr == nullptr) break;
                         recovery_paths[make_pair(&request, path_ptr)].push_back(recovery_path_ptr);
                         recovery_path_cnt++;
@@ -268,7 +236,7 @@ void QCAST::entangle(){
 
 
 void QCAST::p4(){
-    cerr<<"--------QCAST::p4--------"<<endl;
+    if(DEBUG) cerr<<"--------QCAST::p4--------"<<endl;
     //delete unsuccess recovery path
     for(auto &recs:recovery_paths){
         int l = 0;
@@ -278,9 +246,12 @@ void QCAST::p4(){
                 recs.second[l] = recs.second[i];
                 l++;
             }else{
+                recs.second[i]->release();
                 delete recs.second[i];
+                recs.second[i] = nullptr;
             }
         }
+        recs.second.resize(l);
     }
     for(auto &request:requests){
         for(auto path:request.get_paths()){
@@ -322,7 +293,7 @@ void QCAST::p4(){
                     vis[neighbor] = true;
                 }
             }
-            cerr<<"parent["<<destination<<"] = "<<parent[destination]<<endl;
+            if(DEBUG) cerr<<"parent["<<destination<<"] = "<<parent[destination]<<endl;
             if(parent[destination] == -1) continue;
 
             vector<int> path_nodes;
@@ -334,12 +305,12 @@ void QCAST::p4(){
             reverse(path_nodes.begin(), path_nodes.end());
             
             vector<Node *> nodes;
-            cerr << "path to swap in P4: ";
+            if(DEBUG) cerr << "path to swap in P4: ";
             for(int i:path_nodes){
                 nodes.emplace_back(graph.Node_id2ptr(i));
-                cerr <<  i << ' ';
+                if(DEBUG) cerr <<  i << ' ';
             }
-            cerr << '\n';
+            if(DEBUG) cerr << '\n';
 
             //swap path
             bool swap_succ = true;
@@ -352,51 +323,23 @@ void QCAST::p4(){
             }
         }
     }
-    cerr<<"---------------------------"<<endl;
+    if(DEBUG) cerr<<"--------QCAST::p4--------end"<<endl;
 }
 
 void QCAST::swap(){
     p4();
 }
 
-
-Path* QCAST::BFS(int source, int destination){
-    bool vis[graph.get_size()];
-    int parent[graph.get_size()];
-    for(int i = 0; i < graph.get_size(); i++){
-        vis[i] = false;
-        parent[i] = -1;
-    }
-
-    queue<int> q;
-    q.push(source);
-    vis[source] = true;
-    while (!q.empty()){
-        int now = q.front();
-        q.pop();
-        vector<int> neighbors = graph.get_neighbors_id(now);
-        for(auto neighbor: neighbors){
-            if(vis[neighbor]) continue;
-            bool is1_repeater = true, is2_repeater = true;
-            if(now == source) is1_repeater = false;
-            if(neighbor == destination) is2_repeater = false;
-            if(graph.remain_resource_cnt(now, neighbor, is1_repeater, is2_repeater) > 0){
-                parent[neighbor] = now;
-                q.push(neighbor);
-                vis[neighbor] = true;
-            }
+void QCAST::next_time_slot(){
+    AlgorithmBase::next_time_slot();
+    for(auto &recs:recovery_paths){
+        for(int i=0;i<(int)recs.second.size();i++){
+            recs.second[i]->release();
+            delete recs.second[i];
+            recs.second[i] = nullptr;
         }
     }
-    if(parent[destination] == -1) return nullptr;
-
-    vector<int> path_nodes;
-    int now = destination;
-    while(now != -1){
-        path_nodes.push_back(now); 
-        now = parent[now];
-    }
-    reverse(path_nodes.begin(), path_nodes.end());
-    return graph.build_path(path_nodes);
+    recovery_paths.clear();
 }
 
 double QCAST::demoEXT(vector<double> path, int w){

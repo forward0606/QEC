@@ -1,10 +1,10 @@
 #include    <iostream>
 #include    <cmath>
 #include    <algorithm>
-#include    <queue>
 #include    <stack>
 #include    "../AlgorithmBase/AlgorithmBase.h"
 #include    "../../Network/Graph/Graph.h"
+#include "../../config.h"
 using namespace std;
 
 /* 
@@ -21,8 +21,7 @@ class QCAST:public AlgorithmBase{
     double EXT(vector<double> path, int w);
     map<pair<int, int>, double> combination;
     double C(int n, int m);
-    int find_width(vector<int> path);
-    void assign_resource(vector<int> path, int reqno);                   //assign path's resource to requests[reqno]
+    // void assign_resource(vector<int> path, int reqno);                   //assign path's resource to requests[reqno]
     void p4();
 public:
     QCAST(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha);
@@ -30,6 +29,7 @@ public:
     void find_recovery_path(int R);
     void entangle();
     void swap();
-    Path* BFS(int source, int destination); // no connect return NULL
+    void next_time_slot();
+    // Path* BFS(int source, int destination); // no connect return NULL
     double demoEXT(vector<double> path, int w);
 };

@@ -1,12 +1,12 @@
 #include"Request.h"
 
 Request::Request(int source, int destination, const int& time_limit)
-    :source(source), destination(destination), waiting_time(0), time_limit(time_limit), success_cnt(0), throughput(0){
-    cerr<<"new Request"<<endl;
+    :source(source), destination(destination), waiting_time(0), time_limit(time_limit), throughput(0){
+    if(DEBUG)cerr<<"new Request"<<endl;
 }
 
 Request::~Request(void){
-    cerr<<"delete Request"<<endl;
+    if(DEBUG)cerr<<"delete Request"<<endl;
     for(int i=0;i<(int)paths.size();i++){
         paths[i]->release();
         delete paths[i];
@@ -17,7 +17,7 @@ Request::~Request(void){
 int Request::get_waiting_time(){
     return waiting_time;
 }
-int Request::get_source(){
+int Request::get_source(){ 
     return source;
 }
 int Request::get_destination(){
@@ -46,7 +46,7 @@ void Request::entangle(){
 void Request::swap(){
     for(auto &path:paths){
         if(path->get_entangle_succ()) path->swap();
-        if(path->get_swap_succ()) success_cnt++;
+        if(path->get_swap_succ()) throughput++;
     }
 }
 
@@ -57,10 +57,10 @@ bool Request::next_timeslot(){
     }
     paths.clear();
     waiting_time++;
-    if(success_cnt > 0){
+    if(throughput > 0){
         time_limit--;
     }
-    return (time_limit == 0) && (success_cnt > 0);
+    return (time_limit == 0) && (throughput > 0);
 }
 
 void Request::operator+=(Path *path){

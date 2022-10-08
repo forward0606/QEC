@@ -4,6 +4,7 @@
 #include <vector>
 #include "../Network/Node/Node.h"
 #include "../Network/Channel/Channel.h"
+#include "../config.h"
 
 class Path{
     vector<Node*> nodes;

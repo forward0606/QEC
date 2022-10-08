@@ -6,11 +6,11 @@ Channel::Channel(Node *node1_ptr, Node *node2_ptr, double entangle_prob)
 		cerr<<"error:\texist an edge with same node!"<<endl;
 		exit(1);
 	}
-	//cerr<<"New channel!"<<node1_ptr->get_id() << " " << node2_ptr->get_id() << ", entangle_prob = " << entangle_prob << endl;
+	if(DEBUG)cerr<<"New channel!"<<node1_ptr->get_id() << " " << node2_ptr->get_id() << ", entangle_prob = " << entangle_prob << endl;
 }
 
 Channel::~Channel(){
-	cerr<<"delete channel:"<<node1_ptr->get_id()<<" "<<node2_ptr->get_id()<<endl;
+	if(DEBUG)cerr<<"delete channel:"<<node1_ptr->get_id()<<" "<<node2_ptr->get_id()<<endl;
 }
 
 void Channel::set_weight(double _weight){
@@ -44,10 +44,8 @@ bool Channel::is_assignable(){
 }
 
 void Channel::assign(){
-	cerr << "--------------Channel::assign--------------" << endl;
 	Node &node1 = *node1_ptr;
 	Node &node2 = *node2_ptr;
-	cerr << "before:   node " << node1_ptr->get_id() << " remains " << node1_ptr->get_remain() << ", node " << node2_ptr->get_id() << " remains " << node2_ptr->get_remain() << endl;
 	if(!is_assignable()){
 		cerr << "error:\tassign Channel but is NOT assignable" << endl;
 		exit(1);
@@ -55,8 +53,6 @@ void Channel::assign(){
 	used = true;
 	entangled = CHANNEL_UNENTANGLE;
 	node1--, node2--;
-	cerr << "after:   node " << node1_ptr->get_id() << " remains " << node1_ptr->get_remain() << ", node " << node2_ptr->get_id() << " remains " << node2_ptr->get_remain() << endl;
-	cerr << "--------------Channel::assign--------------end" << endl;
 }
 
 bool Channel::entangle(){
@@ -96,12 +92,12 @@ bool Channel::is_entangled(){
 }
 
 void Channel::refresh(){
-	cerr<<"channel refresh "<<endl;
+	if(DEBUG)cerr<<"channel refresh "<<endl;
 	entangled = CHANNEL_UNENTANGLE;
 }
 
 void Channel::release(){
-	cerr<<"channel release "<<endl;
+	if(DEBUG)cerr<<"channel release "<<endl;
 	if(used){
 		(*node1_ptr)++;
 		(*node2_ptr)++;

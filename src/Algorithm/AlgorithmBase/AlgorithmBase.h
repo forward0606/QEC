@@ -3,8 +3,11 @@
 
 #include<iostream>
 #include<vector>
+#include<queue>
+#include <algorithm>
 #include "../../Network/Graph/Graph.h"
 #include "../../Request/Request.h"
+#include "../../config.h"
 using namespace std;
 
 
@@ -21,9 +24,12 @@ public:
     //~AlgorithmBase();
     double get_swap_prob();
     virtual void path_assignment(){};
+    int find_width(vector<int> path);
+    vector<int> BFS(int source, int destination);
+    void assign_resource(vector<int> path, int reqno);
     virtual void entangle();
     virtual void swap();
-    void next_time_slot();
+    virtual void next_time_slot();
     void run();
     int total_throughput();
 };
