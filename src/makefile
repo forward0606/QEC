@@ -1,7 +1,10 @@
+gurobi_path = /opt/gurobi952/linux64
+# gurobi_path = /home/student11/gurobi903/linux64 # on server
+
 all: a.out
 
-a.out: main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o
-	g++ -fopenmp -g -Wall -Wextra main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o
+a.out: main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/REPS/REPS.o
+	g++ -fopenmp -g -Wall -Wextra main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/REPS/REPS.o -L$(gurobi_path)/lib -lgurobi_c++ -lgurobi95 -lm
 # qcast.out: Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o
 Network/Node/Node.o: Network/Node/Node.cpp Network/Node/Node.h config.h
 	g++ -c -g -Wall -Wextra Network/Node/Node.cpp Network/Node/Node.h config.h
@@ -34,6 +37,11 @@ Algorithm/Greedy/Greedy.o: Algorithm/Greedy/Greedy.h Algorithm/Greedy/Greedy.cpp
 Algorithm/QCAST/QCAST.o: Algorithm/QCAST/QCAST.h Algorithm/QCAST/QCAST.cpp config.h
 	g++ -c -g -Wall -Wextra Algorithm/QCAST/QCAST.h Algorithm/QCAST/QCAST.cpp config.h
 	mv QCAST.o Algorithm/QCAST/QCAST.o
+
+Algorithm/REPS/REPS.o: Algorithm/REPS/REPS.h Algorithm/REPS/REPS.cpp config.h
+	g++ -c -g -Wall -Wextra Algorithm/REPS/REPS.h Algorithm/REPS/REPS.cpp config.h -m64 -I$(gurobi_path)/include/  -L$(gurobi_path)/lib -lgurobi_c++ -lgurobi95 -lm
+	mv REPS.o Algorithm/REPS/REPS.o
+
 config.o:	config.h config.cpp
 	g++ -c -g config.h config.cpp
 check_node: Node/Node.o Node/Node_test.cpp
@@ -41,6 +49,8 @@ check_node: Node/Node.o Node/Node_test.cpp
 
 check_channel: Node/Node.o Channel/Channel.o Channel/Channel_test.cpp
 	g++ -g -Wall -Wextra Node/Node.o Channel/Channel.o Channel/Channel_test.cpp -o channel_check.out
+
+
 clean:
 	rm -f a.out check_node.out channel_check.out
 	rm -f Network/Node/Node.o Network/Node/Node.h.gch

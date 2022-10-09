@@ -50,6 +50,26 @@ vector<int> Graph::get_neighbors_id(int node1_id){
     return neighbor[node1_id];
 }
 
+double Graph::get_channel_weight(int node1_id, int node2_id){
+    if(nodes[node1_id] > nodes[node2_id]){
+        swap(node1_id, node2_id);
+    }
+    const Node &node1 = nodes[node1_id], &node2 = nodes[node2_id];
+    double sum = 0;
+    for(Channel &channel : channels[make_pair(node1, node2)]){
+        sum += channel.get_weight();
+    }
+    return sum / channels[make_pair(node1, node2)].size();
+}
+
+int Graph::get_channel_size(int node1_id, int node2_id){
+    if(nodes[node1_id] > nodes[node2_id]){
+        swap(node1_id, node2_id);
+    }
+    const Node &node1 = nodes[node1_id], &node2 = nodes[node2_id];
+    return (int)channels[make_pair(node1, node2)].size();
+}
+
 Node* Graph::Node_id2ptr(int id){
     if(id >= (int)nodes.size() || id < 0){
         cerr<<"err:\t in Graph::Node_id2ptr() id is out of range"<<endl;
@@ -106,17 +126,6 @@ void Graph::generate(string filename){
     if(DEBUG)cerr<<"new graph!"<<endl;
 }
 
-double Graph::get_channel_weight(int node1_id, int node2_id){
-    if(nodes[node1_id] > nodes[node2_id]){
-        swap(node1_id, node2_id);
-    }
-    const Node &node1 = nodes[node1_id], &node2 = nodes[node2_id];
-    double sum = 0;
-    for(Channel &channel : channels[make_pair(node1, node2)]){
-        sum += channel.get_weight();
-    }
-    return sum / channels[make_pair(node1, node2)].size();
-}
 
 
 void Graph::refresh(){ // refresh all channel entangle status

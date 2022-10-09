@@ -20,6 +20,7 @@ public:
     ~Node();
     Node():swap_prob(0){}
     int get_id();
+    int get_memory_cnt();
     double get_swap_prob();
 
     bool swap();                 //release one remain memory

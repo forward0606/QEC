@@ -17,6 +17,9 @@ Node::~Node(){
 int Node::get_id(){
     return id;
 }
+int Node::get_memory_cnt(){
+    return memory_cnt;
+}
 double Node::get_swap_prob(){
     return swap_prob;
 }
