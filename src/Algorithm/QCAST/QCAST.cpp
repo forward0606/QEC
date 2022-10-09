@@ -268,10 +268,11 @@ void QCAST::p4(){
             }
             
             for(auto rec:recovery_paths[make_pair(&request, path)]){
-                vector<Node*> recn = rec->get_nodes();
-                Node *node1 = recn.back(), *node2 = recn[0];
-                adj[node1->get_id()].emplace_back(node2->get_id());
-                adj[node2->get_id()].emplace_back(node1->get_id());
+                for(auto channel: rec->get_channels()){
+                    Node *node1 = channel->get_node1_ptr(), *node2 = channel->get_node2_ptr();
+                    adj[node1->get_id()].emplace_back(node2->get_id());
+                    adj[node2->get_id()].emplace_back(node1->get_id());
+                }
             }
             
             vector<bool> vis(graph.get_size());
