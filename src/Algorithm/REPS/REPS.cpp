@@ -6,15 +6,16 @@ REPS::REPS(string filename, int request_time_limit, int node_time_limit, double 
 }
 
 
-void REPS::PFT(vector<double> &t_plum, vector<vector<vector<double>>> &f_plum){
+void REPS::PFT_LP(vector<double> &t_plum, vector<map<pair<int, int>, double>> &f_plum){
+    //return value is store in t_plum and f_plum
     t_plum.clear();
     f_plum.clear();
     
-     //do LP
+    //do LP
     try {      
         // Create an environment
         GRBEnv env = GRBEnv(true);
-        env.set("LogFile", "pft.log");
+        env.set("LogFile", 0);
         env.start();
 
         // Create an empty model
@@ -91,7 +92,7 @@ void REPS::PFT(vector<double> &t_plum, vector<vector<vector<double>>> &f_plum){
                     expr += f[i][make_pair(u, v)];
                     expr -= f[i][make_pair(v, u)];
                 }
-                model.addConstr(expr == 0, "1c_" + to_string(i) + ", " + to_string(u));
+                model.addConstr(expr == 0, "1c(" + to_string(i) + ", " + to_string(u) + ")");
             }
         }
 
@@ -105,7 +106,7 @@ void REPS::PFT(vector<double> &t_plum, vector<vector<vector<double>>> &f_plum){
                     expr += f[i][make_pair(v, u)];
                 }
                 double p = graph.get_channel_weight(u, v);
-                model.addConstr(expr <= (x[make_pair(u, v)] * p), "1d");
+                model.addConstr(expr <= (x[make_pair(u, v)] * p), "1d(" + to_string(u) + ", " + to_string(v) + ")");
             }
         }
 
@@ -114,7 +115,7 @@ void REPS::PFT(vector<double> &t_plum, vector<vector<vector<double>>> &f_plum){
             neighbor = graph.get_neighbors_id(u);
             for(int v:neighbor){
                 int c = graph.get_channel_size(u, v);
-                model.addConstr(x[make_pair(u, v)] <= c, "1e");
+                model.addConstr(x[make_pair(u, v)] <= c, "1e(" + to_string(u) + ", " + to_string(v) + ")");
             }
         }
 
@@ -126,39 +127,56 @@ void REPS::PFT(vector<double> &t_plum, vector<vector<vector<double>>> &f_plum){
             for(int v:neighbor){
                 expr += x[make_pair(u, v)];
             }
-            model.addConstr(expr <= m, "1f");
+            model.addConstr(expr <= m, "1f(" + to_string(u) + ")");
         }
 
+        // Optimize model
+        model.optimize();
 
+        //get t
+        for(int i=0;i<(int)requests.size();i++){
+            t_plum.emplace_back(t[i].get(GRB_DoubleAttr_X));
+        }
 
-        // model.addConstr(x + 2 * y + 3 * z <= 4, "c0");
+        //get fi
+        f_plum.resize(requests.size());
+        for(int i=0;i<(int)requests.size();i++){
+            for(int u = 0;u<(int)graph.get_size();u++){
+                neighbor = graph.get_neighbors_id(u);
+                for(int v:neighbor){
+                    f_plum[i][make_pair(u, v)] = f[i][make_pair(u, v)].get(GRB_DoubleAttr_X);
+                }
+            }
+        }
+        //cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
 
-        // // Add constraint: x + y >= 1
-        // model.addConstr(x + y >= 1, "c1");
-
-        // // Optimize model
-        // model.optimize();
-
-        // cout << x.get(GRB_StringAttr_VarName) << " "
-        //     << x.get(GRB_DoubleAttr_X) << endl;
-        // cout << y.get(GRB_StringAttr_VarName) << " "
-        //     << y.get(GRB_DoubleAttr_X) << endl;
-        // cout << z.get(GRB_StringAttr_VarName) << " "
-        //     << z.get(GRB_DoubleAttr_X) << endl;
-
-        // cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
-
-  } catch(GRBException e) {
-    cout << "Error code = " << e.getErrorCode() << endl;
-    cout << e.getMessage() << endl;
-  } catch(...) {
-    cout << "Exception during optimization" << endl;
-  }
+    } catch(GRBException e) {
+        cout << "Error code = " << e.getErrorCode() << endl;
+        cout << e.getMessage() << endl;
+    } catch(...) {
+        cout << "Exception during optimization" << endl;
+    }
 }
-void REPS::EPS(){}
+
+void REPS::EPS_LP(vector<double> &t_bar, vector<map<pair<int, int>, double>> &f_bar){
+    // Create an environment
+    GRBEnv env = GRBEnv(true);
+    env.set("LogFile", 0);
+    env.start();
+
+    // Create an empty model
+    GRBModel model = GRBModel(env);
+    
+    // Add constraint: 2(a)
+     
+}
 void REPS::ELS(){}
+
 void REPS::path_assignment(){
     //PFT Using Progressive Rounding
+    vector<double> t_plum;
+    vector<map<pair<int, int>, double>> f_plum;
+    PFT_LP(t_plum, f_plum);
 }
 void REPS::entangle(){}
 void REPS::swap(){

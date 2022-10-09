@@ -6,7 +6,8 @@ using namespace std;
 
 class REPS:public AlgorithmBase{
     vector<Channel *> assign_path;
-    void PFT(vector<double> &t_plum, vector<vector<vector<double>>> &f_plum);
+    void PFT_LP(vector<double> &t_plum, vector<map<pair<int, int>, double>> &f_plum);
+    void EPS_LP(vector<double> &t_bar, vector<map<pair<int, int>, double>> &f_bar);
     void EPS();
     void ELS();
 public:

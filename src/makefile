@@ -4,7 +4,8 @@ gurobi_path = /opt/gurobi952/linux64
 all: a.out
 
 a.out: main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/REPS/REPS.o
-	g++ -fopenmp -g -Wall -Wextra main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/REPS/REPS.o -L$(gurobi_path)/lib -lgurobi_c++ -lgurobi95 -lm
+	g++ -fopenmp -g -Wall -Wextra main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/REPS/REPS.o -I$(gurobi_path)/include/ -L$(gurobi_path)/lib -lgurobi_c++ -lgurobi95 -lm 
+	
 # qcast.out: Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o
 Network/Node/Node.o: Network/Node/Node.cpp Network/Node/Node.h config.h
 	g++ -c -g -Wall -Wextra Network/Node/Node.cpp Network/Node/Node.h config.h
@@ -39,7 +40,8 @@ Algorithm/QCAST/QCAST.o: Algorithm/QCAST/QCAST.h Algorithm/QCAST/QCAST.cpp confi
 	mv QCAST.o Algorithm/QCAST/QCAST.o
 
 Algorithm/REPS/REPS.o: Algorithm/REPS/REPS.h Algorithm/REPS/REPS.cpp config.h
-	g++ -c -g -Wall -Wextra Algorithm/REPS/REPS.h Algorithm/REPS/REPS.cpp config.h -m64 -I$(gurobi_path)/include/  -L$(gurobi_path)/lib -lgurobi_c++ -lgurobi95 -lm
+	g++ -c -g -Wall -Wextra Algorithm/REPS/REPS.h Algorithm/REPS/REPS.cpp config.h -m64 -I$(gurobi_path)/include/  -L$(gurobi_path)/lib -lgurobi_c++ -lgurobi95 -lm 2>warning.txt
+	grep -e opt/gurobi952/linux64/include/gurobi_c++.h -e GRB  -e addConstr -v warning.txt
 	mv REPS.o Algorithm/REPS/REPS.o
 
 config.o:	config.h config.cpp
