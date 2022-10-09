@@ -36,19 +36,19 @@ int main(){
     double swap_prob = 1, entangle_alpha = 0.02;
     int node_time_limit = 7;
 
-    int new_request_min = 1, new_request_max = 5;
+    int new_request_min = 7, new_request_max = 14;
     int request_time_limit = 7;
-    int total_time_slot = 5;
+    int total_time_slot = 10;
 
-    bool debug = true;
+    bool debug = false;
     // python generate graph
     string filename = "input.txt";
-    if(debug) filename = "debug_graph.txt";
     string command = "python3 main.py ";
     if(system((command + filename).c_str()) != 0){
         cerr<<"error:\tsystem proccess python error"<<endl;
         exit(1);
     }
+    if(debug) filename = "debug_graph.txt";
     int num_of_node;
     ifstream graph_input;
     graph_input.open (filename);
@@ -60,6 +60,7 @@ int main(){
 
     
     for(int t = 0; t < total_time_slot; t++){
+        cout<<"-------------------------in round "<<t<<"-------------" <<endl;
         //亂數引擎, to decide how many requests received in this timeslot 
         random_device rd;
         default_random_engine generator = default_random_engine(rd());
@@ -69,20 +70,24 @@ int main(){
         cerr<< "---------generating requests in main.cpp----------" << endl;
         for(int q = 0; q < request_cnt; q++){
             Request new_request = generate_new_request(num_of_node, request_time_limit);
-            //Request new_request = generate_new_request(3, 4, request_time_limit);
+            //Request new_request = generate_new_request(4, 3, request_time_limit);
             cerr<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
             greedy.requests.push_back(new_request);
             qcast.requests.push_back(new_request);
         }
         cerr<< "---------generating requests in main.cpp----------end" << endl;
 
+        cout<<"-----------run greedy---------"<<endl;
         greedy.run();
+        cout<<"-----------run greedy---------end"<<endl;
+        cout<<"-----------run qcast----------"<<endl;
         qcast.run();
+        cout<<"-----------run qcast----------end"<<endl;
         greedy.next_time_slot();
         qcast.next_time_slot();
-        cout<<"-------------------------in round "<<t<<"-------------" <<endl;
         cout<<"(greedy)total throughput = "<<greedy.total_throughput()<<endl;
         cout<<"(QCAST)total throughput = "<<qcast.total_throughput()<<endl;
+        cout<<"-------------------------in round "<<t<<"-------------end" <<endl;
     }
     cout << endl;
     cout<<"(greedy)total throughput = "<<greedy.total_throughput()<<endl;

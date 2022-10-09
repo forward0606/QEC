@@ -110,9 +110,9 @@ double Graph::get_channel_weight(int node1_id, int node2_id){
     if(nodes[node1_id] > nodes[node2_id]){
         swap(node1_id, node2_id);
     }
-    Node node1 = nodes[node1_id], node2 = nodes[node2_id];
+    const Node &node1 = nodes[node1_id], &node2 = nodes[node2_id];
     double sum = 0;
-    for(Channel channel : channels[make_pair(node1, node2)]){
+    for(Channel &channel : channels[make_pair(node1, node2)]){
         sum += channel.get_weight();
     }
     return sum / channels[make_pair(node1, node2)].size();

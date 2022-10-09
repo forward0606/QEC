@@ -78,7 +78,8 @@ struct CandPath{
 
 
 void QCAST::path_assignment(){
-    if(DEBUG) cerr<< "---------QCAST::path_assignment----------end" << endl;
+    if(DEBUG) cerr<< "---------QCAST::path_assignment----------" << endl;
+    cout<<"there is "<<requests.size()<<" requests found"<<endl;
     const int maximum_major_path_per_request = 200;
     const int maximum_path_length = 200;
     const int maximum_total_number_of_path = 200;
@@ -116,7 +117,7 @@ void QCAST::path_assignment(){
                     continue;
                 }
                 
-                //find the path, width, ext
+                //find the path
                 vector<int> path_nodes;
                 vector<double> path_prob;
                 int now = node;
@@ -133,6 +134,7 @@ void QCAST::path_assignment(){
                 if(path_nodes.size() > maximum_path_length){
                     continue;
                 }
+
                 neighbors = graph.get_neighbors_id(node);
                 for(int ele:neighbors){
                     //cout<<ele<<" ";
@@ -157,7 +159,7 @@ void QCAST::path_assignment(){
             if(node != request.get_destination()){
                 //path is not found
                 candidate[reqno] = CandPath();
-                break;
+                continue;
             }
             //find the path, width, ext
             //path

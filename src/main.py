@@ -36,7 +36,12 @@ def dist(a, b):
     (q1, q2) = b
     return (q1-p1) * (q1-p1) + (q2-p2) * (q2-p2)
 
-filename = "input.txt"
+if  len(sys.argv) <= 1:
+    print("missing argv")
+    sys.exit()
+
+
+filename = sys.argv[1]
 num_of_node = 500
 min_channel_cnt = 2
 max_channel_cnt = 10
@@ -82,7 +87,7 @@ positions = nx.get_node_attributes(G, 'pos')
 print(num_of_node, file=f)
 for n in G.nodes():
     (p1, p2) = positions[n]
-    print(str(p1 * 4000) + ' ' + str(p2 * 4000) + " " + str(ceil(random.random()*(max_memory_cnt-min_memory_cnt)) + min_memory_cnt), file=f)
+    print(str(p1 * 20) + ' ' + str(p2 * 20) + " " + str(ceil(random.random()*(max_memory_cnt-min_memory_cnt)) + min_memory_cnt), file=f)
 
 for e in G.edges():
     if e[0] != e[1]:#file 
