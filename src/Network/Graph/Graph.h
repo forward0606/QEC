@@ -12,12 +12,15 @@ using namespace std;
 class Graph{
 	// parameter for generating graph
 	int num_of_node;
+	int num_of_edge;
+	int num_of_social;
 	int time_limit;
 	double swap_prob, entangle_alpha;
 
     vector<Node> nodes;
     map<pair<const Node, const Node>, vector<Channel>> channels;
 	vector<vector<int>> neighbor;
+	vector<vector<bool>> social;
 
 	Channel* assign_channel(Node &node1, Node &node2);	//in algorithm we use this function to find a channel, then collect a sequence of channels. Finally, construct them to be a Path.
 public:
@@ -32,6 +35,7 @@ public:
 	int get_channel_size(int node1_id, int node2_id);
 	Node* Node_id2ptr(int id);
 
+	bool is_friend(int source, int middle_node);			//trust each other?
 	void generate(string);
 	void refresh();
 	void release();

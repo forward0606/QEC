@@ -78,6 +78,13 @@ Node* Graph::Node_id2ptr(int id){
     return &nodes[id];
 }
 
+bool Graph::is_friend(int source, int middle_node){
+    if(source == middle_node){
+        cerr<<"err:\t in Graph::is_friend()  source == middle_node"<<endl;
+    }
+    return social[source][middle_node];
+}
+
 /*
 c++ call system to run python (waxman)
 python generate graph, and then write to file
@@ -98,17 +105,18 @@ void Graph::generate(string filename){
 	}
     
     // input of edges
+    graph_input >> num_of_edge;
     //Node node1, node2;
-    int node_id1, node_id2;
+    int node1_id, node2_id;
     int channel_cnt;
-    while(graph_input >> node_id1 >> node_id2 >> channel_cnt){
-        neighbor[node_id1].emplace_back(node_id2);
-        neighbor[node_id2].emplace_back(node_id1);
-        if(nodes[node_id1] > nodes[node_id2]){
-            swap(node_id1, node_id2);
+    while(graph_input >> node1_id >> node2_id >> channel_cnt){
+        neighbor[node1_id].emplace_back(node2_id);
+        neighbor[node2_id].emplace_back(node1_id);
+        if(nodes[node1_id] > nodes[node2_id]){
+            swap(node1_id, node2_id);
         }
-        Node &node1 = nodes[node_id1];
-        Node &node2 = nodes[node_id2];
+        Node &node1 = nodes[node1_id];
+        Node &node2 = nodes[node2_id];
         
         if(DEBUG) cerr<<"channel cnt:\t"<<channel_cnt<<endl;
         if(node1 == node2){
@@ -122,6 +130,21 @@ void Graph::generate(string filename){
             // cout << "two nodes in channel: " << &node1 << " " << &node2 << endl;
         }
         //edges[make_pair(node1, node2)] = &(Edge(&node1, &node2, channel_cnt, entangle_alpha));
+    }
+
+
+    for(int i = 0; i < num_of_node; i++){
+        for(int j = i; j < num_of_node; j++){
+            social[i][j] = false;
+            social[j][i] = false;
+        }
+    }
+    // input of social
+    graph_input >> num_of_social;
+    // node1 trusts node2
+    while(graph_input >> node1_id >> node2_id){
+        social[node1_id][node2_id] = true;
+
     }
     if(DEBUG)cerr<<"new graph!"<<endl;
 }

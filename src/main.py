@@ -89,8 +89,21 @@ for n in G.nodes():
     (p1, p2) = positions[n]
     print(str(p1 * 20) + ' ' + str(p2 * 20) + " " + str(ceil(random.random()*(max_memory_cnt-min_memory_cnt)) + min_memory_cnt), file=f)
 
+print(G.size(), file=f)
 for e in G.edges():
     if e[0] != e[1]:#file 
         print(str(e[0]) + ' ' + str(e[1]) + " " + str(ceil(random.random()*(max_channel_cnt-min_channel_cnt)) + min_channel_cnt), file=f)
+
+for i in range(num_of_node):
+    for j in range(num_of_node):
+        if i == j:
+            print(1, end=" ", file=f)
+        else:
+            if random.random() > 0.5:
+                print(1, end=" ", file=f)
+            else:
+                print(0, end=" ", file=f)
+    print("", file=f)
+
 print("----------graph generate finished!----------", file=sys.stderr)
 print("----------graph generate finished!----------")
