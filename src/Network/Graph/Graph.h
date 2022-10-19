@@ -12,6 +12,7 @@ using namespace std;
 class Graph{
 	// parameter for generating graph
 	int num_of_node;
+	int num_of_edge;
 	int time_limit;
 	double swap_prob, entangle_alpha;
 

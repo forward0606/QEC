@@ -7,6 +7,9 @@ AlgorithmBase::AlgorithmBase(string filename, int request_time_limit, int node_t
     
 }
 
+AlgorithmBase::~AlgorithmBase(){
+    if(DEBUG)cerr<<"delete AlgorithmBase"<<endl;
+}
 
 double AlgorithmBase::get_swap_prob(){
     return swap_prob;

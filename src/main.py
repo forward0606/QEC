@@ -42,7 +42,7 @@ if  len(sys.argv) <= 1:
 
 
 filename = sys.argv[1]
-num_of_node = 500
+num_of_node = 100
 min_channel_cnt = 2
 max_channel_cnt = 10
 min_memory_cnt = 3
@@ -88,9 +88,14 @@ print(num_of_node, file=f)
 for n in G.nodes():
     (p1, p2) = positions[n]
     print(str(p1 * 20) + ' ' + str(p2 * 20) + " " + str(ceil(random.random()*(max_memory_cnt-min_memory_cnt)) + min_memory_cnt), file=f)
-
+cnt = 0
 for e in G.edges():
-    if e[0] != e[1]:#file 
+    if e[0] != e[1]:#file
+        cnt += 1
+print(cnt, file=f)
+for e in G.edges():
+    if e[0] != e[1]:#file
         print(str(e[0]) + ' ' + str(e[1]) + " " + str(ceil(random.random()*(max_channel_cnt-min_channel_cnt)) + min_channel_cnt), file=f)
 print("----------graph generate finished!----------", file=sys.stderr)
 print("----------graph generate finished!----------")
+f.close()

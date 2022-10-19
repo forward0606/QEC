@@ -21,7 +21,7 @@ public:
     vector<Request> requests;
     Graph graph;
     AlgorithmBase(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha);
-    //~AlgorithmBase();
+    ~AlgorithmBase();
     double get_swap_prob();
     virtual void path_assignment(){};
     int find_width(vector<int> path);

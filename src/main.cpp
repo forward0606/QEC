@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
-#include <omp.h>
+//#include <omp.h>
 #include "Network/Graph/Graph.h"
 #include "Algorithm/AlgorithmBase/AlgorithmBase.h"
 #include "Algorithm/Greedy/Greedy.h"
@@ -45,7 +45,7 @@ int main(){
 
     bool debug = false;
     // python generate graph
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for(int T = 0; T < round; T++){
         stringstream ss;
         string round_str;
@@ -70,7 +70,7 @@ int main(){
         ifstream graph_input;
         graph_input.open (filename);
         graph_input >> num_of_node;
-
+        graph_input.close();
         //Graph graph("input.txt", num_of_node, min_channel, max_channel, min_memory_cnt, max_memory_cnt, node_time_limit, swap_prob, entangle_alpha, true);
         Greedy greedy(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
         QCAST qcast(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);

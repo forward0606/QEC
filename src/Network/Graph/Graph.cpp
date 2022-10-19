@@ -101,7 +101,9 @@ void Graph::generate(string filename){
     //Node node1, node2;
     int node_id1, node_id2;
     int channel_cnt;
-    while(graph_input >> node_id1 >> node_id2 >> channel_cnt){
+    graph_input >> num_of_edge;
+    for(int i=0;i<num_of_edge;i++){
+        graph_input >> node_id1 >> node_id2 >> channel_cnt;
         neighbor[node_id1].emplace_back(node_id2);
         neighbor[node_id2].emplace_back(node_id1);
         if(nodes[node_id1] > nodes[node_id2]){
@@ -119,10 +121,9 @@ void Graph::generate(string filename){
         if(DEBUG) cerr<<"entangle_prob:\t"<<entangle_prob<<endl;
         for(int i = 0; i < channel_cnt; i++){
             channels[make_pair(node1, node2)].emplace_back(&node1, &node2, entangle_prob);
-            // cout << "two nodes in channel: " << &node1 << " " << &node2 << endl;
         }
-        //edges[make_pair(node1, node2)] = &(Edge(&node1, &node2, channel_cnt, entangle_alpha));
     }
+    graph_input.close();
     if(DEBUG)cerr<<"new graph!"<<endl;
 }
 

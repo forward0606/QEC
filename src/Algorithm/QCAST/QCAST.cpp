@@ -333,7 +333,6 @@ void QCAST::swap(){
 }
 
 void QCAST::next_time_slot(){
-    AlgorithmBase::next_time_slot();
     for(auto &recs:recovery_paths){
         for(int i=0;i<(int)recs.second.size();i++){
             recs.second[i]->release();
@@ -342,6 +341,7 @@ void QCAST::next_time_slot(){
         }
     }
     recovery_paths.clear();
+    AlgorithmBase::next_time_slot();
 }
 
 double QCAST::demoEXT(vector<double> path, int w){
