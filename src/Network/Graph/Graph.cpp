@@ -96,8 +96,7 @@ void Graph::generate(string filename){
 
     graph_input >> num_of_node;
     neighbor.resize(num_of_node);
-    // social.resize(num_of_node);
-
+    social.resize(num_of_node);
     // input of nodes
     double pos_x, pos_y;
     int memory_cnt;
@@ -111,12 +110,13 @@ void Graph::generate(string filename){
     //Node node1, node2;
     int node1_id, node2_id;
     int channel_cnt;
-    for(int i = 0; i < num_of_edge; i++){
-        graph_input >> node1_id >> node2_id >> channel_cnt;
-        neighbor[node1_id].emplace_back(node2_id);
-        neighbor[node2_id].emplace_back(node1_id);
-        if(nodes[node1_id] > nodes[node2_id]){
-            swap(node1_id, node2_id);
+    graph_input >> num_of_edge;
+    for(int i=0;i<num_of_edge;i++){
+        graph_input >> node_id1 >> node_id2 >> channel_cnt;
+        neighbor[node_id1].emplace_back(node_id2);
+        neighbor[node_id2].emplace_back(node_id1);
+        if(nodes[node_id1] > nodes[node_id2]){
+            swap(node_id1, node_id2);
         }
         Node &node1 = nodes[node1_id];
         Node &node2 = nodes[node2_id];
@@ -131,20 +131,18 @@ void Graph::generate(string filename){
         if(DEBUG) cerr<<"entangle_prob:\t"<<entangle_prob<<endl;
         for(int i = 0; i < channel_cnt; i++){
             channels[make_pair(node1, node2)].emplace_back(&node1, &node2, entangle_prob);
-            // cout << "two nodes in channel: " << &node1 << " " << &node2 << endl;
         }
-        //edges[make_pair(node1, node2)] = &(Edge(&node1, &node2, channel_cnt, entangle_alpha));
     }
 
+    int is_trust;
+    for(int i = 0; i < num_of_node; i++){
+        for(int j = 0; j < num_of_node; j++){
+            graph_input >> is_trust;
+            social[i].push_back(is_trust);
+        }
+    }
 
-    // int is_trust;
-    // for(int i = 0; i < num_of_node; i++){
-    //     for(int j = 0; j < num_of_node; j++){
-    //         graph_input >> is_trust;
-    //         social[i].push_back(is_trust);
-    //     }
-    // }
-
+    graph_input.close();
     if(DEBUG)cerr<<"new graph!"<<endl;
     graph_input.close();
 }

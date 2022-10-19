@@ -3,12 +3,12 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
-#include <omp.h>
+//#include <omp.h>
 #include "Network/Graph/Graph.h"
 #include "Algorithm/AlgorithmBase/AlgorithmBase.h"
 #include "Algorithm/Greedy/Greedy.h"
 #include "Algorithm/QCAST/QCAST.h"
-#include "Algorithm/REPS/REPS.h"
+//#include "Algorithm/REPS/REPS.h"
 using namespace std;
 
 #define ALGCO_GREEDY 0
@@ -34,18 +34,18 @@ Request generate_new_request(int node1, int node2, int time_limit){//demo
 
 int main(){
 
-    int round = 1;
+    int round = 10;
 
     double swap_prob = 1, entangle_alpha = 0;
     int node_time_limit = 7;
 
     int new_request_min = 1, new_request_max = 1;
     int request_time_limit = 7;
-    int total_time_slot = 1;
+    int total_time_slot = 100;
 
     bool debug = false;
     // python generate graph
-    //#pragma omp parallel for
+    #pragma omp parallel for
     for(int T = 0; T < round; T++){
         stringstream ss;
         string round_str;
@@ -92,7 +92,7 @@ int main(){
                 cerr<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
                 greedy.requests.push_back(new_request);
                 qcast.requests.push_back(new_request);
-                // reps.requests.push_back(new_request);
+                //reps.requests.push_back(new_request);
             }
             cerr<< "---------generating requests in main.cpp----------end" << endl;
             
@@ -108,13 +108,12 @@ int main(){
                     qcast.run();
                     ofs<<"-----------run qcast----------end"<<endl;
                     qcast.next_time_slot();
+                }else if(algo_id == ALGCO_REPS){
+                    ofs<<"-----------run REPS----------"<<endl;
+                    //reps.run();
+                    ofs<<"-----------run REPS----------end"<<endl;
+                    //reps.next_time_slot();
                 }
-                // else if(algo_id == ALGCO_REPS){
-                //     ofs<<"-----------run qcast----------"<<endl;
-                //     reps.run();
-                //     ofs<<"-----------run qcast----------end"<<endl;
-                //     reps.next_time_slot();
-                // }
             }
             ofs<<"(greedy)total throughput = "<<greedy.total_throughput()<<endl;
             ofs<<"(QCAST)total throughput = "<<qcast.total_throughput()<<endl;
