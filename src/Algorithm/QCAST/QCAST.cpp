@@ -201,23 +201,23 @@ void QCAST::find_recovery_path(int R){ // R: max amount of recovery path for any
         for(auto path_ptr: request.get_paths()){
             Path &path = *path_ptr;
             vector<Node*> path_nodes = path.get_nodes();
-            // vector<Node*> bad_path_nodes = bad_path.get_nodes();
-            // for(auto ele:bad_path_nodes) cout << ele << ' ';
-            // cout << endl;
+            vector<int> recovery_path_cnt;
+            recovery_path_cnt.resize((int)path_nodes.size());
             for(int i = 0; i < (int)path_nodes.size(); i++){
-                int recovery_path_cnt = 0;
-                Path *recovery_path_ptr = nullptr;
-                vector<int> bfs_path;
-                for(int hop = 1; i + hop <= path.get_len(); hop++){
-                    while(recovery_path_cnt < R){
+                recovery_path_cnt[i] = 0;
+            }
+            for(int hop = 1; hop <= path.get_len(); hop++){
+                for(int i = 0; i < (int)path_nodes.size(); i++){
+                    if(i + hop > path.get_len() || recovery_path_cnt[i] > R) continue;
+                    Path *recovery_path_ptr = nullptr;
+                    vector<int> bfs_path;
+                    while(recovery_path_cnt[i] < R){
                         bfs_path = BFS(path_nodes[i]->get_id(), path_nodes[i+hop]->get_id());
-                        if(bfs_path.size() == 0){
-                            break;
-                        }
+                        if(bfs_path.size() == 0) break;
                         recovery_path_ptr = graph.build_path(bfs_path);
                         if(recovery_path_ptr == nullptr) break;
                         recovery_paths[make_pair(&request, path_ptr)].push_back(recovery_path_ptr);
-                        recovery_path_cnt++;
+                        recovery_path_cnt[i]++;
                         recovery_path_ptr = nullptr;
                     }
                 }

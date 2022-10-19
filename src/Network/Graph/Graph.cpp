@@ -89,6 +89,7 @@ void Graph::generate(string filename){
 
     graph_input >> num_of_node;
     neighbor.resize(num_of_node);
+    social.resize(num_of_node);
     // input of nodes
     double pos_x, pos_y;
     int memory_cnt;
@@ -123,6 +124,15 @@ void Graph::generate(string filename){
             channels[make_pair(node1, node2)].emplace_back(&node1, &node2, entangle_prob);
         }
     }
+
+    int is_trust;
+    for(int i = 0; i < num_of_node; i++){
+        for(int j = 0; j < num_of_node; j++){
+            graph_input >> is_trust;
+            social[i].push_back(is_trust);
+        }
+    }
+
     graph_input.close();
     if(DEBUG)cerr<<"new graph!"<<endl;
 }
