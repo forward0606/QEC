@@ -20,7 +20,7 @@ class Graph{
     vector<Node> nodes;
     map<pair<const Node, const Node>, vector<Channel>> channels;
 	vector<vector<int>> neighbor;
-	vector<vector<bool>> social;
+	// vector<vector<int>> social; //bool
 
 	Channel* assign_channel(Node &node1, Node &node2);	//in algorithm we use this function to find a channel, then collect a sequence of channels. Finally, construct them to be a Path.
 public:

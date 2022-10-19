@@ -45,7 +45,7 @@ int main(){
 
     bool debug = false;
     // python generate graph
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for(int T = 0; T < round; T++){
         stringstream ss;
         string round_str;
@@ -70,11 +70,11 @@ int main(){
         ifstream graph_input;
         graph_input.open (filename);
         graph_input >> num_of_node;
-
+        graph_input.close();
         //Graph graph("input.txt", num_of_node, min_channel, max_channel, min_memory_cnt, max_memory_cnt, node_time_limit, swap_prob, entangle_alpha, true);
         Greedy greedy(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
         QCAST qcast(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
-        REPS reps(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
+        //REPS reps(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
         
         ofs<<"---------------in round " <<T<<" -------------" <<endl;
         for(int t = 0; t < total_time_slot; t++){
@@ -92,7 +92,7 @@ int main(){
                 cerr<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
                 greedy.requests.push_back(new_request);
                 qcast.requests.push_back(new_request);
-                reps.requests.push_back(new_request);
+                // reps.requests.push_back(new_request);
             }
             cerr<< "---------generating requests in main.cpp----------end" << endl;
             
@@ -108,12 +108,13 @@ int main(){
                     qcast.run();
                     ofs<<"-----------run qcast----------end"<<endl;
                     qcast.next_time_slot();
-                }else if(algo_id == ALGCO_REPS){
-                    ofs<<"-----------run qcast----------"<<endl;
-                    reps.run();
-                    ofs<<"-----------run qcast----------end"<<endl;
-                    reps.next_time_slot();
                 }
+                // else if(algo_id == ALGCO_REPS){
+                //     ofs<<"-----------run qcast----------"<<endl;
+                //     reps.run();
+                //     ofs<<"-----------run qcast----------end"<<endl;
+                //     reps.next_time_slot();
+                // }
             }
             ofs<<"(greedy)total throughput = "<<greedy.total_throughput()<<endl;
             ofs<<"(QCAST)total throughput = "<<qcast.total_throughput()<<endl;

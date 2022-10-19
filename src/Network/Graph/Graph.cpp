@@ -96,6 +96,8 @@ void Graph::generate(string filename){
 
     graph_input >> num_of_node;
     neighbor.resize(num_of_node);
+    // social.resize(num_of_node);
+
     // input of nodes
     double pos_x, pos_y;
     int memory_cnt;
@@ -109,7 +111,8 @@ void Graph::generate(string filename){
     //Node node1, node2;
     int node1_id, node2_id;
     int channel_cnt;
-    while(graph_input >> node1_id >> node2_id >> channel_cnt){
+    for(int i = 0; i < num_of_edge; i++){
+        graph_input >> node1_id >> node2_id >> channel_cnt;
         neighbor[node1_id].emplace_back(node2_id);
         neighbor[node2_id].emplace_back(node1_id);
         if(nodes[node1_id] > nodes[node2_id]){
@@ -119,6 +122,7 @@ void Graph::generate(string filename){
         Node &node2 = nodes[node2_id];
         
         if(DEBUG) cerr<<"channel cnt:\t"<<channel_cnt<<endl;
+        cerr << "!!" << node1_id << " !!" << node2_id << endl;
         if(node1 == node2){
             cerr<<"error:\texist an edge with same node!"<<endl;
             exit(1);
@@ -133,20 +137,16 @@ void Graph::generate(string filename){
     }
 
 
-    for(int i = 0; i < num_of_node; i++){
-        for(int j = i; j < num_of_node; j++){
-            social[i][j] = false;
-            social[j][i] = false;
-        }
-    }
-    // input of social
-    graph_input >> num_of_social;
-    // node1 trusts node2
-    while(graph_input >> node1_id >> node2_id){
-        social[node1_id][node2_id] = true;
+    // int is_trust;
+    // for(int i = 0; i < num_of_node; i++){
+    //     for(int j = 0; j < num_of_node; j++){
+    //         graph_input >> is_trust;
+    //         social[i].push_back(is_trust);
+    //     }
+    // }
 
-    }
     if(DEBUG)cerr<<"new graph!"<<endl;
+    graph_input.close();
 }
 
 

@@ -60,3 +60,5 @@ clean:
 	rm -f Path/Path.o Path/Path.h.gch
 	rm -f Network/Graph/Graph.o Network/Graph/Graph.h.gch
 	rm -f Request/Request.o Request/Request.h.gch
+clean_round:
+	rm -f *log.txt
