@@ -112,11 +112,11 @@ void Graph::generate(string filename){
     int channel_cnt;
     graph_input >> num_of_edge;
     for(int i=0;i<num_of_edge;i++){
-        graph_input >> node_id1 >> node_id2 >> channel_cnt;
-        neighbor[node_id1].emplace_back(node_id2);
-        neighbor[node_id2].emplace_back(node_id1);
-        if(nodes[node_id1] > nodes[node_id2]){
-            swap(node_id1, node_id2);
+        graph_input >> node1_id >> node2_id >> channel_cnt;
+        neighbor[node1_id].emplace_back(node2_id);
+        neighbor[node1_id].emplace_back(node2_id);
+        if(nodes[node1_id] > nodes[node2_id]){
+            swap(node1_id, node2_id);
         }
         Node &node1 = nodes[node1_id];
         Node &node2 = nodes[node2_id];

@@ -6,14 +6,9 @@ AlgorithmBase::AlgorithmBase(string filename, int request_time_limit, int node_t
     :timeslot(0), waiting_time(0), throughputs(0), time_limit(request_time_limit), swap_prob(swap_prob), graph(Graph(filename, node_time_limit, swap_prob, entangle_alpha)){
     
 }
-<<<<<<< HEAD
-AlgorithmBase::~AlgorithmBase(){
-    cerr<<"delete AlgorithmBase"<<endl;
-=======
 
 AlgorithmBase::~AlgorithmBase(){
     if(DEBUG)cerr<<"delete AlgorithmBase"<<endl;
->>>>>>> origin/new_start
 }
 
 double AlgorithmBase::get_swap_prob(){
