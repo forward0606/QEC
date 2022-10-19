@@ -6,14 +6,17 @@ using namespace std;
 
 class REPS:public AlgorithmBase{
     vector<Channel *> assign_path;
+    vector<double> t_hat;
+    vector<map<pair<int, int>, int>> f_hat;
     void PFT_LP(vector<double> &t_plum, vector<map<pair<int, int>, double>> &f_plum);
-    void EPS_LP(vector<double> &t_bar, vector<map<pair<int, int>, double>> &f_bar);
+    void EPS_LP(vector<vector<double>> &t_bar, vector<vector<map<pair<int, int>, double>>> &f_bar);
     void EPS();
     void ELS();
+    tuple<vector<int>, double> DFS(int req_no, map<pair<int, int>, double>&f_plum_i);
 public:
     REPS(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha);
     void path_assignment();
-    void entangle();
+    //void entangle();
     void swap();
-    void next_time_slot();
+    //void next_time_slot();
 };

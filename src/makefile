@@ -40,8 +40,7 @@ Algorithm/QCAST/QCAST.o: Algorithm/QCAST/QCAST.h Algorithm/QCAST/QCAST.cpp confi
 	mv QCAST.o Algorithm/QCAST/QCAST.o
 
 Algorithm/REPS/REPS.o: Algorithm/REPS/REPS.h Algorithm/REPS/REPS.cpp config.h
-	g++ -c -g -Wall -Wextra Algorithm/REPS/REPS.h Algorithm/REPS/REPS.cpp config.h -m64 -I$(gurobi_path)/include/  -L$(gurobi_path)/lib -lgurobi_c++ -lgurobi95 -lm 2>warning.txt
-	grep -e opt/gurobi952/linux64/include/gurobi_c++.h -e GRB  -e addConstr -v warning.txt
+	g++ -c -g -Wall -Wextra Algorithm/REPS/REPS.h Algorithm/REPS/REPS.cpp config.h -m64 -I$(gurobi_path)/include/  -L$(gurobi_path)/lib -lgurobi_c++ -lgurobi95 -lm 
 	mv REPS.o Algorithm/REPS/REPS.o
 
 config.o:	config.h config.cpp
