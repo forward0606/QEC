@@ -140,7 +140,7 @@ int AlgorithmBase::total_throughput(){
 
 Path* AlgorithmBase::find_swap_path(vector<int> path_nodes, map<pair<int, int>, vector<Channel*>> &remain_channels){
     //the the path for swaping
-    cout << "AlgorithmBase::find_swap_path" << endl;
+    //cout << "AlgorithmBase::find_swap_path" << endl;
     
     
     //find the channels of path for swaping 

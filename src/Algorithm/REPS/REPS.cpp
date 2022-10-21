@@ -361,6 +361,7 @@ void REPS::EPS(){
     EPS_P.resize(requests.size());
     for(int i=0;i<(int)t_bar.size();i++){
         for(int k=0;k<(int)t_bar[i].size();k++){
+            p.clear();
             if(dis(gen) > t_bar[i][k]){
                 continue;
             }
@@ -369,7 +370,7 @@ void REPS::EPS(){
                 if(width == -1) break;
                 p.push_back(tie(width, path_nodes));
             }
-            double choose_path_prob = dis(gen) / t_bar[i][k];
+            double choose_path_prob = dis(gen) * t_bar[i][k];
             for(int i=0;i<(int)p.size();i++){
                 tie(width, path_nodes) = p[i];
                 if(choose_path_prob - width <= 1e-6){
@@ -454,10 +455,7 @@ tuple<vector<int>, double> REPS::DFS(int req_no, map<pair<int, int>, double>&f_p
     int source = requests[req_no].get_source();
     int destination = requests[req_no].get_destination();
     vector<int> vis;
-    vis.resize(graph.get_size());
-    for(int &i:vis){
-        i = 0;
-    }
+    vis.resize(graph.get_size(), false);
     vector<int> path_nodes;
     path_nodes.clear();
     int now = source;
@@ -511,7 +509,7 @@ void REPS::ELS(){
             y[i].push_back(0);
         }
     }
-    set<int> T;:
+    set<int> T;
     for(int i = 0; i < (int)requests.size(); i++){
         T.insert(i);
     }
@@ -607,7 +605,7 @@ void REPS::ELS(){
         // line 22
         vector<int> path_nodes;
         while(now != -1){
-            cout << "now = " << now << endl;
+            //cout << "now = " << now << endl;
             path_nodes.push_back(now);
             now = parent[now];
         }
