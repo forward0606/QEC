@@ -1,6 +1,7 @@
 gurobi_path = /opt/gurobi952/linux64
-# gurobi_path = /home/student11/gurobi903/linux64 # on server
-
+gurobi_ver = 
+# on server
+# gurobi_path = /home/student11/gurobi903/linux64
 all: a.out
 
 a.out: main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/REPS/REPS.o

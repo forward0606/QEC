@@ -34,12 +34,12 @@ Request generate_new_request(int node1, int node2, int time_limit){//demo
 
 int main(){
 
-    int round = 1;
+    int round = 10;
 
-    double swap_prob = 1, entangle_alpha = 0.002;
+    double swap_prob = 0.9, entangle_alpha = 0.002;
     int node_time_limit = 7;
 
-    int new_request_min = 1, new_request_max = 5;
+    int new_request_min = 3, new_request_max = 5;
     int request_time_limit = 7;
     int total_time_slot = 10;
 
@@ -59,7 +59,7 @@ int main(){
         cerr  << "時間 " << dt << endl << endl; 
         ofs  << "時間 " << dt << endl << endl; 
 
-        string filename = "input.txt";
+        string filename = "input" + round_str + ".txt";
         // string command = "python3 main.py ";
         // if(system((command + filename).c_str()) != 0){
         //     cerr<<"error:\tsystem proccess python error"<<endl;

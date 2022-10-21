@@ -57,8 +57,8 @@ print("min_memory_cnt = ", min_memory_cnt, ", max_memory_cnt = ", max_memory_cnt
 
 
 while True:
-    #G = nx.waxman_graph(num_of_node, beta=0.85, alpha=0.1, domain=(0, 0, 0.5, 1))
-    G = nx.waxman_graph(num_of_node, beta=0.85, alpha=10, domain=(0, 0, 0.5, 1))
+    G = nx.waxman_graph(num_of_node, beta=0.85, alpha=0.1, domain=(0, 0, 0.5, 1))
+    #G = nx.waxman_graph(num_of_node, beta=0.85, alpha=10, domain=(0, 0, 0.5, 1))
     positions = nx.get_node_attributes(G, 'pos')
     add_edge = []
     for u in range(G.order()-1):
