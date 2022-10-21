@@ -70,6 +70,18 @@ int Graph::get_channel_size(int node1_id, int node2_id){
     return (int)channels[make_pair(node1, node2)].size();
 }
 
+int Graph::get_channel_entangle_succ_cnt(int node1_id, int node2_id){
+    if(nodes[node1_id] > nodes[node2_id]){
+        swap(node1_id, node2_id);
+    }
+    const Node &node1 = nodes[node1_id], &node2 = nodes[node2_id];
+    int cnt = 0;
+    for(auto &channel: channels[make_pair(node1, node2)]){
+        if(channel.is_used() && channel.is_entangled()) cnt++;
+    }
+    return cnt;
+}
+
 Node* Graph::Node_id2ptr(int id){
     if(id >= (int)nodes.size() || id < 0){
         cerr<<"err:\t in Graph::Node_id2ptr() id is out of range"<<endl;

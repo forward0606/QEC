@@ -17,12 +17,14 @@ class Request{
 public:
     Request(int source, int destination, const int& time_limit);
     ~Request(void);
+    void set_path(int path_id, Path *p);                        //should delete old path before set new path
     int get_waiting_time();
     int get_source();
     int get_destination();
     int get_throughput();
     vector<Path *> get_paths();
     
+    void clear_paths();
     void add_one_throughput();
     void entangle();
     void swap();

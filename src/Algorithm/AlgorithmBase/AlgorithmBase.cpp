@@ -21,6 +21,21 @@ void AlgorithmBase::next_time_slot(){
     for(auto &request: requests){
         request.next_timeslot();
     }
+
+    //好強
+    vector<int> finished_reqno;
+    for(int reqno = 0; reqno < (int)requests.size(); reqno++) {
+        if(requests[reqno].get_throughput() >= 1) {
+            finished_reqno.push_back(reqno);
+        }
+    }
+
+    reverse(finished_reqno.begin(), finished_reqno.end());
+    throughputs += (int)finished_reqno.size();
+
+    for(int reqno : finished_reqno) {
+        requests.erase(requests.begin() + reqno);
+    }
 }
 
 void AlgorithmBase::entangle(){
@@ -120,9 +135,40 @@ vector<int> AlgorithmBase::BFS(int source, int destination){
 }
 
 int AlgorithmBase::total_throughput(){
-    int sum = 0;
-    for(auto &request:requests){
-        sum += request.get_throughput();
+    return throughputs;
+}
+
+Path* AlgorithmBase::find_swap_path(vector<int> path_nodes, map<pair<int, int>, vector<Channel*>> &remain_channels){
+    //the the path for swaping
+    cout << "AlgorithmBase::find_swap_path" << endl;
+    
+    
+    //find the channels of path for swaping 
+    vector<Channel*> path_channels;
+    int u, v;
+    for(int i=1;i<(int)path_nodes.size();i++){
+        u = path_nodes[i-1];
+        v = path_nodes[i];
+        if(u > v){
+            int swap_tmp = u;
+            u = v;
+            v = swap_tmp;
+        }
+        if(remain_channels[make_pair(u, v)].empty()){
+            cerr<<"error:\t remain channel is not sufficient"<<endl;
+            exit(1);
+        }
+        path_channels.emplace_back(remain_channels[make_pair(u, v)].back());
+        remain_channels[make_pair(u, v)].pop_back();
     }
-    return sum;
+
+    //find the nodes of path for swapin
+    vector<Node *> nodes;
+    if(DEBUG) cerr << "path to swap in P4: ";
+    for(int i:path_nodes){
+        nodes.emplace_back(graph.Node_id2ptr(i));
+        if(DEBUG) cerr <<  i << ' ';
+    }
+    if(DEBUG) cerr << '\n';
+    return new Path(nodes, path_channels);
 }

@@ -36,12 +36,12 @@ int main(){
 
     int round = 1;
 
-    double swap_prob = 1, entangle_alpha = 0;
+    double swap_prob = 1, entangle_alpha = 0.002;
     int node_time_limit = 7;
 
-    int new_request_min = 1, new_request_max = 1;
+    int new_request_min = 1, new_request_max = 5;
     int request_time_limit = 7;
-    int total_time_slot = 1;
+    int total_time_slot = 10;
 
     bool debug = false;
     // python generate graph
@@ -60,11 +60,11 @@ int main(){
         ofs  << "時間 " << dt << endl << endl; 
 
         string filename = "input.txt";
-        string command = "python3 main.py ";
-        if(system((command + filename).c_str()) != 0){
-            cerr<<"error:\tsystem proccess python error"<<endl;
-            exit(1);
-        }
+        // string command = "python3 main.py ";
+        // if(system((command + filename).c_str()) != 0){
+        //     cerr<<"error:\tsystem proccess python error"<<endl;
+        //     exit(1);
+        // }
         if(debug) filename = "debug_graph.txt";
         int num_of_node;
         ifstream graph_input;
@@ -117,12 +117,14 @@ int main(){
             }
             ofs<<"(greedy)total throughput = "<<greedy.total_throughput()<<endl;
             ofs<<"(QCAST)total throughput = "<<qcast.total_throughput()<<endl;
+            ofs<<"(REPS)total throughput = "<<reps.total_throughput()<<endl;
             ofs<<"---------------in timslot " <<t<<" -------------end" <<endl;
         }
         ofs<<"---------------in round " <<T<<" -------------end" <<endl;
         ofs << endl;
         ofs<<"(greedy)total throughput = "<<greedy.total_throughput()<<endl;
         ofs<<"(QCAST)total throughput = "<<qcast.total_throughput()<<endl;
+        ofs<<"(REPS)total throughput = "<<reps.total_throughput()<<endl;
 
         now = time(0);
         dt = ctime(&now);

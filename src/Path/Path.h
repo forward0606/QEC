@@ -9,7 +9,7 @@
 class Path{
     vector<Node*> nodes;
     vector<Channel*> channels;
-    bool entangle_succ, swap_succ;
+    bool swap_succ;
     double prob;
 public:
 	Path(vector<Node*> nodes, vector<Channel*> channels);
@@ -18,7 +18,7 @@ public:
     int get_len();
     vector<Node*> get_nodes();
     vector<Channel*> get_channels();
-    bool entangle();        //true->entangle success
+    void entangle();        //true->entangle success
     bool get_entangle_succ();
     bool swap();            //true->swapped success
     bool get_swap_succ();

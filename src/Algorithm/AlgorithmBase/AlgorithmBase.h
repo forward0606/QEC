@@ -12,6 +12,7 @@ using namespace std;
 
 
 class AlgorithmBase{
+protected:
     int timeslot, waiting_time;
     int throughputs;
     int time_limit;
@@ -32,6 +33,7 @@ public:
     virtual void next_time_slot();
     void run();
     int total_throughput();
+    Path *find_swap_path(vector<int> path_nodes, map<pair<int, int>, vector<Channel*>> &remain_channels);
 };
 
 #endif

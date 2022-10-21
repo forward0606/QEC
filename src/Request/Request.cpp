@@ -12,6 +12,15 @@ Request::~Request(void){
         delete paths[i];
         paths[i] = nullptr;
     }
+    paths.clear();
+}
+
+void Request::set_path(int path_id, Path *p){
+    if(path_id >= (int)paths.size()){
+        cerr<<"can't set this path!"<<endl;
+        exit(1);
+    }
+    paths[path_id] = p;
 }
 
 int Request::get_waiting_time(){
@@ -32,6 +41,17 @@ vector<Path *> Request::get_paths(){
     return paths;
 }
 
+void Request::clear_paths(){
+    for(int i=0;i < (int)paths.size();i++){
+        if(paths[i] != nullptr){
+            delete paths[i];
+            paths[i] = nullptr;
+        }
+    }
+    paths.clear();
+}
+
+
 void Request::add_one_throughput(){
     throughput++;
 }
@@ -45,6 +65,7 @@ void Request::entangle(){
 
 void Request::swap(){
     for(auto &path:paths){
+        if(path == nullptr)continue;
         if(path->get_entangle_succ()) path->swap();
         if(path->get_swap_succ()) throughput++;
     }
@@ -52,8 +73,10 @@ void Request::swap(){
 
 bool Request::next_timeslot(){
     for(auto path_ptr:paths){
-        path_ptr->release();
-        delete path_ptr;
+        if(path_ptr != nullptr){
+            path_ptr->release();
+            delete path_ptr;
+        }
     }
     paths.clear();
     waiting_time++;

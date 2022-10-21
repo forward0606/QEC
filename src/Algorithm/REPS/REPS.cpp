@@ -1,13 +1,17 @@
 #include    "REPS.h"
+#include <set>
+#include <cmath>
+using namespace std;
 
 REPS::REPS(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha)
     :AlgorithmBase(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha){
-    f_hat.resize(graph.get_size());
+    //f_hat.resize(graph.get_size());
     if(DEBUG) cerr<<"new REPS"<<endl;
 }
 
 
 void REPS::PFT_LP(vector<double> &t_plum, vector<map<pair<int, int>, double>> &f_plum){
+    
     //return value is store in t_plum and f_plum
     t_plum.clear();
     f_plum.clear();
@@ -338,7 +342,47 @@ void REPS::EPS_LP(vector<vector<double>> &t_bar, vector<vector<map<pair<int, int
     }
      
 }
-void REPS::ELS(){}
+
+void REPS::EPS(){
+    cout<<"EPS begin!"<<endl;
+    vector<vector<double>> t_bar;
+    vector<vector<map<pair<int, int>, double>>> f_bar;
+    EPS_LP(t_bar, f_bar);
+    
+    random_device rd;  // Will be used to obtain a seed for the random number engine
+    mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    uniform_real_distribution<double> dis(0.0, 1.0);
+    
+    double width;
+    vector<int> path_nodes;
+    vector<tuple<double, vector<int>>> p; // width(double), req_no, path
+    
+    EPS_P.clear();
+    EPS_P.resize(requests.size());
+    for(int i=0;i<(int)t_bar.size();i++){
+        for(int k=0;k<(int)t_bar[i].size();k++){
+            if(dis(gen) > t_bar[i][k]){
+                continue;
+            }
+            while(true){
+                tie(path_nodes, width) = DFS(i, f_bar[i][k], false);
+                if(width == -1) break;
+                p.push_back(tie(width, path_nodes));
+            }
+            double choose_path_prob = dis(gen) / t_bar[i][k];
+            for(int i=0;i<(int)p.size();i++){
+                tie(width, path_nodes) = p[i];
+                if(choose_path_prob - width <= 1e-6){
+                    EPS_P[i].emplace_back(path_nodes);
+                    break;
+                }
+                choose_path_prob -= width;
+            }
+        }
+    }
+    cout<<"EPS finished!"<<endl;
+}
+
 
 void REPS::path_assignment(){
     //PFT Using Progressive Rounding
@@ -368,9 +412,9 @@ void REPS::path_assignment(){
             tie(width, req_no, path_nodes) = p[i];
             width = find_width(path_nodes);
             while(width-- > 1e-6){
-                for(int j = 0; j < (int)path_nodes.size()-1; j++){
-                    f_hat[req_no][make_pair(path_nodes[j], path_nodes[j+1])] ++;
-                }
+                // for(int j = 0; j < (int)path_nodes.size()-1; j++){
+                //     f_hat[req_no][make_pair(path_nodes[j], path_nodes[j+1])] ++;
+                // }
                 requests[req_no] += graph.build_path(path_nodes);
             }
         }
@@ -381,13 +425,32 @@ void REPS::path_assignment(){
 
 void REPS::swap(){
     //EPS based on Randomized Rounding
-    vector<vector<double>> t_bar;
-    vector<vector<map<pair<int, int>, double>>> f_bar;
-    EPS_LP(t_bar, f_bar);
+    EPS();
     //Entanglement Link Selection (ELS)
+    ELS();
+    map<pair<int, int>, vector<Channel*>> remain_channels;
+    for(auto &request: requests){
+        vector<Path*> path = request.get_paths();
+        for(int path_id = 0; path_id < (int)path.size(); path_id++){
+            vector<Channel*> channels = path[path_id]->get_channels();
+            for(auto channel_ptr: channels){
+                if(channel_ptr->is_entangled()){
+                    Node *node1 = channel_ptr->get_node1_ptr(), *node2 = channel_ptr->get_node2_ptr();
+                    remain_channels[make_pair(node1->get_id(), node2->get_id())].emplace_back(channel_ptr);
+                }
+            }
+        }
+        request.clear_paths();
+    }
+    for(int i = 0; i < (int)requests.size(); i++){
+        for(auto path_nodes: ELS_P[i]){
+            requests[i] += find_swap_path(path_nodes, remain_channels);
+        }
+    }
+    AlgorithmBase::swap();
 }
 
-tuple<vector<int>, double> REPS::DFS(int req_no, map<pair<int, int>, double>&f_plum_i){
+tuple<vector<int>, double> REPS::DFS(int req_no, map<pair<int, int>, double>&f_plum_i, bool is_assign_path /*= true*/){
     int source = requests[req_no].get_source();
     int destination = requests[req_no].get_destination();
     vector<int> vis;
@@ -422,7 +485,10 @@ tuple<vector<int>, double> REPS::DFS(int req_no, map<pair<int, int>, double>&f_p
     for(int i = 0; i < (int)path_nodes.size()-1; i++){
         int u = path_nodes[i], v = path_nodes[i+1];
         f_plum_i[make_pair(u, v)] -= mn;
-        f_hat[req_no][make_pair(u, v)] += (int)mn;
+        //f_hat[req_no][make_pair(u, v)] += (int)mn;
+    }
+    if(!is_assign_path){
+        return make_tuple(path_nodes, mn);
     }
     int width = (int)mn;
     while(width--){
@@ -430,5 +496,128 @@ tuple<vector<int>, double> REPS::DFS(int req_no, map<pair<int, int>, double>&f_p
     }
     
     
-    return make_tuple(path_nodes, mn-(int)mn); ;
+    return make_tuple(path_nodes, mn-(int)mn);
+}
+
+void REPS::ELS(){
+    cout<<"ELS begin!"<<endl;
+    ELS_P.clear();
+    ELS_P.resize(requests.size());
+    // line 3
+    vector<vector<int>> y;
+    y.resize(graph.get_size());
+    for(int i = 0; i < graph.get_size(); i++){
+        for(int j = 0; j < graph.get_size(); j++){
+            y[i].push_back(0);
+        }
+    }
+    set<int> T;:
+    for(int i = 0; i < (int)requests.size(); i++){
+        T.insert(i);
+    }
+
+    // line 4
+    while(!T.empty()){
+        for(int req_no = 0; req_no < (int)requests.size(); req_no++){
+            int l = 0; // stay EPS_P which has no (u, v) that y[u][v] >= e[u][v]
+            for(int k = 0; k < (int)EPS_P[req_no].size(); k++){
+                bool stay_path = true;
+                for(int i = 0; i < (int)EPS_P[req_no][k].size()-1; i++){
+                    int u = EPS_P[req_no][k][i], v = EPS_P[req_no][k][i+1];
+                    if(y[u][v] >= graph.get_channel_entangle_succ_cnt(u, v)) stay_path = false; //remove path
+                }
+                if(stay_path) {
+                    EPS_P[req_no][l] = EPS_P[req_no][k];
+                    l++;
+                }
+            }
+            EPS_P[req_no].resize(l);
+        }
+        // line 6
+        int req_no = 0, mn = 0x3f3f3f3f;
+        for(int i = 0; i < (int)requests.size(); i++){
+            if(T.count(i) != 0 && (int)ELS_P[i].size() < mn){
+                mn = ELS_P[i].size();
+                req_no = i;
+            }
+        }
+
+        // line 7
+        if(EPS_P[req_no].size() != 0){
+            double mn_q = 0x3f3f3f3f3f3f3f3f;
+            int r = 0;
+            for(int k = 0; k < (int)EPS_P[req_no].size(); k++){
+                double sum = 0;
+                for(int node_id: EPS_P[req_no][k]){
+                    Node *node_ptr = graph.Node_id2ptr(node_id);
+                    sum += (-log(node_ptr->get_swap_prob()));
+                }
+                if(sum < mn_q){
+                    mn_q = sum;
+                    r = k;
+                }
+            }
+            ELS_P[req_no].push_back(EPS_P[req_no][r]); 
+            for(int i = 0; i < (int)EPS_P[req_no][r].size()-1; i++){
+                int u = EPS_P[req_no][r][i], v = EPS_P[req_no][r][i+1];
+                y[u][v] ++;
+                y[v][u] ++;
+            }
+            continue;
+        }
+        T.erase(req_no);
+    }
+
+    // line 14
+    for(int i = 0; i < (int)requests.size(); i++){
+        T.insert(i);
+    }
+    // line 15
+    while(!T.empty()){
+        // line 16
+        int req_no = 0, mn = 0x3f3f3f3f;
+        for(int i = 0; i < (int)requests.size(); i++){
+            if(T.count(i) != 0 && (int)ELS_P[i].size() < mn){
+                mn = ELS_P[i].size();
+                req_no = i;
+            }
+        }
+        // line 17
+        vector<int> parent(graph.get_size(), -1);
+        vector<bool> vis(graph.get_size(), false);
+        queue<int> q;
+        q.push(requests[req_no].get_source());
+        int now;
+        while(!q.empty()){
+            now = q.front();
+            q.pop();
+            vis[now] = true;
+            if(now == requests[req_no].get_destination()) break;
+            vector<int> neighbors = graph.get_neighbors_id(now);
+            for(int neighbor: neighbors){
+                if(vis[now] || y[now][neighbor] >= graph.get_channel_entangle_succ_cnt(now, neighbor)) continue;
+                parent[neighbor] = now;
+                q.push(neighbor);
+            }
+        }
+        if(now != requests[req_no].get_destination()){
+            T.erase(req_no);
+            continue;
+        }
+        // line 22
+        vector<int> path_nodes;
+        while(now != -1){
+            cout << "now = " << now << endl;
+            path_nodes.push_back(now);
+            now = parent[now];
+        }
+        reverse(path_nodes.begin(), path_nodes.end());
+        ELS_P[req_no].push_back(path_nodes);
+        for(int i = 0; i < (int)path_nodes.size(); i++){
+            int u = path_nodes[i], v = path_nodes[i+1];
+            y[u][v] ++;
+            y[v][u] ++;
+        }
+    }
+    cout<<"ELS finished!"<<endl;
 }

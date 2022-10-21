@@ -255,26 +255,36 @@ void QCAST::p4(){
         recs.second.resize(l);
     }
     for(auto &request:requests){
-        for(auto path:request.get_paths()){
+        int path_id = 0;
+        for(auto &path:request.get_paths()){
             //find swaping path
             vector<vector<int>> adj(graph.get_size());
+            //use for find the channel of swapping path 
+            map<pair<int, int>, vector<Channel*>> remain_channels;
             
             for(auto& c:path->get_channels()){
                 if(c->is_entangled()){
                     Node *node1 = c->get_node1_ptr(), *node2 = c->get_node2_ptr();
                     adj[node1->get_id()].emplace_back(node2->get_id());
                     adj[node2->get_id()].emplace_back(node1->get_id());
+                    remain_channels[make_pair(node1->get_id(), node2->get_id())].emplace_back(c);
                 }
             }
             
-            for(auto rec:recovery_paths[make_pair(&request, path)]){
+            for(auto &rec:recovery_paths[make_pair(&request, path)]){
                 for(auto channel: rec->get_channels()){
                     Node *node1 = channel->get_node1_ptr(), *node2 = channel->get_node2_ptr();
                     adj[node1->get_id()].emplace_back(node2->get_id());
                     adj[node2->get_id()].emplace_back(node1->get_id());
+                    remain_channels[make_pair(node1->get_id(), node2->get_id())].emplace_back(channel);
                 }
+                delete rec;
+                rec = nullptr;
             }
-            
+            recovery_paths[make_pair(&request, path)].clear();
+            delete path;
+            request.set_path(path_id, nullptr);
+
             vector<bool> vis(graph.get_size());
             vector<int> parent(graph.get_size());
             stack<int> st;
@@ -296,7 +306,10 @@ void QCAST::p4(){
                 }
             }
             if(DEBUG) cerr<<"parent["<<destination<<"] = "<<parent[destination]<<endl;
-            if(parent[destination] == -1) continue;
+            if(parent[destination] == -1) {
+                path_id += 1;
+                continue;
+            }
 
             vector<int> path_nodes;
             int now = destination;
@@ -306,25 +319,13 @@ void QCAST::p4(){
             }
             reverse(path_nodes.begin(), path_nodes.end());
             
-            vector<Node *> nodes;
-            if(DEBUG) cerr << "path to swap in P4: ";
-            for(int i:path_nodes){
-                nodes.emplace_back(graph.Node_id2ptr(i));
-                if(DEBUG) cerr <<  i << ' ';
-            }
-            if(DEBUG) cerr << '\n';
-
             //swap path
-            bool swap_succ = true;
-            for(int i=1;i<(int)nodes.size()-1;i++){
-                Node* node = nodes[i];
-                swap_succ &= node->swap();
-            }
-            if(swap_succ){
-                request.add_one_throughput();
-            }
+            //make new path for swapping
+            request.set_path(path_id, find_swap_path(path_nodes, remain_channels));
+            path_id += 1;
         }
     }
+    AlgorithmBase::swap();
     if(DEBUG) cerr<<"--------QCAST::p4--------end"<<endl;
 }
 
