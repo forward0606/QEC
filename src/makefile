@@ -1,7 +1,9 @@
 gurobi_path = /opt/gurobi952/linux64
-gurobi_ver = 
+
 # on server
-# gurobi_path = /home/student11/gurobi903/linux64
+#gurobi_path=/home/oba/danger/gurobi951/linux64/
+
+
 all: a.out
 
 a.out: main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/REPS/REPS.o
@@ -41,7 +43,7 @@ Algorithm/QCAST/QCAST.o: Algorithm/QCAST/QCAST.h Algorithm/QCAST/QCAST.cpp confi
 	mv QCAST.o Algorithm/QCAST/QCAST.o
 
 Algorithm/REPS/REPS.o: Algorithm/REPS/REPS.h Algorithm/REPS/REPS.cpp config.h
-	g++ -c -g -Wall -Wextra Algorithm/REPS/REPS.h Algorithm/REPS/REPS.cpp config.h -m64 -I$(gurobi_path)/include/  -L$(gurobi_path)/lib -lgurobi_c++ -lgurobi95 -lm 
+	g++ -c -g -Wall -Wextra --static Algorithm/REPS/REPS.h Algorithm/REPS/REPS.cpp config.h -m64 -I$(gurobi_path)/include/  -L$(gurobi_path)/lib -lgurobi_c++ -lgurobi95 -lm 
 	mv REPS.o Algorithm/REPS/REPS.o
 
 config.o:	config.h config.cpp
@@ -60,3 +62,4 @@ clean:
 	rm -f Path/Path.o Path/Path.h.gch
 	rm -f Network/Graph/Graph.o Network/Graph/Graph.h.gch
 	rm -f Request/Request.o Request/Request.h.gch
+	rm -f Algorithm/REPS/REPS.o
