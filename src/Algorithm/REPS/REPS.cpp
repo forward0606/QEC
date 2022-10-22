@@ -4,7 +4,7 @@
 using namespace std;
 
 REPS::REPS(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha)
-    :AlgorithmBase(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha){
+    :AlgorithmBase(filename, "REPS", request_time_limit, node_time_limit, swap_prob, entangle_alpha){
     //f_hat.resize(graph.get_size());
     if(DEBUG) cerr<<"new REPS"<<endl;
 }
@@ -286,8 +286,8 @@ void REPS::EPS_LP(vector<vector<double>> &t_bar, vector<vector<map<pair<int, int
             }
         }
         
-        model.update();
-        model.write("debug.lp");
+        //model.update();
+        //model.write("debug.lp");
         model.optimize();
         
         cout << "EPS_Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;

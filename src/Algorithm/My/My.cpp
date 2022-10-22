@@ -1,7 +1,7 @@
 #include "My.h"
 #include <limits>
 My::My(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha)
-    :AlgorithmBase(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha) {
+    :AlgorithmBase(filename, "MY", request_time_limit, node_time_limit, swap_prob, entangle_alpha) {
     if(DEBUG) cerr<<"new My"<<endl;
 }
 
@@ -9,46 +9,77 @@ double My::get_weight(int node1_id, int node2_id) {
     return -log(graph.get_channel_weight(node1_id, node2_id));
 }
 
-void My::build_all_pair_path() {
-    const double INF = numeric_limits<double>::infinity();;
+vector<int> My::Dijkstra(int src, int dst, vector<vector<int>> &adjacency_list) {
+    const double INF = numeric_limits<double>::infinity();
     int n = (int)graph.get_size();
-    vector<vector<double>> distance(n, vector<double>(n, INF));
-    split_node = vector<vector<int>> (n, vector<int>(n, -1));
+    vector<double> distance(n, INF);
+    vector<int> parent(n, -1);
+    vector<bool> used(n, false);
+    priority_queue<pair<double, int>, vector<pair<double, int>>, greater<pair<double, int>>> pq;
 
-    for(int i = 0; i < n; i++) {
-        for(int j = 0; j < n; j++) {
-            if(i == j) distance[i][j] = 0;
-            else distance[i][j] = get_weight(i, j);
+    distance[src] = 0;
+    pq.push({0, src});
+    while(!pq.empty()) {
+        int cur_node = pq.top().second;
+        pq.pop();
+        if(used[cur_node]) continue;
+
+        for(int neighbor : adjacency_list[cur_node]) {
+            if(distance[cur_node] + get_weight(cur_node, neighbor) < distance[neighbor]) {
+                distance[neighbor] = distance[cur_node] + get_weight(cur_node, neighbor);
+                parent[neighbor] = cur_node;
+            }
         }
     }
 
-    for(int k = 0; k < n; k++) {
-        for(int i = 0; i < n; i++) {
-            for(int j = 0; j < n; j++) {
-                if(distance[i][j] > distance[i][k] + distance[k][j]) {
-                    split_node[i][j] = k;
-                    distance[i][j] = distance[i][k] + distance[k][j];
-                }
-            }
+    int cur_node = dst;
+    vector<int> path;
+    while(cur_node != -1) {
+        path.push_back(cur_node);
+        cur_node = parent[cur_node];
+    }
+
+    reverse(path.begin(), path.end());
+
+    return path;
+}
+
+void My::build_all_pair_path() {
+    path_table = vector<vector<vector<vector<int>>>>(n, vector<vector<vector<int>>>(n));
+
+    for(int i = 0; i < n; i++) {
+        for(int j = i + 1; j < n; j++) {
+
         }
+    }
+}
+
+vector<vector<int>> My::find_5_paths(int src, int dst) {
+    int n = graph.get_size();
+    vector<vector<int>> paths;
+    paths.resize(5);
+    int need = 5;
+    int find = 0;
+
+    vector<vector<int>> adjacency_list;
+    vector<int> reamimn_qubits(n);
+    adjacency_list.resize(n);
+
+    for(int node = 0; node < n; node++) {
+        reamimn_qubits[node] = graph.Node_id2ptr(node)->get_memory_cnt();
+        for(int neightbor : graph.get_neighbors_id(node)) {
+            adjacency_list[node].push_back(neightbor);
+        }
+    }
+
+
+    while(find < need) {
+        vector<int> path = Dijkstra(src, dst, )
     }
 }
 
 vector<int> My::get_path(int src, int dst) {
 
-    int split = split_node[src][dst];
-    if(split == -1) return {};
-    vector<int> path;
-    vector<int> subpath1 = get_path(src, split);
-    vector<int> subpath2 = get_path(split, dst);
-
-    path.push_back(src);
-    for(int node : subpath1) path.push_back(node);
-    path.push_back(split);
-    for(int node : subpath2) path.push_back(node);
-    path.push_back(dst);
-
-    return path;
 }
 
 void My::path_assignment() {

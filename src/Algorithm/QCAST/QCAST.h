@@ -25,6 +25,7 @@ class QCAST:public AlgorithmBase{
     void p4();
 public:
     QCAST(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha);
+    ~QCAST();
     void path_assignment();
     void find_recovery_path(int R);
     void entangle();

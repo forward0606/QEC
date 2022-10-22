@@ -8,11 +8,16 @@
 #include "../config.h"
 using namespace std;
 
+const int REQUEST_UNFINISHED = 0;
+const int REQUEST_SUCC = 1;
+const int REQUEST_FAIL = -1;
+
 
 class Request{
     int source, destination;
     int waiting_time, time_limit;
     int throughput;
+    int status;
     vector<Path *> paths;                                       //休學
 public:
     Request(int source, int destination, const int& time_limit);
@@ -28,6 +33,9 @@ public:
     void add_one_throughput();
     void entangle();
     void swap();
+    void send();
+    bool is_finished();
+    bool is_success();
     bool next_timeslot();
     void operator+=(Path *path);
     void print();

@@ -2,8 +2,8 @@
 
 
 
-AlgorithmBase::AlgorithmBase(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha)
-    :timeslot(0), waiting_time(0), throughputs(0), time_limit(request_time_limit), swap_prob(swap_prob), graph(Graph(filename, node_time_limit, swap_prob, entangle_alpha)){
+AlgorithmBase::AlgorithmBase(string filename, string algorithm_name, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha)
+    :algorithm_name(algorithm_name), timeslot(0), waiting_time(0), throughputs(0), time_limit(request_time_limit), swap_prob(swap_prob), graph(Graph(filename, node_time_limit, swap_prob, entangle_alpha)){
     
 }
 
@@ -25,14 +25,17 @@ void AlgorithmBase::next_time_slot(){
     //好強
     vector<int> finished_reqno;
     for(int reqno = 0; reqno < (int)requests.size(); reqno++) {
-        if(requests[reqno].get_throughput() >= 1) {
-            finished_reqno.push_back(reqno);
+        if(!requests[reqno].is_finished()) {
+            continue;
+        }
+        finished_reqno.push_back(reqno);
+        if(requests[reqno].is_success()){
+            throughputs += 1;
+            //result["waiting_time"] += requests[reqno].get_waiting_time(); segmentation fault
         }
     }
 
     reverse(finished_reqno.begin(), finished_reqno.end());
-    throughputs += (int)finished_reqno.size();
-
     for(int reqno : finished_reqno) {
         requests.erase(requests.begin() + reqno);
     }
@@ -49,12 +52,17 @@ void AlgorithmBase::swap(){
         requests[i].swap();
     }
 }
-
+void AlgorithmBase::send(){
+    for(int i=0;i<(int)requests.size();i++){
+        requests[i].send();
+    }
+}
 
 void AlgorithmBase::run(){
     path_assignment();
     entangle();
     swap();
+    send();
 }
 
 int AlgorithmBase::find_width(vector<int> path){
@@ -171,4 +179,8 @@ Path* AlgorithmBase::find_swap_path(vector<int> path_nodes, map<pair<int, int>, 
     }
     if(DEBUG) cerr << '\n';
     return new Path(nodes, path_channels);
+}
+
+string AlgorithmBase::get_name(){
+    return algorithm_name;
 }

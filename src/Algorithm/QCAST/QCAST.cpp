@@ -1,8 +1,12 @@
 #include "QCAST.h"
 
 QCAST::QCAST(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha)
-    :AlgorithmBase(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha){
+    :AlgorithmBase(filename, "QCAST", request_time_limit, node_time_limit, swap_prob, entangle_alpha){
     if(DEBUG) cerr<<"new QCAST"<<endl;
+}
+
+QCAST::~QCAST(){
+    if(DEBUG) cerr << "delete QCAST" << endl;
 }
 
 double QCAST::EXT(vector<double> path, int w){

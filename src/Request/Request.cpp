@@ -1,7 +1,7 @@
 #include"Request.h"
 
 Request::Request(int source, int destination, const int& time_limit)
-    :source(source), destination(destination), waiting_time(0), time_limit(time_limit), throughput(0){
+    :source(source), destination(destination), waiting_time(0), time_limit(time_limit), throughput(0), status(REQUEST_UNFINISHED){
     if(DEBUG)cerr<<"new Request"<<endl;
 }
 
@@ -67,10 +67,39 @@ void Request::swap(){
     for(auto &path:paths){
         if(path == nullptr)continue;
         if(path->get_entangle_succ()) path->swap();
-        if(path->get_swap_succ()) throughput++;
+        // if(path->get_swap_succ()) throughput++;
     }
 }
 
+void Request::send(){
+    int pid = -1, mx = 0;
+    for(int i=0;i<(int)paths.size();i++){
+        if(paths[i] == nullptr)continue;
+        if(!paths[i]->get_swap_succ())continue;
+        if(paths[i]->fidelity() > mx){
+            mx = paths[i]->fidelity();
+            pid = i;
+        }
+    }
+    if(pid == -1){
+        return;
+    }
+    if(paths[pid]->send_data()){
+        status = REQUEST_SUCC;
+    }else{
+        status = REQUEST_FAIL;
+    }
+}
+bool Request::is_finished(){
+    return status != REQUEST_UNFINISHED;
+}
+bool Request::is_success(){
+    if(status == REQUEST_UNFINISHED){
+        cerr<<"the request is unfinshed!"<<endl;
+        exit(1);
+    }
+    return status == REQUEST_SUCC;
+}
 bool Request::next_timeslot(){
     for(auto path_ptr:paths){
         if(path_ptr != nullptr){

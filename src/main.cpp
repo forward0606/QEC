@@ -33,104 +33,144 @@ Request generate_new_request(int node1, int node2, int time_limit){//demo
 
 
 int main(){
+    string file_path = "../data/";
+
+    map<string, double> default_setting;
+    default_setting["swap_prob"] = 0.9;
+    default_setting["entan_alpha"] = 0.002;
+    default_setting["node_time_limit"] = 7;
+    default_setting["new_request_min"] = 5;
+    default_setting["new_request_max"] = 12;
+    default_setting["request_time_limit"] = 7;
+    default_setting["total_time_slot"] = 10;
+
+    map<string, vector<double>> change_parameter;
+    change_parameter["swap_prob"] = {0.7, 0.8, 0.9};
+    change_parameter["entan_alpha"] = {0.02, 0.002, 0};
+
+    vector<string> X_names = {"swap_prob", "entan_alpha"};
+    vector<string> Y_names = {"waiting_time", "throughtputs"};
 
     int round = 1;
+    for(string X_name : X_names) {
+        map<string, double> input_parameter = default_setting;
 
-    double swap_prob = 0.9, entangle_alpha = 0.02;
-    int node_time_limit = 7;
-
-    int new_request_min = 5, new_request_max = 12;
-    int request_time_limit = 7;
-    int total_time_slot = 10;
-
-    bool debug = true;
-    // python generate graph
-    // #pragma omp parallel for
-    for(int T = 0; T < round; T++){
-        stringstream ss;
-        string round_str;
-        ss << T;
-        ss >> round_str;
-        ofstream ofs;
-        ofs.open("Round " + round_str + " log.txt");
-
-        time_t now = time(0);
-        char* dt = ctime(&now);
-        cerr  << "時間 " << dt << endl << endl; 
-        ofs  << "時間 " << dt << endl << endl; 
-
-        string filename = "input" + round_str + ".txt";
-        string command = "python3 main.py ";
-        if(system((command + filename).c_str()) != 0){
-            cerr<<"error:\tsystem proccess python error"<<endl;
-            exit(1);
-        }
-        if(debug) filename = "debug_graph.txt";
-        int num_of_node;
-        ifstream graph_input;
-        graph_input.open (filename);
-        graph_input >> num_of_node;
-        graph_input.close();
-        //Graph graph("input.txt", num_of_node, min_channel, max_channel, min_memory_cnt, max_memory_cnt, node_time_limit, swap_prob, entangle_alpha, true);
-        Greedy greedy(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
-        QCAST qcast(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
-        REPS reps(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
-        
-        ofs<<"---------------in round " <<T<<" -------------" <<endl;
-        for(int t = 0; t < total_time_slot; t++){
-            ofs<<"---------------in timslot " <<t<<" -------------" <<endl;
-            //亂數引擎, to decide how many requests received in this timeslot 
-            random_device rd;
-            default_random_engine generator = default_random_engine(rd());
-            uniform_int_distribution<int> unif(new_request_min, new_request_max);
-            int request_cnt = unif(generator);
-
-            cerr<< "---------generating requests in main.cpp----------" << endl;
-            for(int q = 0; q < request_cnt; q++){
-                Request new_request = generate_new_request(num_of_node, request_time_limit);
-                // Request new_request = generate_new_request(0, 1, request_time_limit);
-                cerr<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
-                greedy.requests.push_back(new_request);
-                qcast.requests.push_back(new_request);
-                reps.requests.push_back(new_request);
-            }
-            cerr<< "---------generating requests in main.cpp----------end" << endl;
+        for(double change_value : change_parameter[X_name]) {
+            input_parameter[X_name] = change_value;
             
-            //#pragma omp parallel for
-            for(int algo_id = 0; algo_id < ALGO_CNT; algo_id++){
-                if(algo_id == ALGCO_GREEDY){
-                    ofs<<"-----------run greedy---------"<<endl;
-                    greedy.run();
-                    ofs<<"-----------run greedy---------end"<<endl;
-                    greedy.next_time_slot();
-                }else if(algo_id == ALGCO_QCAST){
-                    ofs<<"-----------run qcast----------"<<endl;
-                    qcast.run();
-                    ofs<<"-----------run qcast----------end"<<endl;
-                    qcast.next_time_slot();
-                }else if(algo_id == ALGCO_REPS){
-                    ofs<<"-----------run REPS----------"<<endl;
-                    reps.run();
-                    ofs<<"-----------run REPS----------end"<<endl;
-                    reps.next_time_slot();
-                }
-            }
-            ofs<<"(greedy)total throughput = "<<greedy.total_throughput()<<endl;
-            ofs<<"(QCAST)total throughput = "<<qcast.total_throughput()<<endl;
-            ofs<<"(REPS)total throughput = "<<reps.total_throughput()<<endl;
-            ofs<<"---------------in timslot " <<t<<" -------------end" <<endl;
-        }
-        ofs<<"---------------in round " <<T<<" -------------end" <<endl;
-        ofs << endl;
-        ofs<<"(greedy)total throughput = "<<greedy.total_throughput()<<endl;
-        ofs<<"(QCAST)total throughput = "<<qcast.total_throughput()<<endl;
-        ofs<<"(REPS)total throughput = "<<reps.total_throughput()<<endl;
+            double swap_prob = input_parameter["swap_prob"], entangle_alpha = input_parameter["entangle_alpha"];
 
-        now = time(0);
-        dt = ctime(&now);
-        cerr  << "時間 " << dt << endl << endl; 
-        ofs  << "時間 " << dt << endl << endl; 
-        ofs.close();
+            int node_time_limit = input_parameter["node_time_limit"];
+
+            int new_request_min = input_parameter["new_request_min"], new_request_max = input_parameter["new_request_max"];
+            int request_time_limit = input_parameter["request_time_limit"];
+            int total_time_slot = input_parameter["total_time_slot"];
+
+            bool debug = false;
+            // python generate graph
+
+            // #pragma omp parallel for
+            for(int T = 0; T < round; T++){
+                stringstream ss;
+                string round_str;
+                ss << T;
+                ss >> round_str;
+                ofstream ofs;
+                ofs.open(file_path + "Round " + round_str + " log.txt");
+
+                time_t now = time(0);
+                char* dt = ctime(&now);
+                cerr  << "時間 " << dt << endl << endl; 
+                ofs  << "時間 " << dt << endl << endl; 
+
+                string filename = "input" + round_str + ".txt";
+                string command = "python3 main.py ";
+                if(system((command + file_path + filename).c_str()) != 0){
+                    cerr<<"error:\tsystem proccess python error"<<endl;
+                    exit(1);
+                }
+                if(debug) filename = "debug_graph.txt";
+                int num_of_node;
+                ifstream graph_input;
+                graph_input.open (file_path + filename);
+                graph_input >> num_of_node;
+                graph_input.close();
+                //Graph graph("input.txt", num_of_node, min_channel, max_channel, min_memory_cnt, max_memory_cnt, node_time_limit, swap_prob, entangle_alpha, true);
+                // Greedy greedy(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
+                // QCAST qcast(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
+                // REPS reps(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
+                vector<AlgorithmBase> algorithms;
+                algorithms.emplace_back(Greedy(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
+                algorithms.emplace_back(QCAST(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
+                algorithms.emplace_back(REPS(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
+
+                ofs<<"---------------in round " <<T<<" -------------" <<endl;
+                for(int t = 0; t < total_time_slot; t++){
+                    ofs<<"---------------in timslot " <<t<<" -------------" <<endl;
+                    //亂數引擎, to decide how many requests received in this timeslot 
+                    random_device rd;
+                    default_random_engine generator = default_random_engine(rd());
+                    uniform_int_distribution<int> unif(new_request_min, new_request_max);
+                    int request_cnt = unif(generator);
+
+                    cerr<< "---------generating requests in main.cpp----------" << endl;
+                    for(int q = 0; q < request_cnt; q++){
+                        Request new_request = generate_new_request(num_of_node, request_time_limit);
+                        // Request new_request = generate_new_request(0, 1, request_time_limit);
+                        cerr<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
+                        for(auto &algo:algorithms){
+                            algo.requests.emplace_back(new_request);
+                        }
+                    }
+                    cerr<< "---------generating requests in main.cpp----------end" << endl;
+                    
+                    //#pragma omp parallel for
+                    for(auto &algo:algorithms){
+                        ofs<<"-----------run "<< algo.get_name() << " ---------"<<endl;
+                        algo.run();
+                        algo.next_time_slot();
+                        ofs<<"total_throughputs : "<<algo.total_throughput()<<endl;
+                        ofs<<"-----------run "<<algo.get_name() << " ---------end"<<endl;
+                    }
+                    
+                }
+                ofs<<"---------------in round " <<T<<" -------------end" <<endl;
+                ofs << endl;
+                for(auto &algo:algorithms){
+                    ofs<<"("<<algo.get_name()<<")total throughput = "<<algo.total_throughput()<<endl;
+                }
+
+                now = time(0);
+                dt = ctime(&now);
+                cerr  << "時間 " << dt << endl << endl; 
+                ofs  << "時間 " << dt << endl << endl; 
+                ofs.close();
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            for(string Y_name : Y_names) {
+                string filename = X_name + "_" + Y_name;
+                // result[Y_name];
+            }
+
+        }
     }
+
+    
+    
+
+
     return 0;
 }

@@ -1,12 +1,24 @@
 #include"Channel.h"
 
+
+//constructor of not consider fidelity
 Channel::Channel(Node *node1_ptr, Node *node2_ptr, double entangle_prob)
-	:node1_ptr(node1_ptr), node2_ptr(node2_ptr), entangle_prob(entangle_prob), used(0), entangled(CHANNEL_UNENTANGLE), weight(entangle_prob){
+	:node1_ptr(node1_ptr), node2_ptr(node2_ptr), entangle_prob(entangle_prob), used(0), entangled(CHANNEL_UNENTANGLE), fidelity(1), weight(entangle_prob), send_status(CHANNEL_UNSEND){
 	if((*node1_ptr) == (*node2_ptr)){
 		cerr<<"error:\texist an edge with same node!"<<endl;
 		exit(1);
 	}
-	if(DEBUG)cerr<<"New channel!"<<node1_ptr->get_id() << " " << node2_ptr->get_id() << ", entangle_prob = " << entangle_prob << endl;
+	if(DEBUG)cerr<<"New channel(with fidelity = 1)!"<<node1_ptr->get_id() << " " << node2_ptr->get_id() << ", entangle_prob = " << entangle_prob << endl;
+}
+
+//constructor for fidelity
+Channel::Channel(Node *node1_ptr, Node *node2_ptr, double entangle_prob, double fidelity)
+	:node1_ptr(node1_ptr), node2_ptr(node2_ptr), entangle_prob(entangle_prob), used(0), entangled(CHANNEL_UNENTANGLE), fidelity(fidelity), weight(fidelity), send_status(CHANNEL_UNSEND){
+	if((*node1_ptr) == (*node2_ptr)){
+		cerr<<"error:\texist an edge with same node!"<<endl;
+		exit(1);
+	}
+	if(DEBUG)cerr<<"New channel(consider fidelity)!"<<node1_ptr->get_id() << " " << node2_ptr->get_id() << ", entangle_prob = " << entangle_prob << endl;
 }
 
 Channel::~Channel(){
@@ -25,7 +37,9 @@ double Channel::get_weight(){
 double Channel::get_entangle_prob(){
 	return entangle_prob;
 }
-
+double Channel::get_fidelity(){
+	return fidelity;
+}
 Node* Channel::get_node1_ptr(){
 	return node1_ptr;
 }
@@ -90,6 +104,39 @@ bool Channel::is_entangled(){
 	}
 	return entangled == CHANNEL_ENTANGLE_SUCC;
 }
+
+
+bool Channel::data_send_succ(){
+	if(!is_entangled()){
+		cerr<<"error:\tsend data on a unentangled link"<<endl;
+		exit(1);
+	}
+	if(send_status == CHANNEL_UNSEND){
+		cerr<<"error:\t the channel is unsend"<<endl;
+		exit(1);
+	}
+	return send_status == CHANNEL_SEND_SUCC;
+}
+bool Channel::send(){
+	if(!is_entangled()){
+		cerr<<"error:\tsend data on a unentangled link"<<endl;
+		exit(1);
+	}
+	if(send_status != CHANNEL_UNSEND){
+		cerr<<"error:\tchannel is aleady send data!"<<endl;
+		exit(1);
+	}
+	//亂數引擎 
+    random_device rd;  // Will be used to obtain a seed for the random number engine
+    mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    uniform_real_distribution<double> dis(0.0, 1.0);
+    if(dis(gen) <= fidelity){ // entangle success
+		entangled = CHANNEL_SEND_SUCC;
+		return true;
+    }
+	entangled = CHANNEL_SEND_FAIL;
+	return false;
+};
 
 void Channel::refresh(){
 	if(DEBUG)cerr<<"channel refresh "<<endl;

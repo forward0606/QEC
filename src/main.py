@@ -47,6 +47,8 @@ min_channel_cnt = 2
 max_channel_cnt = 10
 min_memory_cnt = 3
 max_memory_cnt = 10
+min_fidelity = 0.85
+max_fidelity = 0.99
 print("hello python!")
 print("--------------generating graph--------------", file=sys.stderr)
 print("--------------generating graph--------------")
@@ -95,7 +97,7 @@ for e in G.edges():
 print(cnt, file=f)
 for e in G.edges():
     if e[0] != e[1]:#file
-        print(str(e[0]) + ' ' + str(e[1]) + " " + str(ceil(random.random()*(max_channel_cnt-min_channel_cnt)) + min_channel_cnt), file=f)
+        print(str(e[0]) + ' ' + str(e[1]) + " " + str(ceil(random.random()*(max_channel_cnt-min_channel_cnt)) + min_channel_cnt), str(random.random()*(max_fidelity-min_fidelity) + min_fidelity), file=f)
 for i in range(num_of_node):
     for j in range(num_of_node):
         if i == j:

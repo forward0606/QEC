@@ -1,7 +1,7 @@
 #include "Path.h"
 
 Path::Path(vector<Node*> nodes, vector<Channel*> channels)
-    :nodes(nodes), channels(channels), swap_succ(false){
+    :nodes(nodes), channels(channels), swap_status(PATH_UNSWAP), send_status(PATH_UNSEND){
         prob = 1;
         for(auto channel:channels){
             prob *= channel->get_entangle_prob();
@@ -72,17 +72,66 @@ bool Path::get_entangle_succ(){
 bool Path::swap(){
     if(!get_entangle_succ()){
         cerr<<"error:\tcan't swap on a path with fail entanglement!"<<endl;
+        exit(1);
     }
-    swap_succ = true;
+    if(swap_status != PATH_UNSWAP){
+        cerr<<"error:\tswap twice on the same path"<<endl;
+    }
+    bool swap_succ = true;
     for(int i=1;i<(int)nodes.size()-1;i++){
         Node* node = nodes[i];
         swap_succ &= node->swap();
+    }
+    if(swap_succ){
+        swap_status = PATH_SWAP_SUCC;
+    }else{
+        swap_status = PATH_SWAP_FAIL;
     }
     return swap_succ;
 }
 
 bool Path::get_swap_succ(){
-    return swap_succ;
+    if(swap_status == PATH_UNSWAP){
+        if(DEBUG)cerr<<"warning\tthe path is unswaped!"<<endl;
+    }
+    return (swap_status == PATH_SWAP_SUCC);
+}
+bool Path::send_data(){
+    if(!get_swap_succ()){
+        cerr<<"error:\tcan't send data on a unswaped path!"<<endl;
+        exit(1);
+    }
+    if(send_status != PATH_UNSEND){
+        cerr<<"error:\tthe path have already send the data!"<<endl;
+        exit(1);
+    }
+    if(channels.size() == 0 || nodes.size() <= 1){
+        cerr << "error:\tWTF(send data)" << endl;
+        exit(1);
+    }
+    bool send_succ = true;
+    for(auto &channel:channels){
+        if(DEBUG)cerr<<"send data on channel : ";
+        send_succ &= channel->send();
+    }
+    if(send_succ){
+        send_status = PATH_SEND_SUCC;
+    }else{
+        send_status = PATH_SEND_FAIL;
+    }
+    return send_succ;
+}
+
+bool Path::send_data_succ(){
+    if(!get_swap_succ()){
+        cerr<<"error:\tcan't send data on a unswaped path!"<<endl;
+        exit(1);
+    }
+    if(send_status == PATH_UNSEND){
+        cerr<<"error:\tthe path haven't send the data yet!"<<endl;
+        exit(1);
+    }
+    return (swap_status == PATH_SEND_SUCC);
 }
 
 void Path::release(){
@@ -96,7 +145,7 @@ void Path::print(){
     if(!DEBUG)  return;
     cerr<<"this is a Path"<<endl;
     cerr<<"\tentangle_succ = "<<get_entangle_succ()<<endl;
-    cerr<<"\tswap_succ = "<<swap_succ<<endl;
+    cerr<<"\tswap_succ = "<<swap_status<<endl;
     cerr<<"\t the node in path is:";
     for(auto n:nodes){
         cerr<<n->get_id()<<" ";
@@ -109,7 +158,13 @@ void Path::print(){
     cerr<<endl;
 }
 
-
+double Path::fidelity(){
+    double fidelity = 1;
+    for(auto &channel:channels){
+        fidelity *= channel->get_fidelity();
+    }
+    return fidelity;
+}
 // double compute_weight(){
     
 // }

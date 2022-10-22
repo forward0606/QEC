@@ -6,10 +6,20 @@
 #include "../Network/Channel/Channel.h"
 #include "../config.h"
 
+const int PATH_UNSWAP = 0;
+const int PATH_SWAP_SUCC = 1;
+const int PATH_SWAP_FAIL = -1;
+
+const int PATH_UNSEND = 0;
+const int PATH_SEND_SUCC = 1;
+const int PATH_SEND_FAIL = -1;
+
+
 class Path{
     vector<Node*> nodes;
     vector<Channel*> channels;
-    bool swap_succ;
+    int swap_status;
+    int send_status;
     double prob;
 public:
 	Path(vector<Node*> nodes, vector<Channel*> channels);
@@ -22,9 +32,11 @@ public:
     bool get_entangle_succ();
     bool swap();            //true->swapped success
     bool get_swap_succ();
+    bool send_data();
+    bool send_data_succ();
     void release();
     void print();
-    //virtual double compute_weight();
+    double fidelity();
 };
 
 #endif
