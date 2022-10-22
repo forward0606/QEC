@@ -400,8 +400,9 @@ void REPS::path_assignment(){
         int req_no;
         for(int i = p.size()-1; i >= 0; i--){
             tie(width, req_no, path_nodes) = p[i];
-            width = find_width(path_nodes);
-            while(width-- > 1e-6){
+            int w;
+            w = find_width(path_nodes);
+            while(w--){
                 // for(int j = 0; j < (int)path_nodes.size()-1; j++){
                 //     f_hat[req_no][make_pair(path_nodes[j], path_nodes[j+1])] ++;
                 // }
@@ -479,7 +480,7 @@ tuple<vector<int>, double, bool> REPS::DFS(int req_no, map<pair<int, int>, doubl
     if(!is_assign_path){
         return make_tuple(path_nodes, mn, false);
     }
-    int width = (int)mn;
+    int width = min( (int)mn, find_width(path_nodes));
     bool set_flag = false;
     while(width--){
         set_flag = true;
