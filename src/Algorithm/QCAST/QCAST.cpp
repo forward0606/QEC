@@ -188,7 +188,7 @@ void QCAST::path_assignment(){
         assign_resource(candidate[mx_reqno].path, mx_reqno);
     }
 
-    find_recovery_path(3);
+    find_recovery_path(10);
     if(DEBUG) cerr<< "---------QCAST::path_assignment----------end" << endl;
 }
 

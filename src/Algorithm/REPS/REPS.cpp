@@ -185,13 +185,11 @@ void REPS::EPS_LP(vector<vector<double>> &t_bar, vector<vector<map<pair<int, int
             f[i].resize(requests[i].get_paths().size());
             for(int k=0;k<(int)requests[i].get_paths().size();k++){
                 Path *pik = requests[i].get_paths()[k];
-                vector<Node *> nodes = pik->get_nodes();
-                int u, v;
-                u = nodes[0]->get_id();
+                vector<Node*> nodes = pik->get_nodes();
+                int u = nodes[0]->get_id(), v;
                 for(int j=1;j < (int)nodes.size();j++){
                     v = nodes[j]->get_id();
-                    f[i][k][make_pair(u, v)] = model.addVar(0.0, 1.0, 0.0, GRB_CONTINUOUS, "f" + to_string(i) + " " + to_string(k) + "("+to_string(u)+", "+to_string(v) + ")");
-                    f[i][k][make_pair(v, u)] = model.addVar(0.0, 1.0, 0.0, GRB_CONTINUOUS, "f" + to_string(i) + " " + to_string(k) + "("+to_string(v)+", "+to_string(u) + ")");
+                    f[i][k][make_pair(u, v)] = model.addVar(0.0, 1.0, 0.0, GRB_CONTINUOUS, "f" + to_string(i) + " " + to_string(k) + "("+to_string(u)+","+to_string(v) + ")");
                     u = v;
                 }
             }
@@ -226,8 +224,7 @@ void REPS::EPS_LP(vector<vector<double>> &t_bar, vector<vector<map<pair<int, int
                 u = nodes[0]->get_id();
                 v = nodes[1]->get_id();
                 expr += f[i][k][make_pair(u, v)];
-                expr -= f[i][k][make_pair(v, u)];
-                model.addConstr(expr == t[i][k], "2a_" + to_string(i));
+                model.addConstr(expr == t[i][k], "2a_" + to_string(i)+","+to_string(k));
             }
         }
 
@@ -241,9 +238,8 @@ void REPS::EPS_LP(vector<vector<double>> &t_bar, vector<vector<map<pair<int, int
                 int u, v;
                 u = nodes.back()->get_id();
                 v = nodes[nodes.size()-2]->get_id();
-                expr += f[i][k][make_pair(u, v)];
                 expr -= f[i][k][make_pair(v, u)];
-                model.addConstr(expr == GRBLinExpr(t[i][k], -1.0), "2b_" + to_string(i));
+                model.addConstr(expr == GRBLinExpr(t[i][k], -1.0), "2b_" + to_string(i)+","+to_string(k));
             }
         }
         
@@ -252,58 +248,46 @@ void REPS::EPS_LP(vector<vector<double>> &t_bar, vector<vector<map<pair<int, int
         // Add constraint: 2(c) 
         for(int i=0;i<(int)requests.size();i++){
             for(int k=0;k<(int)requests[i].get_paths().size();k++){
-                expr = 0;
                 Path *pik = requests[i].get_paths()[k];
                 vector<Node *> nodes = pik->get_nodes();
                 int u, v;
-                u = nodes[1]->get_id();
-                for(int j=2;j<(int)nodes.size()-1;j++){
-                    v = nodes[j]->get_id();
-                    expr += f[i][k][make_pair(u, v)];
+                for(int j=1;j<(int)nodes.size()-1;j++){
+                    expr = 0;
+                    u = nodes[j]->get_id(); 
+                    v = nodes[j-1]->get_id();
                     expr -= f[i][k][make_pair(v, u)];
-                    u = v;
+                    v = nodes[j+1]->get_id();
+                    expr += f[i][k][make_pair(u, v)];
+                    model.addConstr(expr == 0, "2c_" + to_string(i)+","+to_string(k)+"(" + to_string(u) + ")");
                 }
-                model.addConstr(expr == 0, "2c_" + to_string(i));
             }
         }
         
 
         // Add constraint: 2(d) 
         for(int u=0;u<(int)graph.get_size();u++){
-            vector<int> neighbor = graph.get_neighbors_id(u);
-            for(int v:neighbor){
-                if(u > v)continue;
+            for(int v=0;v<(int)graph.get_size();v++){
                 expr = 0;
-                int entangle_succ = 0;
+                bool flag = false;
                 for(int i=0;i<(int)requests.size();i++){
                     for(int k=0;k<(int)requests[i].get_paths().size();k++){
-                        Path *pik = requests[i].get_paths()[k];
-                        vector<Node *> nodes = pik->get_nodes();
-                        int ut, vt;
-                        ut = nodes[0]->get_id();
-                        for(int j=1;j < (int)nodes.size();j++){
-                            vt = nodes[j]->get_id();
-                            if(ut == u && vt == v){
-                                expr += f[i][k][make_pair(u, v)];
-                                if(pik->get_channels()[j-1]->is_entangled()){
-                                    entangle_succ++;
-                                }
-                            }else if(vt == u && ut == v){
-                                expr += f[i][k][make_pair(v, u)];
-                                if(pik->get_channels()[j-1]->is_entangled()){
-                                    entangle_succ++;
-                                }
-                            }
-                            ut = vt;
+                        if(f[i][k].find(make_pair(u, v)) != f[i][k].end()){
+                            expr += f[i][k][make_pair(u, v)];
+                            flag = true;
+                        }
+                        if(f[i][k].find(make_pair(v, u)) != f[i][k].end()){
+                            expr += f[i][k][make_pair(v, u)];
+                            flag = true;
                         }
                     }
                 }
-                model.addConstr(expr <=entangle_succ, "2d(" + to_string(u) + ", " + to_string(v) + ")");
+                // model.addConstr(expr <=entangle_succ, "2d(" + to_string(u) + ", " + to_string(v) + ")");
+                if(flag)model.addConstr(expr <= graph.get_channel_entangle_succ_cnt(u, v), "2d(" + to_string(u) + ", " + to_string(v) + ")");
             }
         }
         
-        // model.update();
-        // model.write("debug.lp");
+        model.update();
+        model.write("debug.lp");
         model.optimize();
         
         cout << "EPS_Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
@@ -365,21 +349,23 @@ void REPS::EPS(){
             if(dis(gen) > t_bar[i][k]){
                 continue;
             }
+            vector<double> sum;
+            sum.emplace_back(0);
             while(true){
                 bool set_flag;
                 tie(path_nodes, width, set_flag) = DFS(i, f_bar[i][k], false);
                 if(width == -1) break;
                 p.push_back(tie(width, path_nodes));
+                sum.emplace_back(sum.back() + width);
             }
-            double choose_path_prob = dis(gen) * t_bar[i][k];
-            for(int i=0;i<(int)p.size();i++){
-                tie(width, path_nodes) = p[i];
-                if(choose_path_prob - width <= 1e-6){
-                    EPS_P[i].emplace_back(path_nodes);
-                    break;
+            double choose_path_prob = dis(gen) * sum.back();
+            int choose_path_id = 0;
+            for(int i=1;i<(int)sum.size();i++){
+                if(choose_path_prob <= sum[i]){
+                    choose_path_id = i-1;
                 }
-                choose_path_prob -= width;
             }
+            EPS_P[i].emplace_back(get<1>(p[choose_path_id]));
         }
     }
     cout<<"EPS finished!"<<endl;
@@ -405,6 +391,7 @@ void REPS::path_assignment(){
                 bool set_flag; // true if assign path in DFS
                 tie(path_nodes, width, set_flag) = DFS(i, f_plum[i]);
                 if(width == -1) break;
+                // cout << "set_flag = " << set_flag << ", width = " << width << endl;
                 if(set_flag) flag = true;
                 if(width > 1e-6) p.push_back(tie(width, i, path_nodes));
             }
@@ -421,7 +408,9 @@ void REPS::path_assignment(){
                 requests[req_no] += graph.build_path(path_nodes);
             }
         }
+        // cout << "call PFT_LP in REPS::path_assignment()" << endl;
         PFT_LP(t_plum, f_plum);
+        // cout << "call PFT_LP in REPS::path_assignment()--end" << endl;
     }
 }
 
@@ -491,9 +480,9 @@ tuple<vector<int>, double, bool> REPS::DFS(int req_no, map<pair<int, int>, doubl
         return make_tuple(path_nodes, mn, false);
     }
     int width = (int)mn;
-    bool set_flag = true;
+    bool set_flag = false;
     while(width--){
-        set_flag = false;
+        set_flag = true;
         requests[req_no] += graph.build_path(path_nodes);
     }
     

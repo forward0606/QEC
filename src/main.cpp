@@ -34,16 +34,16 @@ Request generate_new_request(int node1, int node2, int time_limit){//demo
 
 int main(){
 
-    int round = 10;
+    int round = 1;
 
-    double swap_prob = 0.9, entangle_alpha = 0.002;
+    double swap_prob = 0.9, entangle_alpha = 0.02;
     int node_time_limit = 7;
 
-    int new_request_min = 3, new_request_max = 5;
+    int new_request_min = 5, new_request_max = 12;
     int request_time_limit = 7;
     int total_time_slot = 10;
 
-    bool debug = false;
+    bool debug = true;
     // python generate graph
     // #pragma omp parallel for
     for(int T = 0; T < round; T++){
@@ -88,7 +88,7 @@ int main(){
             cerr<< "---------generating requests in main.cpp----------" << endl;
             for(int q = 0; q < request_cnt; q++){
                 Request new_request = generate_new_request(num_of_node, request_time_limit);
-                // Request new_request = generate_new_request(4, 3, request_time_limit);
+                // Request new_request = generate_new_request(0, 1, request_time_limit);
                 cerr<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
                 greedy.requests.push_back(new_request);
                 qcast.requests.push_back(new_request);
