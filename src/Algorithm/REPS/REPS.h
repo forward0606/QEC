@@ -16,7 +16,7 @@ class REPS:public AlgorithmBase{
     void EPS_LP(vector<vector<double>> &t_bar, vector<vector<map<pair<int, int>, double>>> &f_bar);
     void EPS();
     void ELS();
-    tuple<vector<int>, double> DFS(int req_no, map<pair<int, int>, double>&f_plum_i, bool is_assign_path = true);
+    tuple<vector<int>, double, bool> DFS(int req_no, map<pair<int, int>, double>&f_plum_i, bool is_assign_path = true);
 public:
     REPS(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha);
     void path_assignment();

@@ -60,11 +60,11 @@ int main(){
         ofs  << "時間 " << dt << endl << endl; 
 
         string filename = "input" + round_str + ".txt";
-        // string command = "python3 main.py ";
-        // if(system((command + filename).c_str()) != 0){
-        //     cerr<<"error:\tsystem proccess python error"<<endl;
-        //     exit(1);
-        // }
+        string command = "python3 main.py ";
+        if(system((command + filename).c_str()) != 0){
+            cerr<<"error:\tsystem proccess python error"<<endl;
+            exit(1);
+        }
         if(debug) filename = "debug_graph.txt";
         int num_of_node;
         ifstream graph_input;

@@ -366,7 +366,8 @@ void REPS::EPS(){
                 continue;
             }
             while(true){
-                tie(path_nodes, width) = DFS(i, f_bar[i][k], false);
+                bool set_flag;
+                tie(path_nodes, width, set_flag) = DFS(i, f_bar[i][k], false);
                 if(width == -1) break;
                 p.push_back(tie(width, path_nodes));
             }
@@ -401,10 +402,11 @@ void REPS::path_assignment(){
         flag = false;
         for(int i = 0; i < (int)requests.size(); i++){
             while(true){
-                tie(path_nodes, width) = DFS(i, f_plum[i]);
+                bool set_flag; // true if assign path in DFS
+                tie(path_nodes, width, set_flag) = DFS(i, f_plum[i]);
                 if(width == -1) break;
-                flag = true;
-                p.push_back(tie(width, i, path_nodes));
+                if(set_flag) flag = true;
+                if(width > 1e-6) p.push_back(tie(width, i, path_nodes));
             }
         }
         sort(p.begin(), p.end());
@@ -451,7 +453,7 @@ void REPS::swap(){
     AlgorithmBase::swap();
 }
 
-tuple<vector<int>, double> REPS::DFS(int req_no, map<pair<int, int>, double>&f_plum_i, bool is_assign_path /*= true*/){
+tuple<vector<int>, double, bool> REPS::DFS(int req_no, map<pair<int, int>, double>&f_plum_i, bool is_assign_path /*= true*/){
     int source = requests[req_no].get_source();
     int destination = requests[req_no].get_destination();
     vector<int> vis;
@@ -477,7 +479,7 @@ tuple<vector<int>, double> REPS::DFS(int req_no, map<pair<int, int>, double>&f_p
     
     if(mn == 0x3f3f3f3f3f3f3f3f) { // no path
         path_nodes.clear();
-        return make_pair(path_nodes, -1); 
+        return make_tuple(path_nodes, -1, false); 
     }
     path_nodes.push_back(now); // destination
     for(int i = 0; i < (int)path_nodes.size()-1; i++){
@@ -486,15 +488,17 @@ tuple<vector<int>, double> REPS::DFS(int req_no, map<pair<int, int>, double>&f_p
         //f_hat[req_no][make_pair(u, v)] += (int)mn;
     }
     if(!is_assign_path){
-        return make_tuple(path_nodes, mn);
+        return make_tuple(path_nodes, mn, false);
     }
     int width = (int)mn;
+    bool set_flag = true;
     while(width--){
+        set_flag = false;
         requests[req_no] += graph.build_path(path_nodes);
     }
     
     
-    return make_tuple(path_nodes, mn-(int)mn);
+    return make_tuple(path_nodes, mn-(int)mn, set_flag);
 }
 
 void REPS::ELS(){
