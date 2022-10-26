@@ -10,6 +10,7 @@ using SubRequest = Request;
 
 class WholeRequest:public Request {
     int current_temporary; // index of node in trusted_node_path
+    int finished_qubits;
     bool divide_to_5_qubits;
 public:
     vector<int> trusted_node_path;

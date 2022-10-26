@@ -329,8 +329,12 @@ void MyAlgo::send() {
 void MyAlgo::next_time_slot() {
     graph.refresh();
     // graph.release();
-
     vector<int> finished_reqno;
+    for(WholeRequest whole_request : whole_requests) {
+        for(SubRequest subrequest : whole_request.subrequest) {
+            
+        }
+    }
     for(int reqno = 0; reqno < (int)whole_requests.size(); reqno++) {
         if(whole_requests[reqno].subrequest.empty()) {
             continue;
@@ -338,7 +342,6 @@ void MyAlgo::next_time_slot() {
 
         int finished_qubits = 0;
         if(requests[reqno].is_success()){
-            throughputs += 1;
             //result["waiting_time"] += requests[reqno].get_waiting_time(); segmentation fault
         }
     }

@@ -136,6 +136,7 @@ void Graph::generate(string filename){
             exit(1);
 	    }
         double entangle_prob = exp(-entangle_alpha * (node1.distance(node2))); // e^( -alpha * dis(node1, node2) )
+        cout<<"entangle_prob:\t"<<entangle_prob<<endl;
         if(DEBUG) cerr<<"entangle_prob:\t"<<entangle_prob<<endl;
         for(int i = 0; i < channel_cnt; i++){
             channels[make_pair(node1, node2)].emplace_back(&node1, &node2, entangle_prob, fidelity);

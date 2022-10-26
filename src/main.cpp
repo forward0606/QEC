@@ -9,12 +9,8 @@
 #include "Algorithm/Greedy/Greedy.h"
 #include "Algorithm/QCAST/QCAST.h"
 #include "Algorithm/REPS/REPS.h"
+#include "Algorithm/MyAlgo/MyAlgo.h"
 using namespace std;
-
-// #define ALGCO_GREEDY 0
-// #define ALGCO_QCAST 1
-// #define ALGCO_REPS 2
-// #define ALGO_CNT 3
 
 Request generate_new_request(int num_of_node, int time_limit){
     //亂數引擎 
@@ -37,6 +33,7 @@ int main(){
 
     map<string, double> default_setting;
     default_setting["num_of_node"] = 100;
+    default_setting["social_density"] = 1;
     default_setting["min_channel_cnt"] = 5;
     default_setting["max_channel_cnt"] = 10;
     default_setting["min_memory_cnt"] = 9;
@@ -53,12 +50,12 @@ int main(){
     default_setting["total_time_slot"] = 10;
 
     map<string, vector<double>> change_parameter;
-    change_parameter["swap_prob"] = {1.0, 0.9, 0.1, 0};
+    change_parameter["swap_prob"] = {0.1, 0.9, 1};
     change_parameter["entangle_alpha"] = {0.02, 0.002, 0};
 
     vector<string> X_names = {"swap_prob", "entangle_alpha"};
     vector<string> Y_names = {"waiting_time", "throughputs"};
-    vector<string> algo_names = {"Greedy", "QCAST", "REPS"};
+    vector<string> algo_names = {"Greedy", "QCAST", "REPS", "MyAlgo"};
     // init result
     for(string X_name : X_names) {
         for(string Y_name : Y_names){
@@ -77,6 +74,7 @@ int main(){
             input_parameter[X_name] = change_value;
             
             int num_of_node = input_parameter["num_of_node"];
+            double social_density = input_parameter["social_density"];
             int min_channel_cnt = input_parameter["min_channel_cnt"];
             int max_channel_cnt = input_parameter["max_channel_cnt"];
             int min_memory_cnt = input_parameter["min_memory_cnt"];
@@ -97,7 +95,7 @@ int main(){
             for(int T = 0; T < round; T++){
                 string round_str = to_string(T);
                 ofstream ofs;
-                ofs.open(file_path + "Round " + round_str + " log.txt");
+                ofs.open(file_path + X_name + "_Round_" + round_str + "_log.txt");
 
                 time_t now = time(0);
                 char* dt = ctime(&now);
@@ -106,7 +104,7 @@ int main(){
 
                 string filename = file_path + "input" + round_str + ".txt";
                 string command = "python3 main.py ";
-                string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity);
+                string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity) + " " + to_string(social_density);
                 if(system((command + filename + " " + parameter).c_str()) != 0){
                     cerr<<"error:\tsystem proccess python error"<<endl;
                     exit(1);
@@ -125,6 +123,7 @@ int main(){
                 algorithms.emplace_back(new Greedy(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
                 algorithms.emplace_back(new QCAST(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
                 algorithms.emplace_back(new REPS(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
+                algorithms.emplace_back(new MyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
 
                 ofs<<"---------------in round " <<T<<" -------------" <<endl;
                 for(int t = 0; t < total_time_slot; t++){

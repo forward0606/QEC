@@ -17,7 +17,6 @@ class AlgorithmBase{
     string algorithm_name;
 protected:
     int timeslot, waiting_time;
-    int throughputs;
     int time_limit;
     double swap_prob;
     map<string, double> res;

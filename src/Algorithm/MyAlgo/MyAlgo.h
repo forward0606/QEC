@@ -44,6 +44,9 @@ public:
     MyAlgo(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha);
     void path_assignment();
     void next_time_slot();
+    void entangle();
+    void swap();
+    void send();
 };
 
 #endif

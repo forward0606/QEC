@@ -3,7 +3,7 @@
 
 
 AlgorithmBase::AlgorithmBase(string filename, string algorithm_name, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha)
-    :algorithm_name(algorithm_name), timeslot(0), waiting_time(0), throughputs(0), time_limit(request_time_limit), swap_prob(swap_prob), graph(Graph(filename, node_time_limit, swap_prob, entangle_alpha)){
+    :algorithm_name(algorithm_name), timeslot(0), waiting_time(0), time_limit(request_time_limit), swap_prob(swap_prob), graph(Graph(filename, node_time_limit, swap_prob, entangle_alpha)){
     
 }
 
@@ -30,7 +30,6 @@ void AlgorithmBase::base_next_time_slot(){
         }
         finished_reqno.push_back(reqno);
         if(requests[reqno].is_success()){
-            throughputs += 1;
             res["throughputs"]++;
             //result["waiting_time"] += requests[reqno].get_waiting_time(); segmentation fault
         }
