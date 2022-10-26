@@ -36,19 +36,19 @@ int main(){
     string file_path = "../data/";
 
     map<string, double> default_setting;
-    default_setting["swap_prob"] = 0.9;
-    default_setting["entan_alpha"] = 0.002;
+    default_setting["swap_prob"] = 1;
+    default_setting["entangle_alpha"] = 0;
     default_setting["node_time_limit"] = 7;
     default_setting["new_request_min"] = 5;
     default_setting["new_request_max"] = 12;
     default_setting["request_time_limit"] = 7;
-    default_setting["total_time_slot"] = 10;
+    default_setting["total_time_slot"] = 1;
 
     map<string, vector<double>> change_parameter;
-    change_parameter["swap_prob"] = {0.7, 0.8, 0.9};
+    change_parameter["swap_prob"] = {1.0, 0.7, 0.8, 0.9};
     change_parameter["entangle_alpha"] = {0.02, 0.002, 0};
 
-    vector<string> X_names = {"swap_prob", "entan_alpha"};
+    vector<string> X_names = {"swap_prob", "entangle_alpha"};
     vector<string> Y_names = {"waiting_time", "throughtputs"};
 
     int round = 1;
@@ -127,6 +127,7 @@ int main(){
                     //#pragma omp parallel for
                     for(auto &algo:algorithms){
                         ofs<<"-----------run "<< algo.get_name() << " ---------"<<endl;
+                        
                         algo.run();
                         algo.next_time_slot();
                         ofs<<"total_throughputs : "<<algo.total_throughput()<<endl;
@@ -138,6 +139,11 @@ int main(){
                 ofs << endl;
                 for(auto &algo:algorithms){
                     ofs<<"("<<algo.get_name()<<")total throughput = "<<algo.total_throughput()<<endl;
+                }
+                cout<<"---------------in round " <<T<<" -------------end" <<endl;
+                cout << endl;
+                for(auto &algo:algorithms){
+                    cout<<"("<<algo.get_name()<<")total throughput = "<<algo.total_throughput()<<endl;
                 }
 
                 now = time(0);

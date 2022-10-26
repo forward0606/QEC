@@ -1,7 +1,9 @@
+#ifndef __GREEDY
+#define __GREEDY
+
 #include    <iostream>
 #include    <algorithm>
 #include    <queue>
-#include    <string>
 #include    <limits>
 #include    "../AlgorithmBase/AlgorithmBase.h"
 #include    "../../Request/WholeRequest.h"
@@ -42,8 +44,10 @@ class MyAlgo:public AlgorithmBase {
     vector<int> find_path_on_Social(int src, int dst);
     vector<vector<int>> find_5_paths(int src, int dst);
 
-public:
+// public:
     MyAlgo(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha);
     void path_assignment();
     void next_time_slot();
 };
+
+#endif

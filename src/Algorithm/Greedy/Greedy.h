@@ -1,3 +1,5 @@
+#ifndef __GREEDY
+#define __GREEDY
 #include    <iostream>
 #include    <algorithm>
 #include    <queue>
@@ -11,3 +13,5 @@ public:
     Greedy(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha);
     void path_assignment();
 };
+
+#endif
