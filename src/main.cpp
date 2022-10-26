@@ -95,7 +95,7 @@ int main(){
 
             // #pragma omp parallel for
             for(int T = 0; T < round; T++){
-                string round_str = to_string(round);
+                string round_str = to_string(T);
                 ofstream ofs;
                 ofs.open(file_path + "Round " + round_str + " log.txt");
 
