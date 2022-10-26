@@ -6,8 +6,8 @@ gurobi_path = /opt/gurobi952/linux64
 
 all: a.out
 
-a.out: main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/REPS/REPS.o Algorithm/MyAlgo/MyAlgo.o
-	g++ -fopenmp -g -Wall -Wextra main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/MyAlgo/MyAlgo.o Algorithm/REPS/REPS.o -I$(gurobi_path)/include/ -L$(gurobi_path)/lib -lgurobi_c++ -lgurobi95 -lm 
+a.out: main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/REPS/REPS.o Algorithm/MyAlgo/MyAlgo.o Request/WholeRequest.o
+	g++ -fopenmp -g -Wall -Wextra main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/MyAlgo/MyAlgo.o Request/WholeRequest.o Algorithm/REPS/REPS.o -I$(gurobi_path)/include/ -L$(gurobi_path)/lib -lgurobi_c++ -lgurobi95 -lm 
 	
 # qcast.out: Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o
 Network/Node/Node.o: Network/Node/Node.cpp Network/Node/Node.h config.h
@@ -29,6 +29,9 @@ Network/Graph/Graph.o: Network/Graph/Graph.cpp Network/Graph/Graph.h config.h
 Request/Request.o: Request/Request.cpp Request/Request.h config.h
 	g++ -c -g -Wall -Wextra Request/Request.cpp Request/Request.h config.h
 	mv Request.o Request/Request.o
+Request/WholeRequest.o: Request/WholeRequest.cpp Request/WholeRequest.h config.h
+	g++ -c -g -Wall -Wextra Request/WholeRequest.cpp Request/WholeRequest.h config.h
+	mv WholeRequest.o Request/WholeRequest.o
 
 Algorithm/AlgorithmBase/AlgorithmBase.o: Algorithm/AlgorithmBase/AlgorithmBase.h Algorithm/AlgorithmBase/AlgorithmBase.cpp config.h
 	g++ -c -g -Wall -Wextra Algorithm/AlgorithmBase/AlgorithmBase.h Algorithm/AlgorithmBase/AlgorithmBase.cpp config.h

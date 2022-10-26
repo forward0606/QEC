@@ -14,6 +14,7 @@ const int REQUEST_FAIL = -1;
 
 
 class Request{
+protected:
     int source, destination;
     int waiting_time, time_limit;
     int throughput;
@@ -31,6 +32,7 @@ public:
     vector<Path *> get_paths();
     
     void clear_paths();
+    void refresh_paths();
     void add_one_throughput();
     void entangle();
     void swap();

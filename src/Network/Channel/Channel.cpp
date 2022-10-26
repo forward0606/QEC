@@ -141,6 +141,7 @@ bool Channel::send(){
 void Channel::refresh(){
 	if(DEBUG)cerr<<"channel refresh "<<endl;
 	entangled = CHANNEL_UNENTANGLE;
+	send_status = CHANNEL_UNSEND;
 }
 
 void Channel::release(){
@@ -151,4 +152,5 @@ void Channel::release(){
 	}
 	used = false;
 	entangled = CHANNEL_UNENTANGLE;
+	send_status = CHANNEL_UNSEND;
 }

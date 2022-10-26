@@ -1,5 +1,5 @@
-#ifndef __GREEDY
-#define __GREEDY
+#ifndef __MYALGO_H
+#define __MYALGO_H
 
 #include    <iostream>
 #include    <algorithm>
@@ -20,6 +20,7 @@ class MyAlgo:public AlgorithmBase {
     vector<vector<vector<double>>> fidelity_table;
 
     void build_all_pair_path();
+    void path_assignment();
     void entangle();
     void swap();
     void send();
@@ -42,11 +43,7 @@ class MyAlgo:public AlgorithmBase {
 
 public:
     MyAlgo(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha);
-    void path_assignment();
-    void next_time_slot();
-    void entangle();
-    void swap();
-    void send();
+    ~MyAlgo();
 };
 
 #endif

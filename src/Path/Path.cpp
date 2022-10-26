@@ -76,6 +76,7 @@ bool Path::swap(){
     }
     if(swap_status != PATH_UNSWAP){
         cerr<<"error:\tswap twice on the same path"<<endl;
+        exit(1);
     }
     bool swap_succ = true;
     for(int i=1;i<(int)nodes.size()-1;i++){
@@ -139,8 +140,16 @@ void Path::release(){
     for(auto &channel:channels){
         channel->release();
     }
+    send_status = PATH_UNSEND;
+    swap_status = PATH_UNSWAP;
 }
-
+void Path::refresh(){
+    for(auto &channel:channels){
+        channel->refresh();
+    }
+    send_status = PATH_UNSEND;
+    swap_status = PATH_UNSWAP;
+}
 void Path::print(){
     if(!DEBUG)  return;
     cerr<<"this is a Path"<<endl;

@@ -35,6 +35,7 @@ public:
     bool send_data();
     bool send_data_succ();
     void release();
+    void refresh();
     void print();
     double fidelity();
 };

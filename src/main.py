@@ -36,25 +36,25 @@ def dist(a, b):
     (q1, q2) = b
     return (q1-p1) * (q1-p1) + (q2-p2) * (q2-p2)
 
-    def genSocialNetwork(self, userNum, density):
-        # n * n
-        community1 = [0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 2, 2, 2, 2, 3, 2, 2, 2, 3, 2]  # 0.25
-        community2 = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1]  # 0.50
-        community3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0]  # 0.75
-        community4 = [0 for _ in range(20)]                                        # 1.00
-        community = {0.25 : community1, 0.50 : community2, 0.75 : community3, 1.00 : community4}
+def genSocialNetwork(self, userNum, density):
+    # n * n
+    community1 = [0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 2, 2, 2, 2, 3, 2, 2, 2, 3, 2]  # 0.25
+    community2 = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1]  # 0.50
+    community3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0]  # 0.75
+    community4 = [0 for _ in range(20)]                                        # 1.00
+    community = {0.25 : community1, 0.50 : community2, 0.75 : community3, 1.00 : community4}
 
-        self.topo.SN = {i: [] for i in range(userNum)}  # user to user
-        community = community[density]
-        for i in range(userNum):
-            for j in range(i, userNum):
-                # p = random.random()
-                # if p <= density:
-                #     self.topo.SN[i].append(j)
-                #     self.topo.SN[j].append(i)
-                if community[i] == community[j]:
-                    self.topo.SN[i].append(j)
-                    self.topo.SN[j].append(i)
+    self.topo.SN = {i: [] for i in range(userNum)}  # user to user
+    community = community[density]
+    for i in range(userNum):
+        for j in range(i, userNum):
+            # p = random.random()
+            # if p <= density:
+            #     self.topo.SN[i].append(j)
+            #     self.topo.SN[j].append(i)
+            if community[i] == community[j]:
+                self.topo.SN[i].append(j)
+                self.topo.SN[j].append(i)
 
 
 if  len(sys.argv) <= 8:

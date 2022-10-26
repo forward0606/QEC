@@ -4,6 +4,14 @@
 MyAlgo::MyAlgo(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha)
     :AlgorithmBase(filename, "MY", request_time_limit, node_time_limit, swap_prob, entangle_alpha) {
     if(DEBUG) cerr << "new My" << endl;
+    build_all_pair_path();
+}
+
+MyAlgo::~MyAlgo() {
+    if(DEBUG) cerr << "delete My";
+    for(WholeRequest &whole_request : whole_requests) {
+        whole_request.clear();
+    }
 }
 
 double MyAlgo::get_weight(int node1_id, int node2_id) {
@@ -24,7 +32,7 @@ vector<int> MyAlgo::Dijkstra(int src, int dst, vector<vector<int>> &adjacency_li
         int cur_node = pq.top().second;
         pq.pop();
         if(used[cur_node]) continue;
-
+        used[cur_node] = true;
         for(int neighbor : adjacency_list[cur_node]) {
             if(distance[cur_node] + get_weight(cur_node, neighbor) < distance[neighbor]) {
                 distance[neighbor] = distance[cur_node] + get_weight(cur_node, neighbor);
@@ -94,6 +102,12 @@ void MyAlgo::build_all_pair_path() {
                 fidelity_table[i][j].push_back(fidelity);
                 fidelity_table[j][i].push_back(fidelity);
             }
+
+            if(path_table[i][j].size() == 0LL) {
+                cerr<<"path_table["<<i<<"]["<<j<<"]:";
+                cerr << "can't find path error\n";
+                exit(1);
+            }
         }
     }
 }
@@ -110,7 +124,7 @@ int MyAlgo::find_width(vector<int> &path, vector<vector<int>> &capacity, vector<
     }
 
     for(int i = 1; i < (int)path.size(); i++) {
-        int node1 = i - 1, node2 = i;
+        int node1 = path[i - 1], node2 = path[i];
         width = min(width, capacity[node1][node2]);
     }
 
@@ -180,16 +194,11 @@ vector<vector<int>> MyAlgo::get_paths(int src, int dst) {
 
 double MyAlgo::get_fidelity_with_remain_qubits(int src, int dst) {
     int width = min(graph.Node_id2ptr(src)->get_remain(), graph.Node_id2ptr(dst)->get_remain());
-    width = min(width, 5);
+    width = min(width, (int)fidelity_table[src][dst].size());
     if(width == 0) return 0;
 
     auto first = fidelity_table[src][dst].begin();
     auto last = first + width;
-
-    if((int)fidelity_table[src][dst].size() < width) {
-        cerr << "fidelity and width error" << endl;
-        exit(1);
-    }
 
     return calculate_fidelity(vector<double>(first, last));
 }
@@ -214,37 +223,44 @@ vector<int> MyAlgo::find_path_on_Social(int src, int dst) {
 
     int n = (int)subgraph_node.size();
 
-    vector<int> id_to_index(n);
+    vector<int> id_to_index(graph.get_size());
     for(int i = 0; i < n; i++) {
         id_to_index[subgraph_node[i]] = i;
     }
 
-    priority_queue<pair<double, int>, vector<pair<double, int>>, greater<pair<double, int>>> pq;
+    priority_queue<pair<double, int>> pq;
     vector<int> parent(n, -1);
     vector<bool> used(n, false);
     vector<double> fidelity(n, 0);
+
+    fidelity[id_to_index[src]] = 1;
     pq.push({1, id_to_index[src]}); // {fidelity, src}
 
-    while(pq.empty()) {
-        int cur_node = pq.top().second;
+    while(!pq.empty()) {
+        int node_index = pq.top().second;
         pq.pop();
-        if(used[cur_node]) continue;
-
-        for(auto next_node : subgraph_node) {
-            int node_id = subgraph_node[cur_node], next_id = subgraph_node[next_node];
-            double fidelity_this_path = max(get_max_fidelity_1_path(node_id, cur_node), get_fidelity_with_remain_qubits(node_id, next_id));
-            if(fidelity[next_node] < fidelity_this_path) {
-                fidelity[next_node] = fidelity_this_path;
-                parent[next_node] = cur_node;
+        if(used[node_index]) continue;
+        used[node_index] = true;
+        for(int next_index = 0; next_index < (int)subgraph_node.size(); next_index++) {
+            if(next_index == node_index) continue;
+            int cur_node = subgraph_node[node_index], next_node = subgraph_node[next_index];
+            double fidelity_this_path = fidelity[node_index] * max(get_max_fidelity_1_path(cur_node, next_node), get_fidelity_with_remain_qubits(cur_node, next_node));
+            if(fidelity[next_index] < fidelity_this_path) {
+                fidelity[next_index] = fidelity_this_path;
+                parent[next_index] = node_index;
+                pq.push({fidelity[next_index], next_index});
             }
         }
     }
-
-    int cur_node = id_to_index[dst];
+    if(parent[id_to_index[dst]] == -1){
+        cerr<<"no path found!"<<endl;
+        exit(1);
+    }
+    int cur_node_index = id_to_index[dst];
     vector<int> path_on_trusted;
-    while(cur_node != -1) {
-        path_on_trusted.push_back(subgraph_node[cur_node]);
-        cur_node = parent[cur_node];
+    while(cur_node_index != -1) {
+        path_on_trusted.push_back(subgraph_node[cur_node_index]);
+        cur_node_index = parent[cur_node_index];
     }
 
     reverse(path_on_trusted.begin(), path_on_trusted.end());
@@ -258,8 +274,8 @@ void MyAlgo::path_assignment() {
     }
     requests.clear();
 
-    for(WholeRequest request : whole_requests) {
-        if(request.subrequest.empty()) {
+    for(WholeRequest &request : whole_requests) {
+        if(request.subrequests.empty()) {
             // find path
             int temp = request.get_current_temporary();
             int src = request.trusted_node_path[temp], dst = request.trusted_node_path[temp + 1];
@@ -284,20 +300,21 @@ void MyAlgo::path_assignment() {
             double fidelity_threshold = max(get_max_fidelity_1_path(src, dst), calculate_fidelity(fidelity_table[src][dst]));
             
             if(fidelity >= fidelity_threshold) {
-                for(Path* &path : sufficient_paths) {
-                    request.subrequest.emplace_back(src, dst, request.get_time_limit());
-                    request.subrequest.back() += path;
-                }
-
-                assign_path = true;
                 request.set_divide(true);
+                for(int path_index = 0; path_index < (int)sufficient_paths.size(); path_index++) {
+                    request.subrequests.emplace_back(new SubRequest(src, dst, request.get_time_limit()));
+                }
+                for(int path_index = 0; path_index < (int)sufficient_paths.size(); path_index++) {
+                    *(request.subrequests[path_index]) += sufficient_paths[path_index];
+                }
             } else {
+                request.set_divide(false);
                 for(Path* &path : sufficient_paths) {
                     path->release();
                 }
                 if(sufficient_fidelities[0] == get_max_fidelity_1_path(src, dst)) {
-                    request.subrequest.emplace_back(src, dst, request.get_time_limit());
-                    request.subrequest.back() += graph.build_path(paths[first_path_id]);
+                    request.subrequests.emplace_back(new SubRequest(src, dst, request.get_time_limit()));
+                    *(request.subrequests.back()) += graph.build_path(paths[first_path_id]);
                 }
             }
         }
@@ -306,49 +323,53 @@ void MyAlgo::path_assignment() {
 
 void MyAlgo::entangle() {
     for(WholeRequest &whole_request : whole_requests) {
-        for(SubRequest &subrequest : whole_request.subrequest) {
-            subrequest.entangle();
+        for(SubRequest* subrequest : whole_request.subrequests) {
+            subrequest->entangle();
         }
     }
 }
 void MyAlgo::swap() {
     for(WholeRequest &whole_request : whole_requests) {
-        for(SubRequest &subrequest : whole_request.subrequest) {
-            subrequest.swap();
+        for(SubRequest* subrequest : whole_request.subrequests) {
+            subrequest->swap();
         }
     }
 }
 void MyAlgo::send() {
     for(WholeRequest &whole_request : whole_requests) {
-        for(SubRequest &subrequest : whole_request.subrequest) {
-            subrequest.swap();
+        for(SubRequest* subrequest : whole_request.subrequests) {
+            subrequest->send();
         }
     }
 }
 
 void MyAlgo::next_time_slot() {
-    graph.refresh();
     // graph.release();
-    vector<int> finished_reqno;
-    for(WholeRequest whole_request : whole_requests) {
-        for(SubRequest subrequest : whole_request.subrequest) {
-            
-        }
+   
+    for(WholeRequest &whole_request : whole_requests) {
+        whole_request.try_forward();
     }
-    for(int reqno = 0; reqno < (int)whole_requests.size(); reqno++) {
-        if(whole_requests[reqno].subrequest.empty()) {
-            continue;
-        }
 
-        int finished_qubits = 0;
-        if(requests[reqno].is_success()){
-            //result["waiting_time"] += requests[reqno].get_waiting_time(); segmentation fault
+    vector<int> finished_reqno;
+    for(int reqno = 0; reqno < (int)whole_requests.size(); reqno++) {
+        if(whole_requests[reqno].is_finished()) {
+            finished_reqno.push_back(reqno);
+            if(whole_requests[reqno].is_success()) {
+                res["throughputs"]++;
+            }
         }
     }
 
     reverse(finished_reqno.begin(), finished_reqno.end());
 
     for(int reqno : finished_reqno) {
-        requests.erase(requests.begin() + reqno);
+        whole_requests.erase(whole_requests.begin() + reqno);
+    }
+
+    graph.refresh();
+    for(WholeRequest &whole_request : whole_requests) {
+        for(SubRequest* subrequest : whole_request.subrequests) {
+            subrequest->refresh_paths();
+        }
     }
 }

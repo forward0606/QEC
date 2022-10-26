@@ -55,6 +55,13 @@ void Request::clear_paths(){
     paths.clear();
 }
 
+void Request::refresh_paths(){
+    for(Path *path : paths){
+        path->refresh();
+    }
+    status = REQUEST_UNFINISHED;
+}
+
 
 void Request::add_one_throughput(){
     throughput++;

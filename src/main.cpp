@@ -44,13 +44,13 @@ int main(){
     default_setting["swap_prob"] = 1;
     default_setting["entangle_alpha"] = 0;
     default_setting["node_time_limit"] = 7;
-    default_setting["new_request_min"] = 12;
-    default_setting["new_request_max"] = 12;
+    default_setting["new_request_min"] = 10;
+    default_setting["new_request_max"] = 10;
     default_setting["request_time_limit"] = 7;
-    default_setting["total_time_slot"] = 10;
+    default_setting["total_time_slot"] = 20;
 
     map<string, vector<double>> change_parameter;
-    change_parameter["swap_prob"] = {0.1, 0.9, 1};
+    change_parameter["swap_prob"] = {1};
     change_parameter["entangle_alpha"] = {0.02, 0.002, 0};
 
     vector<string> X_names = {"swap_prob", "entangle_alpha"};
