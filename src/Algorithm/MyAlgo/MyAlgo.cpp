@@ -277,6 +277,8 @@ void MyAlgo::path_assignment() {
 
             double fidelity = calculate_fidelity(sufficient_fidelities);
             double fidelity_threshold = max(get_max_fidelity_1_path(src, dst), calculate_fidelity(fidelity_table[src][dst]));
+            
+
             if(fidelity >= fidelity_threshold) {
                 for(Path* &path : sufficient_paths) {
                     request.subrequest.emplace_back(src, dst, request.get_time_limit());
@@ -287,8 +289,20 @@ void MyAlgo::path_assignment() {
                     path->release();
                 }
             }
+            
+
         }
     }
+}
+
+void MyAlgo::entangle() {
+    AlgorithmBase::base_entangle();
+}
+void MyAlgo::swap() {
+    AlgorithmBase::base_swap();
+}
+void MyAlgo::send() {
+    AlgorithmBase::base_send();
 }
 
 void MyAlgo::next_time_slot() {

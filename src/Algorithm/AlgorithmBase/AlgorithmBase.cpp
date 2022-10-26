@@ -105,12 +105,16 @@ void AlgorithmBase::assign_resource(vector<int> path, int reqno){
 }
 
 vector<int> AlgorithmBase::BFS(int source, int destination){
-    bool vis[graph.get_size()];
-    int parent[graph.get_size()];
-    for(int i = 0; i < graph.get_size(); i++){
-        vis[i] = false;
-        parent[i] = -1;
-    }
+    // if(source > graph.get_size() || destination > graph.get_size()){
+    //     cerr<<"error:\tnode id is out of range"<<endl;
+    //     exit(1);
+    // }
+    vector<bool> vis(graph.get_size()+5, false);
+    vector<int> parent(graph.get_size()+5, -1);
+    // for(int i = 0; i < graph.get_size(); i++){
+    //     vis[i] = false;
+    //     parent[i] = -1;
+    // }
 
     queue<int> q;
     q.push(source);
@@ -145,7 +149,7 @@ vector<int> AlgorithmBase::BFS(int source, int destination){
 }
 
 int AlgorithmBase::total_throughput(){
-    return res["throughput"];
+    return res["throughputs"];
 }
 
 Path* AlgorithmBase::find_swap_path(vector<int> path_nodes, map<pair<int, int>, vector<Channel*>> &remain_channels){

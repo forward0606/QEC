@@ -8,7 +8,7 @@
 #include "Algorithm/AlgorithmBase/AlgorithmBase.h"
 #include "Algorithm/Greedy/Greedy.h"
 #include "Algorithm/QCAST/QCAST.h"
-// #include "Algorithm/REPS/REPS.h"
+#include "Algorithm/REPS/REPS.h"
 using namespace std;
 
 // #define ALGCO_GREEDY 0
@@ -39,17 +39,17 @@ int main(){
     default_setting["swap_prob"] = 1;
     default_setting["entangle_alpha"] = 0;
     default_setting["node_time_limit"] = 7;
-    default_setting["new_request_min"] = 5;
+    default_setting["new_request_min"] = 12;
     default_setting["new_request_max"] = 12;
     default_setting["request_time_limit"] = 7;
-    default_setting["total_time_slot"] = 1;
+    default_setting["total_time_slot"] = 10;
 
     map<string, vector<double>> change_parameter;
-    change_parameter["swap_prob"] = {1.0, 0.7, 0.8, 0.9};
+    change_parameter["swap_prob"] = {1.0, 0.9, 0.8, 0.7};
     change_parameter["entangle_alpha"] = {0.02, 0.002, 0};
 
     vector<string> X_names = {"swap_prob", "entangle_alpha"};
-    vector<string> Y_names = {"waiting_time", "throughtputs"};
+    vector<string> Y_names = {"waiting_time", "throughputs"};
     vector<string> algo_names = {"Greedy", "QCAST", "REPS"};
     // init result
     for(string X_name : X_names) {
@@ -60,12 +60,12 @@ int main(){
     }
     
 
-    int round = 1;
+    int round = 10;
     for(string X_name : X_names) {
         map<string, double> input_parameter = default_setting;
-        map<string, map<string, double>> result;
 
         for(double change_value : change_parameter[X_name]) {
+            map<string, map<string, double>> result;
             input_parameter[X_name] = change_value;
             
             double swap_prob = input_parameter["swap_prob"], entangle_alpha = input_parameter["entangle_alpha"];
@@ -112,7 +112,7 @@ int main(){
                 vector<AlgorithmBase*> algorithms;
                 algorithms.emplace_back(new Greedy(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
                 algorithms.emplace_back(new QCAST(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
-                //algorithms.emplace_back(new REPS(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
+                algorithms.emplace_back(new REPS(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
 
                 ofs<<"---------------in round " <<T<<" -------------" <<endl;
                 for(int t = 0; t < total_time_slot; t++){
@@ -124,7 +124,7 @@ int main(){
                     int request_cnt = unif(generator);
 
                     cerr<< "---------generating requests in main.cpp----------" << endl;
-                    for(int q = 0; q < request_cnt; q++){
+                    for(int q = 0; q < request_cnt && total_time_slot < 5; q++){
                         Request new_request = generate_new_request(num_of_node, request_time_limit);
                         // Request new_request = generate_new_request(0, 1, request_time_limit);
                         cerr<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
@@ -140,7 +140,7 @@ int main(){
                         
                         algo->run();
                         algo->next_time_slot();
-                        ofs<<"total_throughputs : "<<algo->total_throughput()<<endl;
+                        ofs<<"total_throughputs : "<<algo->get_res("throughputs")<<endl;
                         ofs<<"-----------run "<<algo->get_name() << " ---------end"<<endl;
                     }
                     
@@ -148,12 +148,12 @@ int main(){
                 ofs<<"---------------in round " <<T<<" -------------end" <<endl;
                 ofs << endl;
                 for(auto &algo:algorithms){
-                    ofs<<"("<<algo->get_name()<<")total throughput = "<<algo->total_throughput()<<endl;
+                    ofs<<"("<<algo->get_name()<<")total throughput = "<<algo->get_res("throughputs")<<endl;
                 }
                 cout<<"---------------in round " <<T<<" -------------end" <<endl;
                 cout << endl;
                 for(auto &algo:algorithms){
-                    cout<<"("<<algo->get_name()<<")total throughput = "<<algo->total_throughput()<<endl;
+                    cout<<"("<<algo->get_name()<<")total throughput = "<<algo->get_res("throughputs")<<endl;
                 }
                 
                 for(auto &algo:algorithms){
