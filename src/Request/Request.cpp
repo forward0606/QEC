@@ -23,6 +23,10 @@ void Request::set_path(int path_id, Path *p){
     paths[path_id] = p;
 }
 
+int Request::get_time_limit(){
+    return time_limit;
+}
+
 int Request::get_waiting_time(){
     return waiting_time;
 }

@@ -46,7 +46,7 @@ int main(){
 
     map<string, vector<double>> change_parameter;
     change_parameter["swap_prob"] = {0.7, 0.8, 0.9};
-    change_parameter["entan_alpha"] = {0.02, 0.002, 0};
+    change_parameter["entangle_alpha"] = {0.02, 0.002, 0};
 
     vector<string> X_names = {"swap_prob", "entan_alpha"};
     vector<string> Y_names = {"waiting_time", "throughtputs"};
@@ -95,7 +95,7 @@ int main(){
                 graph_input.open (file_path + filename);
                 graph_input >> num_of_node;
                 graph_input.close();
-                //Graph graph("input.txt", num_of_node, min_channel, max_channel, min_memory_cnt, max_memory_cnt, node_time_limit, swap_prob, entangle_alpha, true);
+                // Graph graph("input.txt", num_of_node, min_channel, max_channel, min_memory_cnt, max_memory_cnt, node_time_limit, swap_prob, entangle_alpha, true);
                 // Greedy greedy(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
                 // QCAST qcast(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
                 // REPS reps(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);

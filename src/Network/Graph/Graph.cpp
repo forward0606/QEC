@@ -82,6 +82,10 @@ int Graph::get_channel_entangle_succ_cnt(int node1_id, int node2_id){
     return cnt;
 }
 
+bool Graph::is_trusted(int node1_id, int node2_id) {
+    return social[node1_id][node2_id];
+}
+
 Node* Graph::Node_id2ptr(int id){
     if(id >= (int)nodes.size() || id < 0){
         cerr<<"err:\t in Graph::Node_id2ptr() id is out of range"<<endl;

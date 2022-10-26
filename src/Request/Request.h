@@ -23,6 +23,7 @@ public:
     Request(int source, int destination, const int& time_limit);
     ~Request(void);
     void set_path(int path_id, Path *p);                        //should delete old path before set new path
+    int get_time_limit();
     int get_waiting_time();
     int get_source();
     int get_destination();

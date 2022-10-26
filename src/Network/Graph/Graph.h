@@ -33,6 +33,7 @@ public:
 	double get_channel_weight(int node1_id, int node2_id);	//return the average weight of channel between node1 and node2
 	int get_channel_size(int node1_id, int node2_id);
 	int get_channel_entangle_succ_cnt(int node1_id, int node2_id);
+	bool is_trusted(int node1_id, int node2_id);
 	Node* Node_id2ptr(int id);
 
 	void generate(string);
