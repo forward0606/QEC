@@ -31,6 +31,6 @@ public:
     void entangle();
     void swap();
     void next_time_slot();
-    // Path* BFS(int source, int destination); // no connect return NULL
+    void send();
     double demoEXT(vector<double> path, int w);
 };

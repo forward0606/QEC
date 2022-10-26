@@ -12,6 +12,10 @@ class Greedy:public AlgorithmBase{
 public:
     Greedy(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha);
     void path_assignment();
+    void entangle();
+    void swap();
+    void send();
+    void next_time_slot();
 };
 
 #endif

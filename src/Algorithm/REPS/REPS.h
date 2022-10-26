@@ -21,7 +21,8 @@ class REPS:public AlgorithmBase{
 public:
     REPS(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha);
     void path_assignment();
-    //void entangle();
+    void entangle();
     void swap();
-    //void next_time_slot();
+    void send()
+    void next_time_slot();
 };

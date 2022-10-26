@@ -18,3 +18,16 @@ void Greedy::path_assignment(){
         }
     }
 }
+
+void Greedy::entangle(){
+    AlgorithmBase::base_entangle();
+}
+void Greedy::swap(){
+    AlgorithmBase::base_swap();
+}
+void Greedy::send(){
+    AlgorithmBase::base_send();
+}
+void Greedy::next_time_slot(){
+    AlgorithmBase::base_next_time_slot();
+}

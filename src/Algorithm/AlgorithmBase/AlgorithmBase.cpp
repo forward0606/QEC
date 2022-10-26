@@ -15,7 +15,7 @@ double AlgorithmBase::get_swap_prob(){
     return swap_prob;
 }
 
-void AlgorithmBase::next_time_slot(){
+void AlgorithmBase::base_next_time_slot(){
     graph.refresh();
     graph.release();
     for(auto &request: requests){
@@ -41,21 +41,23 @@ void AlgorithmBase::next_time_slot(){
     }
 }
 
-void AlgorithmBase::entangle(){
+void AlgorithmBase::base_entangle(){
     for(int i=0;i<(int)requests.size();i++){
         requests[i].entangle();
     }
 }
 
-void AlgorithmBase::swap(){
+void AlgorithmBase::base_swap(){
     for(int i=0;i<(int)requests.size();i++){
         requests[i].swap();
     }
 }
-void AlgorithmBase::send(){
+void AlgorithmBase::base_send(){
+    cout<<algorithm_name<<" base_send()"<<endl;
     for(int i=0;i<(int)requests.size();i++){
         requests[i].send();
     }
+    cout<<algorithm_name<<" base_send() end"<<endl;
 }
 
 void AlgorithmBase::run(){
@@ -63,6 +65,7 @@ void AlgorithmBase::run(){
     entangle();
     swap();
     send();
+    cout<<algorithm_name<<" run end"<<endl;
 }
 
 int AlgorithmBase::find_width(vector<int> path){

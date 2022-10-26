@@ -8,7 +8,7 @@
 #include "Algorithm/AlgorithmBase/AlgorithmBase.h"
 #include "Algorithm/Greedy/Greedy.h"
 #include "Algorithm/QCAST/QCAST.h"
-#include "Algorithm/REPS/REPS.h"
+// #include "Algorithm/REPS/REPS.h"
 using namespace std;
 
 #define ALGCO_GREEDY 0
@@ -50,10 +50,19 @@ int main(){
 
     vector<string> X_names = {"swap_prob", "entangle_alpha"};
     vector<string> Y_names = {"waiting_time", "throughtputs"};
+    // init result
+    for(string X_name : X_names) {
+        for(string Y_name : Y_names){
+            string filename = X_name + "_" + Y_name + ".txt";
+            fstream file( file_path + filename, ios::out );
+        }
+    }
+    
 
     int round = 1;
     for(string X_name : X_names) {
         map<string, double> input_parameter = default_setting;
+        map<string, map<string, double>> result;
 
         for(double change_value : change_parameter[X_name]) {
             input_parameter[X_name] = change_value;
@@ -83,26 +92,26 @@ int main(){
                 cerr  << "時間 " << dt << endl << endl; 
                 ofs  << "時間 " << dt << endl << endl; 
 
-                string filename = "input" + round_str + ".txt";
+                string filename = file_path + "input" + round_str + ".txt";
                 string command = "python3 main.py ";
-                if(system((command + file_path + filename).c_str()) != 0){
+                if(system((command + filename).c_str()) != 0){
                     cerr<<"error:\tsystem proccess python error"<<endl;
                     exit(1);
                 }
                 if(debug) filename = "debug_graph.txt";
                 int num_of_node;
                 ifstream graph_input;
-                graph_input.open (file_path + filename);
+                graph_input.open (filename);
                 graph_input >> num_of_node;
                 graph_input.close();
                 // Graph graph("input.txt", num_of_node, min_channel, max_channel, min_memory_cnt, max_memory_cnt, node_time_limit, swap_prob, entangle_alpha, true);
                 // Greedy greedy(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
                 // QCAST qcast(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
                 // REPS reps(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
-                vector<AlgorithmBase> algorithms;
-                algorithms.emplace_back(Greedy(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
-                algorithms.emplace_back(QCAST(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
-                algorithms.emplace_back(REPS(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
+                vector<AlgorithmBase*> algorithms;
+                algorithms.emplace_back(new Greedy(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
+                algorithms.emplace_back(new QCAST(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
+                //algorithms.emplace_back(new REPS(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
 
                 ofs<<"---------------in round " <<T<<" -------------" <<endl;
                 for(int t = 0; t < total_time_slot; t++){
@@ -119,58 +128,60 @@ int main(){
                         // Request new_request = generate_new_request(0, 1, request_time_limit);
                         cerr<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
                         for(auto &algo:algorithms){
-                            algo.requests.emplace_back(new_request);
+                            algo->requests.emplace_back(new_request);
                         }
                     }
                     cerr<< "---------generating requests in main.cpp----------end" << endl;
                     
                     //#pragma omp parallel for
                     for(auto &algo:algorithms){
-                        ofs<<"-----------run "<< algo.get_name() << " ---------"<<endl;
+                        ofs<<"-----------run "<< algo->get_name() << " ---------"<<endl;
                         
-                        algo.run();
-                        algo.next_time_slot();
-                        ofs<<"total_throughputs : "<<algo.total_throughput()<<endl;
-                        ofs<<"-----------run "<<algo.get_name() << " ---------end"<<endl;
+                        algo->run();
+                        algo->next_time_slot();
+                        ofs<<"total_throughputs : "<<algo->total_throughput()<<endl;
+                        ofs<<"-----------run "<<algo->get_name() << " ---------end"<<endl;
                     }
                     
                 }
                 ofs<<"---------------in round " <<T<<" -------------end" <<endl;
                 ofs << endl;
                 for(auto &algo:algorithms){
-                    ofs<<"("<<algo.get_name()<<")total throughput = "<<algo.total_throughput()<<endl;
+                    ofs<<"("<<algo->get_name()<<")total throughput = "<<algo->total_throughput()<<endl;
                 }
                 cout<<"---------------in round " <<T<<" -------------end" <<endl;
                 cout << endl;
                 for(auto &algo:algorithms){
-                    cout<<"("<<algo.get_name()<<")total throughput = "<<algo.total_throughput()<<endl;
+                    cout<<"("<<algo->get_name()<<")total throughput = "<<algo->total_throughput()<<endl;
                 }
-
+                
+                for(auto &algo:algorithms){
+                    for(string Y_name : Y_names) {
+                        result[algo->get_name()][Y_name] += algo->get_res(Y_name);
+                    }
+                }
                 now = time(0);
                 dt = ctime(&now);
                 cerr  << "時間 " << dt << endl << endl; 
                 ofs  << "時間 " << dt << endl << endl; 
                 ofs.close();
+            
+                for(auto &algo:algorithms){
+                    delete algo;
+                }
+                algorithms.clear();
+            
             }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
             for(string Y_name : Y_names) {
-                string filename = X_name + "_" + Y_name;
-                // result[Y_name];
+                string filename = X_name + "_" + Y_name + ".txt";
+                ofstream ofs;
+                ofs.open(file_path + filename, ios::app);
+                ofs << change_value << ' ';
+                ofs.close();
             }
-
         }
     }
 

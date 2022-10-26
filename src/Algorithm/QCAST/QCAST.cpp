@@ -231,7 +231,7 @@ void QCAST::find_recovery_path(int R){ // R: max amount of recovery path for any
 }
 
 void QCAST::entangle(){
-    AlgorithmBase::entangle();
+    AlgorithmBase::base_entangle();
     for(auto rps:recovery_paths){
         for(auto p:rps.second){
             p->entangle();
@@ -329,7 +329,7 @@ void QCAST::p4(){
             path_id += 1;
         }
     }
-    AlgorithmBase::swap();
+    AlgorithmBase::base_swap();
     if(DEBUG) cerr<<"--------QCAST::p4--------end"<<endl;
 }
 
@@ -346,9 +346,11 @@ void QCAST::next_time_slot(){
         }
     }
     recovery_paths.clear();
-    AlgorithmBase::next_time_slot();
+    AlgorithmBase::base_next_time_slot();
 }
-
+void QCAST::send(){
+    AlgorithmBase::base_send();
+}
 double QCAST::demoEXT(vector<double> path, int w){
     return EXT(path, w);
 }

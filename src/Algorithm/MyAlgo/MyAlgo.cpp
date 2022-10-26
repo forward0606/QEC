@@ -178,8 +178,9 @@ vector<vector<int>> MyAlgo::get_paths(int src, int dst) {
     return path_table[src][dst];
 }
 
-double MyAlgo::get_fidelity(int src, int dst) {
+double MyAlgo::get_fidelity_with_remain_qubits(int src, int dst) {
     int width = min(graph.Node_id2ptr(src)->get_remain(), graph.Node_id2ptr(dst)->get_remain());
+    width = min(width, 5);
     if(width == 0) return 0;
 
     auto first = fidelity_table[src][dst].begin();
@@ -193,6 +194,10 @@ double MyAlgo::get_fidelity(int src, int dst) {
     return calculate_fidelity(vector<double>(first, last));
 }
 
+double MyAlgo::get_max_fidelity_1_path(int src, int dst) {
+    return fidelity_table[src][dst][0];
+}
+
 vector<int> MyAlgo::find_path_on_Social(int src, int dst) { 
     // use Dijkstra
 
@@ -200,14 +205,14 @@ vector<int> MyAlgo::find_path_on_Social(int src, int dst) {
 
     subgraph_node.push_back(src);
     subgraph_node.push_back(dst);
-    for(int node = 0; node < graph.size(); node++) {
+    for(int node = 0; node < graph.get_size(); node++) {
         if(node == src || node == dst) continue;
         if(graph.is_trusted(src, node)) {
             subgraph_node.push_back(node);
         }
     }
 
-    int n = (int)trusted_node.size();
+    int n = (int)subgraph_node.size();
 
     vector<int> id_to_index(n);
     for(int i = 0; i < n; i++) {
@@ -227,14 +232,15 @@ vector<int> MyAlgo::find_path_on_Social(int src, int dst) {
 
         for(auto next_node : subgraph_node) {
             int node_id = subgraph_node[cur_node], next_id = subgraph_node[next_node];
-            if(fidelity[next_node] < fidelity[cur_node] * get_fidelity(node_id, next_id) {
-                fidelity[next_node] = fidelity[cur_node] * get_fidelity(node_id, next_id);
+            double fidelity_this_path = max(get_max_fidelity_1_path(node_id, cur_node), get_fidelity_with_remain_qubits(node_id, next_id));
+            if(fidelity[next_node] < fidelity_this_path) {
+                fidelity[next_node] = fidelity_this_path;
                 parent[next_node] = cur_node;
             }
         }
     }
 
-    int cur_node = id_to_index(dst);
+    int cur_node = id_to_index[dst];
     vector<int> path_on_trusted;
     while(cur_node != -1) {
         path_on_trusted.push_back(subgraph_node[cur_node]);
@@ -257,6 +263,30 @@ void MyAlgo::path_assignment() {
             // find path
             int temp = request.get_current_temporary();
             int src = request.trusted_node_path[temp], dst = request.trusted_node_path[temp + 1];
+
+            vector<vector<int>> paths = get_paths(src, dst);
+            vector<Path*> sufficient_paths;
+            vector<double> sufficient_fidelities;
+            for(int path_id = 0; path_id < (int)paths.size(); path_id++) {
+                int width = AlgorithmBase::find_width(paths[path_id]);
+                if(width >= 1) {
+                    sufficient_fidelities.push_back(fidelity_table[src][dst][path_id]);
+                    sufficient_paths.push_back(graph.build_path(paths[path_id]));
+                }
+            }
+
+            double fidelity = calculate_fidelity(sufficient_fidelities);
+            double fidelity_threshold = max(get_max_fidelity_1_path(src, dst), calculate_fidelity(fidelity_table[src][dst]));
+            if(fidelity >= fidelity_threshold) {
+                for(Path* &path : sufficient_paths) {
+                    request.subrequest.emplace_back(src, dst, request.get_time_limit());
+                    request.subrequest.back() += path;
+                }
+            } else {
+                for(Path* &path : sufficient_paths) {
+                    path->release();
+                }
+            }
         }
     }
 }
@@ -286,10 +316,3 @@ void MyAlgo::next_time_slot() {
         requests.erase(requests.begin() + reqno);
     }
 }
-
-WholeRequest::WholeRequest(int source, int destination, int time_limit, vector<int> trusted_node_path)
-    : Request(source, destination, time_limit), trusted_node_path(trusted_node_path), divdie_to_5_qubits(false), temporary_node_index(0) {
-    if(DEBUG)cerr<<"new WholeRequest"<<endl;
-}
-
-

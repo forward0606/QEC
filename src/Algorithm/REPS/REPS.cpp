@@ -415,6 +415,15 @@ void REPS::path_assignment(){
     }
 }
 
+void REPS::entangle(){
+    AlgorithmBase::base_entangle();
+}
+void REPS::send(){
+    AlgorithmBase::base_send();
+}
+void REPS::next_time_slot(){
+    AlgorithmBase::base_next_time_slot();
+}
 
 void REPS::swap(){
     //EPS based on Randomized Rounding

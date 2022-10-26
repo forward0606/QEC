@@ -9,10 +9,10 @@ using namespace std;
 using SubRequest = Request;
 
 class WholeRequest:public Request {
-    vector<int> trusted_node_path;
     int current_temporary; // index of node in trusted_node_path
     bool divide_to_5_qubits;
 public:
+    vector<int> trusted_node_path;
     vector<SubRequest> subrequest;
     WholeRequest(int source, int destination, int time_limit, vector<int> trusted_node_path);
     int get_current_temporary();
