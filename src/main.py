@@ -36,20 +36,21 @@ def dist(a, b):
     (q1, q2) = b
     return (q1-p1) * (q1-p1) + (q2-p2) * (q2-p2)
 
-if  len(sys.argv) <= 1:
+if  len(sys.argv) <= 8:
     print("missing argv")
     sys.exit()
 
 
 filename = sys.argv[1]
-num_of_node = 100
-min_channel_cnt = 5
-max_channel_cnt = 10
-min_memory_cnt = 9
-max_memory_cnt = 20
-min_fidelity = 0.85
-max_fidelity = 0.99
-print("hello python!")
+num_of_node = int(sys.argv[2])
+min_channel_cnt = int(sys.argv[3])
+max_channel_cnt = int(sys.argv[4])
+min_memory_cnt = int(sys.argv[5])
+max_memory_cnt = int(sys.argv[6])
+min_fidelity = float(sys.argv[7])
+max_fidelity = float(sys.argv[8])
+
+
 print("--------------generating graph--------------", file=sys.stderr)
 print("--------------generating graph--------------")
 print("filename = ", filename, file=sys.stderr)
@@ -61,6 +62,7 @@ print("min_memory_cnt = ", min_memory_cnt, ", max_memory_cnt = ", max_memory_cnt
 while True:
     G = nx.waxman_graph(num_of_node, beta=0.85, alpha=0.1, domain=(0, 0, 0.5, 1))
     #G = nx.waxman_graph(num_of_node, beta=0.85, alpha=10, domain=(0, 0, 0.5, 1))
+
     positions = nx.get_node_attributes(G, 'pos')
     add_edge = []
     for u in range(G.order()-1):

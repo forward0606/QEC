@@ -267,57 +267,76 @@ void MyAlgo::path_assignment() {
             vector<vector<int>> paths = get_paths(src, dst);
             vector<Path*> sufficient_paths;
             vector<double> sufficient_fidelities;
+
+            int first_path_id = -1;
             for(int path_id = 0; path_id < (int)paths.size(); path_id++) {
                 int width = AlgorithmBase::find_width(paths[path_id]);
                 if(width >= 1) {
+                    if(first_path_id == -1) first_path_id = path_id;
                     sufficient_fidelities.push_back(fidelity_table[src][dst][path_id]);
                     sufficient_paths.push_back(graph.build_path(paths[path_id]));
                 }
             }
 
+            if(sufficient_paths.empty()) continue;
+
             double fidelity = calculate_fidelity(sufficient_fidelities);
             double fidelity_threshold = max(get_max_fidelity_1_path(src, dst), calculate_fidelity(fidelity_table[src][dst]));
             
-
             if(fidelity >= fidelity_threshold) {
                 for(Path* &path : sufficient_paths) {
                     request.subrequest.emplace_back(src, dst, request.get_time_limit());
                     request.subrequest.back() += path;
                 }
+
+                assign_path = true;
+                request.set_divide(true);
             } else {
                 for(Path* &path : sufficient_paths) {
                     path->release();
                 }
+                if(sufficient_fidelities[0] == get_max_fidelity_1_path(src, dst)) {
+                    request.subrequest.emplace_back(src, dst, request.get_time_limit());
+                    request.subrequest.back() += graph.build_path(paths[first_path_id]);
+                }
             }
-            
-
         }
     }
 }
 
 void MyAlgo::entangle() {
-    AlgorithmBase::base_entangle();
+    for(WholeRequest &whole_request : whole_requests) {
+        for(SubRequest &subrequest : whole_request.subrequest) {
+            subrequest.entangle();
+        }
+    }
 }
 void MyAlgo::swap() {
-    AlgorithmBase::base_swap();
+    for(WholeRequest &whole_request : whole_requests) {
+        for(SubRequest &subrequest : whole_request.subrequest) {
+            subrequest.swap();
+        }
+    }
 }
 void MyAlgo::send() {
-    AlgorithmBase::base_send();
+    for(WholeRequest &whole_request : whole_requests) {
+        for(SubRequest &subrequest : whole_request.subrequest) {
+            subrequest.swap();
+        }
+    }
 }
 
 void MyAlgo::next_time_slot() {
     graph.refresh();
     // graph.release();
-    for(Request &request: requests){
-        request.next_timeslot();
-    }
 
     vector<int> finished_reqno;
-    for(int reqno = 0; reqno < (int)requests.size(); reqno++) {
-        if(!requests[reqno].is_finished()) {
+    for(int reqno = 0; reqno < (int)whole_requests.size(); reqno++) {
+        if(whole_requests[reqno].subrequest.empty()) {
             continue;
         }
-        finished_reqno.push_back(reqno);
+
+        int finished_qubits = 0;
         if(requests[reqno].is_success()){
             throughputs += 1;
             //result["waiting_time"] += requests[reqno].get_waiting_time(); segmentation fault

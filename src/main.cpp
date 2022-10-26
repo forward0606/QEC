@@ -36,6 +36,14 @@ int main(){
     string file_path = "../data/";
 
     map<string, double> default_setting;
+    default_setting["num_of_node"] = 100;
+    default_setting["min_channel_cnt"] = 5;
+    default_setting["max_channel_cnt"] = 10;
+    default_setting["min_memory_cnt"] = 9;
+    default_setting["max_memory_cnt"] = 20;
+    default_setting["min_fidelity"] = 0.85;
+    default_setting["max_fidelity"] = 0.99;
+
     default_setting["swap_prob"] = 1;
     default_setting["entangle_alpha"] = 0;
     default_setting["node_time_limit"] = 7;
@@ -45,7 +53,7 @@ int main(){
     default_setting["total_time_slot"] = 10;
 
     map<string, vector<double>> change_parameter;
-    change_parameter["swap_prob"] = {1.0, 0.9, 0.8, 0.7};
+    change_parameter["swap_prob"] = {1.0, 0.9, 0.1, 0};
     change_parameter["entangle_alpha"] = {0.02, 0.002, 0};
 
     vector<string> X_names = {"swap_prob", "entangle_alpha"};
@@ -65,13 +73,19 @@ int main(){
         map<string, double> input_parameter = default_setting;
 
         for(double change_value : change_parameter[X_name]) {
-            map<string, map<string, double>> result;
+            vector<map<string, map<string, double>>> result(round);
             input_parameter[X_name] = change_value;
             
+            int num_of_node = input_parameter["num_of_node"];
+            int min_channel_cnt = input_parameter["min_channel_cnt"];
+            int max_channel_cnt = input_parameter["max_channel_cnt"];
+            int min_memory_cnt = input_parameter["min_memory_cnt"];
+            int max_memory_cnt = input_parameter["max_memory_cnt"];
+            double min_fidelity = input_parameter["min_fidelity"];
+            double max_fidelity = input_parameter["max_fidelity"];
+
             double swap_prob = input_parameter["swap_prob"], entangle_alpha = input_parameter["entangle_alpha"];
-
             int node_time_limit = input_parameter["node_time_limit"];
-
             int new_request_min = input_parameter["new_request_min"], new_request_max = input_parameter["new_request_max"];
             int request_time_limit = input_parameter["request_time_limit"];
             int total_time_slot = input_parameter["total_time_slot"];
@@ -81,10 +95,7 @@ int main(){
 
             // #pragma omp parallel for
             for(int T = 0; T < round; T++){
-                stringstream ss;
-                string round_str;
-                ss << T;
-                ss >> round_str;
+                string round_str = to_string(round);
                 ofstream ofs;
                 ofs.open(file_path + "Round " + round_str + " log.txt");
 
@@ -95,7 +106,8 @@ int main(){
 
                 string filename = file_path + "input" + round_str + ".txt";
                 string command = "python3 main.py ";
-                if(system((command + filename).c_str()) != 0){
+                string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity);
+                if(system((command + filename + " " + parameter).c_str()) != 0){
                     cerr<<"error:\tsystem proccess python error"<<endl;
                     exit(1);
                 }
@@ -124,7 +136,7 @@ int main(){
                     int request_cnt = unif(generator);
 
                     cerr<< "---------generating requests in main.cpp----------" << endl;
-                    for(int q = 0; q < request_cnt && total_time_slot < 5; q++){
+                    for(int q = 0; q < request_cnt && t < 5; q++){
                         Request new_request = generate_new_request(num_of_node, request_time_limit);
                         // Request new_request = generate_new_request(0, 1, request_time_limit);
                         cerr<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
@@ -158,7 +170,7 @@ int main(){
                 
                 for(auto &algo:algorithms){
                     for(string Y_name : Y_names) {
-                        result[algo->get_name()][Y_name] += algo->get_res(Y_name);
+                        result[T][algo->get_name()][Y_name] += algo->get_res(Y_name);
                     }
                 }
                 now = time(0);
@@ -174,15 +186,17 @@ int main(){
             
             }
 
-
-
+            map<string, map<string, double>> sum_res;
             for(string Y_name : Y_names) {
                 string filename = X_name + "_" + Y_name + ".txt";
                 ofstream ofs;
                 ofs.open(file_path + filename, ios::app);
                 ofs << change_value << ' ';
                 for(string algo_name : algo_names){
-                    ofs << result[algo_name][Y_name] / round << ' ';
+                    for(int T = 0; T < round; T++){
+                        sum_res[algo_name][Y_name] += result[T][algo_name][Y_name];
+                    }
+                    ofs << sum_res[algo_name][Y_name] / round << ' ';
                 }
                 ofs << endl;
                 ofs.close();
