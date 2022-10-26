@@ -44,13 +44,13 @@ int main(){
     default_setting["swap_prob"] = 1;
     default_setting["entangle_alpha"] = 0;
     default_setting["node_time_limit"] = 7;
-    default_setting["new_request_min"] = 10;
-    default_setting["new_request_max"] = 10;
+    default_setting["new_request_min"] = 12;
+    default_setting["new_request_max"] = 12;
     default_setting["request_time_limit"] = 7;
-    default_setting["total_time_slot"] = 20;
+    default_setting["total_time_slot"] = 100;
 
     map<string, vector<double>> change_parameter;
-    change_parameter["swap_prob"] = {1};
+    change_parameter["swap_prob"] = {0.1, 0.3, 0.5, 0.7, 0.9, 1};
     change_parameter["entangle_alpha"] = {0.02, 0.002, 0};
 
     vector<string> X_names = {"swap_prob", "entangle_alpha"};
@@ -134,16 +134,16 @@ int main(){
                     uniform_int_distribution<int> unif(new_request_min, new_request_max);
                     int request_cnt = unif(generator);
 
-                    cerr<< "---------generating requests in main.cpp----------" << endl;
-                    for(int q = 0; q < request_cnt && t < 5; q++){
+                    cout<< "---------generating requests in main.cpp----------" << endl;
+                    for(int q = 0; q < request_cnt && t < 10; q++){
                         Request new_request = generate_new_request(num_of_node, request_time_limit);
                         // Request new_request = generate_new_request(0, 1, request_time_limit);
-                        cerr<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
+                        cout<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
                         for(auto &algo:algorithms){
                             algo->requests.emplace_back(new_request);
                         }
                     }
-                    cerr<< "---------generating requests in main.cpp----------end" << endl;
+                    cout<< "---------generating requests in main.cpp----------end" << endl;
                     
                     //#pragma omp parallel for
                     for(auto &algo:algorithms){

@@ -27,6 +27,11 @@ void WholeRequest::set_divide(bool flag) {
 
 void WholeRequest::temporary_forward() {
     current_temporary++;
+    if(is_finished()) {
+        if(status == REQUEST_UNFINISHED) {
+            status = REQUEST_SUCC;
+        }
+    }
     divide_to_5_qubits = false;
     finished_qubits = 0;
     success_qubits = 0;
@@ -47,8 +52,8 @@ void WholeRequest::try_forward() {
         
         if(is_divide()) {
             if(finished_qubits >= 5) {
-                if(success_qubits >= 4) {
-                    status = REQUEST_SUCC;
+                if(status != REQUEST_FAIL && success_qubits >= 4) {
+                    status = REQUEST_UNFINISHED;
                 } else {
                     status = REQUEST_FAIL;
                 }
