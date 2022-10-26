@@ -174,7 +174,7 @@ vector<vector<int>> MyAlgo::find_5_paths(int src, int dst) {
     return paths;
 }
 
-vector<vector<int>> MyAlgo::get_5_path(int src, int dst) {
+vector<vector<int>> MyAlgo::get_paths(int src, int dst) {
     return path_table[src][dst];
 }
 
@@ -251,6 +251,14 @@ void MyAlgo::path_assignment() {
         whole_requests.emplace_back(request.get_source(), request.get_destination(), request.get_time_limit(), find_path_on_Social(src, dst));
     }
     requests.clear();
+
+    for(WholeRequest request : whole_requests) {
+        if(request.subrequest.empty()) {
+            // find path
+            int temp = request.get_current_temporary();
+            int src = request.trusted_node_path[temp], dst = request.trusted_node_path[temp + 1];
+        }
+    }
 }
 
 void MyAlgo::next_time_slot() {
@@ -280,7 +288,7 @@ void MyAlgo::next_time_slot() {
 }
 
 WholeRequest::WholeRequest(int source, int destination, int time_limit, vector<int> trusted_node_path)
-    : Request(source, destination, time_limit), trusted_node_path(trusted_node_path) {
+    : Request(source, destination, time_limit), trusted_node_path(trusted_node_path), divdie_to_5_qubits(false), temporary_node_index(0) {
     if(DEBUG)cerr<<"new WholeRequest"<<endl;
 }
 

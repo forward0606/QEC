@@ -4,16 +4,22 @@
 #include    <string>
 #include    <limits>
 #include    "../AlgorithmBase/AlgorithmBase.h"
+#include    "../../Request/WholeRequest.h"
 #include    "../../Network/Graph/Graph.h"
 #include    "../../config.h"
+
 using namespace std;
 using SubRequest = Request;
 
 class WholeRequest:public Request {
-public:
     vector<int> trusted_node_path;
+    int current_temporary; // index of node in trusted_node_path
+    bool divdie_to_5_qubits;
+public:
     vector<SubRequest> subrequest;
     WholeRequest(int source, int destination, int time_limit, vector<int> trusted_node_path);
+    int get_temporary_ith();
+    bool is_divide();
 };
 
 

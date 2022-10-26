@@ -43,10 +43,10 @@ if  len(sys.argv) <= 1:
 
 filename = sys.argv[1]
 num_of_node = 100
-min_channel_cnt = 2
+min_channel_cnt = 5
 max_channel_cnt = 10
-min_memory_cnt = 3
-max_memory_cnt = 10
+min_memory_cnt = 9
+max_memory_cnt = 20
 min_fidelity = 0.85
 max_fidelity = 0.99
 print("hello python!")
