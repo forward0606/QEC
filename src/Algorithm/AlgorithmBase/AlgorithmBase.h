@@ -6,6 +6,7 @@
 #include<queue>
 #include <algorithm>
 #include <string>
+#include<map>
 #include "../../Network/Graph/Graph.h"
 #include "../../Request/Request.h"
 #include "../../config.h"
@@ -19,6 +20,7 @@ protected:
     int throughputs;
     int time_limit;
     double swap_prob;
+    map<string, double> res;
     //Request* generate_new_request();
 public:
     vector<Request> requests;
@@ -27,6 +29,7 @@ public:
     virtual~AlgorithmBase();
     double get_swap_prob();
     string get_name();
+    double get_res(string s);
     virtual void path_assignment()=0;
     int find_width(vector<int> path);
     vector<int> BFS(int source, int destination);
@@ -41,7 +44,6 @@ public:
     virtual void next_time_slot()=0;
     void run();
     int total_throughput();
-    map<string, double> result;
 
     Path *find_swap_path(vector<int> path_nodes, map<pair<int, int>, vector<Channel*>> &remain_channels);
 };

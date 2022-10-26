@@ -31,6 +31,7 @@ void AlgorithmBase::base_next_time_slot(){
         finished_reqno.push_back(reqno);
         if(requests[reqno].is_success()){
             throughputs += 1;
+            res["throughputs"]++;
             //result["waiting_time"] += requests[reqno].get_waiting_time(); segmentation fault
         }
     }
@@ -53,11 +54,9 @@ void AlgorithmBase::base_swap(){
     }
 }
 void AlgorithmBase::base_send(){
-    cout<<algorithm_name<<" base_send()"<<endl;
     for(int i=0;i<(int)requests.size();i++){
         requests[i].send();
     }
-    cout<<algorithm_name<<" base_send() end"<<endl;
 }
 
 void AlgorithmBase::run(){
@@ -146,7 +145,7 @@ vector<int> AlgorithmBase::BFS(int source, int destination){
 }
 
 int AlgorithmBase::total_throughput(){
-    return throughputs;
+    return res["throughput"];
 }
 
 Path* AlgorithmBase::find_swap_path(vector<int> path_nodes, map<pair<int, int>, vector<Channel*>> &remain_channels){
@@ -186,4 +185,8 @@ Path* AlgorithmBase::find_swap_path(vector<int> path_nodes, map<pair<int, int>, 
 
 string AlgorithmBase::get_name(){
     return algorithm_name;
+}
+
+double AlgorithmBase::get_res(string s){
+    return res[s];
 }

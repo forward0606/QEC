@@ -449,7 +449,7 @@ void REPS::swap(){
             requests[i] += find_swap_path(path_nodes, remain_channels);
         }
     }
-    AlgorithmBase::swap();
+    AlgorithmBase::base_swap();
 }
 
 tuple<vector<int>, double, bool> REPS::DFS(int req_no, map<pair<int, int>, double>&f_plum_i, bool is_assign_path /*= true*/){

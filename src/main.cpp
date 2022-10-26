@@ -11,10 +11,10 @@
 // #include "Algorithm/REPS/REPS.h"
 using namespace std;
 
-#define ALGCO_GREEDY 0
-#define ALGCO_QCAST 1
-#define ALGCO_REPS 2
-#define ALGO_CNT 3
+// #define ALGCO_GREEDY 0
+// #define ALGCO_QCAST 1
+// #define ALGCO_REPS 2
+// #define ALGO_CNT 3
 
 Request generate_new_request(int num_of_node, int time_limit){
     //亂數引擎 
@@ -50,6 +50,7 @@ int main(){
 
     vector<string> X_names = {"swap_prob", "entangle_alpha"};
     vector<string> Y_names = {"waiting_time", "throughtputs"};
+    vector<string> algo_names = {"Greedy", "QCAST", "REPS"};
     // init result
     for(string X_name : X_names) {
         for(string Y_name : Y_names){
@@ -180,6 +181,10 @@ int main(){
                 ofstream ofs;
                 ofs.open(file_path + filename, ios::app);
                 ofs << change_value << ' ';
+                for(string algo_name : algo_names){
+                    ofs << result[algo_name][Y_name] / round << ' ';
+                }
+                ofs << endl;
                 ofs.close();
             }
         }

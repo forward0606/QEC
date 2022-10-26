@@ -23,6 +23,6 @@ public:
     void path_assignment();
     void entangle();
     void swap();
-    void send()
+    void send();
     void next_time_slot();
 };
