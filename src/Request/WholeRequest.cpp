@@ -2,7 +2,7 @@
 
 WholeRequest::WholeRequest(int source, int destination, int time_limit, vector<int> trusted_node_path)
     :Request(source, destination, time_limit), current_temporary(0), divide_to_5_qubits(false),
-     finished_qubits(0), success_qubits(0), trusted_node_path(trusted_node_path) {
+     finished_qubits(0), success_qubits(0), path_length(0), fidelity(1), trusted_node_path(trusted_node_path) {
     if(DEBUG)cerr<<"new WholeRequest"<<endl;
 }
 

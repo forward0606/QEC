@@ -3,6 +3,7 @@
 #include    <iostream>
 #include    <vector>
 #include    <algorithm>
+#include    <cassert>
 #include    "../config.h"
 #include    "Request.h"
 using namespace std;
