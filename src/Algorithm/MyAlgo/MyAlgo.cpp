@@ -180,7 +180,7 @@ vector<vector<int>> MyAlgo::find_5_paths(int src, int dst) {
                 for(int neighbor : adjacency_list[node]) {
                     adjacency_list[neighbor].erase(find(adjacency_list[neighbor].begin(), adjacency_list[neighbor].end(), node));
                 }
-                adjacency_list[i].clear();
+                adjacency_list[node].clear();
             }
         }
     }
