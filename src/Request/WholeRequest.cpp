@@ -7,6 +7,7 @@ WholeRequest::WholeRequest(int source, int destination, int time_limit, vector<i
 }
 
 double calculate_fidelity(vector<double> paths_fidelity) {
+    assert(!paths_fidelity.empty());
     sort(paths_fidelity.rbegin(), paths_fidelity.rend());
     vector<double> fidelities;
     while(fidelities.size() < 5LL) {
@@ -30,6 +31,7 @@ double calculate_fidelity(vector<double> paths_fidelity) {
 
 double WholeRequest::calculate_subfidelity() {
     if(subrequests.empty()) return 1;
+    if(!is_divide()) return subrequests[0]->get_paths()[0]->fidelity();
 
     vector<double> fidelities;
     for(SubRequest* subrequest : subrequests) {
@@ -37,6 +39,7 @@ double WholeRequest::calculate_subfidelity() {
             cerr << "error subrequest has more than 1 path" << endl;
         }
 
+        assert(!subrequest->get_paths().empty());
         fidelities.push_back(subrequest->get_paths()[0]->fidelity());
     }
 

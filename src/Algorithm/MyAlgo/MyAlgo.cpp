@@ -315,7 +315,7 @@ void MyAlgo::path_assignment() {
                 }
                 for(int path_index = 0; path_index < (int)sufficient_paths.size(); path_index++) {
                     *(request.subrequests[path_index]) += sufficient_paths[path_index];
-                    request.path_length += sufficient_paths[path_index]->get_len() / 5;
+                    request.path_length += sufficient_paths[path_index]->get_len() / (double)5;
                 }
             } else {
                 request.set_divide(false);

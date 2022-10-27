@@ -203,7 +203,7 @@ int main(){
                     finished_request_sum += result[T][algo_name]["finished_throughputs"];
                     result[T][algo_name]["waiting_time"] /= result[T][algo_name]["total_request"];
                     result[T][algo_name]["succ-finished_rate(1)"] = result[T][algo_name]["throughputs"] / result[T][algo_name]["finished_throughputs"];
-                    result[T][algo_name]["path_length"] /= result[T][algo_name]["path_length"] / result[T][algo_name]["finished_throughputs"];
+                    result[T][algo_name]["path_length"] = result[T][algo_name]["path_length"] / result[T][algo_name]["finished_throughputs"];
                 }
                 sum_res[algo_name]["succ-finished_rate(0)"] = succ_request_sum / finished_request_sum;
 
