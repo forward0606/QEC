@@ -1,7 +1,7 @@
 #include"Request.h"
 
-Request::Request(int source, int destination, const int& time_limit)
-    :source(source), destination(destination), waiting_time(0), time_limit(time_limit), throughput(0), status(REQUEST_UNFINISHED){
+Request::Request(int source, int destination, const int& time_limit):source(source),
+    destination(destination), time_limit(time_limit), status(REQUEST_UNFINISHED), send_path_length(0){
     if(DEBUG)cerr<<"new Request"<<endl;
 }
 
@@ -27,20 +27,22 @@ int Request::get_time_limit(){
     return time_limit;
 }
 
-int Request::get_waiting_time(){
-    return waiting_time;
-}
+// int Request::get_waiting_time(){
+//     return waiting_time;
+// }
 int Request::get_source(){ 
     return source;
 }
 int Request::get_destination(){
     return destination;
 }
-
-int Request::get_throughput(){
-    return throughput;
+int Request::get_send_path_length(){
+    if(status == REQUEST_UNFINISHED){
+        cerr<<"error:\tthe request is unfinished!"<<endl;
+        exit(1);
+    }
+    return send_path_length;
 }
-
 vector<Path *> Request::get_paths(){
     return paths;
 }
@@ -61,12 +63,6 @@ void Request::refresh_paths(){
     }
     status = REQUEST_UNFINISHED;
 }
-
-
-void Request::add_one_throughput(){
-    throughput++;
-}
-
 
 void Request::entangle(){
     for(auto &path:paths){
@@ -95,6 +91,7 @@ void Request::send(){
     if(pid == -1){
         return;
     }
+    send_path_length = paths[pid]->get_len();
     if(paths[pid]->send_data()){
         status = REQUEST_SUCC;
     }else{
@@ -111,7 +108,7 @@ bool Request::is_success(){
     }
     return status == REQUEST_SUCC;
 }
-bool Request::next_timeslot(){
+void Request::next_timeslot(){
     for(auto path_ptr:paths){
         if(path_ptr != nullptr){
             path_ptr->release();
@@ -119,11 +116,11 @@ bool Request::next_timeslot(){
         }
     }
     paths.clear();
-    waiting_time++;
-    if(throughput > 0){
-        time_limit--;
-    }
-    return (time_limit == 0) && (throughput > 0);
+    // waiting_time++;
+    // if(throughput > 0){
+    //     time_limit--;
+    // }
+    // return (time_limit == 0) && (throughput > 0);
 }
 
 void Request::operator+=(Path *path){

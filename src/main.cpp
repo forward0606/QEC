@@ -37,12 +37,12 @@ int main(){
 
     map<string, double> default_setting;
     default_setting["num_of_node"] = 100;
-    default_setting["social_density"] = 1;
+    default_setting["social_density"] = 0.5;
     default_setting["min_channel_cnt"] = 3;
     default_setting["max_channel_cnt"] = 7;
     default_setting["min_memory_cnt"] = 10;
     default_setting["max_memory_cnt"] = 14;
-    default_setting["min_fidelity"] = 0.85;
+    default_setting["min_fidelity"] = 0.75;
     default_setting["max_fidelity"] = 0.99;
 
     default_setting["swap_prob"] = 1;
@@ -61,7 +61,7 @@ int main(){
     change_parameter["service_time"] = {1, 5, 10};
 
     vector<string> X_names = {"swap_prob", "entangle_alpha", "min_fidelity", "service_time"};
-    vector<string> Y_names = {"waiting_time", "throughputs", "finished_throughputs", "succ-finished_rate"};
+    vector<string> Y_names = {"waiting_time", "throughputs", "finished_throughputs", "succ-finished_rate", "active_timeslot", "path_length"};
     vector<string> algo_names = {"Greedy", "QCAST", "REPS", "MyAlgo"};
     // init result
     for(string X_name : X_names) {
@@ -72,7 +72,7 @@ int main(){
     }
     
 
-    int round = 10;
+    int round = 20;
     for(string X_name : X_names) {
         map<string, double> input_parameter = default_setting;
 
@@ -134,7 +134,7 @@ int main(){
 
                 ofs<<"---------------in round " <<T<<" -------------" <<endl;
                 for(int t = 0; t < total_time_slot; t++){
-                    ofs<<"---------------in timslot " <<t<<" -------------" <<endl;
+                    ofs<<"---------------in timeslot " <<t<<" -------------" <<endl;
                     //亂數引擎, to decide how many requests received in this timeslot 
                     random_device rd;
                     default_random_engine generator = default_random_engine(rd());

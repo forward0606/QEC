@@ -37,6 +37,7 @@ public:
     void base_swap();
     void base_send();
     void base_next_time_slot();
+    void base_test_active();
     virtual void entangle()=0;
     virtual void swap()=0;
     virtual void send()=0;

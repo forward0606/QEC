@@ -29,10 +29,10 @@ void AlgorithmBase::base_next_time_slot(){
             continue;
         }
         res["finished_throughputs"]++;
+        res["path_length"] += requests[reqno].get_send_path_length();
         finished_reqno.push_back(reqno);
         if(requests[reqno].is_success()){
             res["throughputs"]++;
-            //result["waiting_time"] += requests[reqno].get_waiting_time(); segmentation fault
         }
     }
 
@@ -56,7 +56,12 @@ void AlgorithmBase::base_swap(){
 void AlgorithmBase::base_send(){
     for(int i=0;i<(int)requests.size();i++){
         requests[i].send();
-    }
+   }
+}
+
+void AlgorithmBase::base_test_active(){
+    if(requests.size() != 0) res["active_timeslot"]++;
+    res["waiting_time"] += requests.size();
 }
 
 void AlgorithmBase::run(){

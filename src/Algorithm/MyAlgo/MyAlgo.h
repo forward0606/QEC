@@ -20,11 +20,13 @@ class MyAlgo:public AlgorithmBase {
     vector<vector<vector<double>>> fidelity_table;
 
     void build_all_pair_path();
+    void calculate_before_path_assognment();
     void path_assignment();
     void entangle();
     void swap();
     void send();
     void next_time_slot();
+
 
     int find_width(vector<int> &path, vector<vector<int>> &capacity, vector<int> &remain_qubits);
     double get_weight(int node1_id, int node2_id);

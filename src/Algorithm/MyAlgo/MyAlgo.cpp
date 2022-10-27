@@ -267,12 +267,20 @@ vector<int> MyAlgo::find_path_on_Social(int src, int dst) {
     return path_on_trusted;
 }
 
+void MyAlgo::calculate_before_path_assognment() {
+    if(!whole_requests.empty()) res["active_timeslot"]++;
+    res["waiting_time"] += whole_requests.size();
+}
+
 void MyAlgo::path_assignment() {
+
     for(Request &request : requests) {
         int src = request.get_source(), dst = request.get_destination();
         whole_requests.emplace_back(request.get_source(), request.get_destination(), request.get_time_limit(), find_path_on_Social(src, dst));
     }
     requests.clear();
+    
+    calculate_before_path_assognment();
 
     for(WholeRequest &request : whole_requests) {
         if(request.subrequests.empty()) {
@@ -306,6 +314,7 @@ void MyAlgo::path_assignment() {
                 }
                 for(int path_index = 0; path_index < (int)sufficient_paths.size(); path_index++) {
                     *(request.subrequests[path_index]) += sufficient_paths[path_index];
+                    request.path_length += sufficient_paths[path_index]->get_len() / 5;
                 }
             } else {
                 request.set_divide(false);
@@ -314,7 +323,9 @@ void MyAlgo::path_assignment() {
                 }
                 if(sufficient_fidelities[0] == get_max_fidelity_1_path(src, dst)) {
                     request.subrequests.emplace_back(new SubRequest(src, dst, request.get_time_limit()));
-                    *(request.subrequests.back()) += graph.build_path(paths[first_path_id]);
+                    Path* single_path = graph.build_path(paths[first_path_id]);
+                    *(request.subrequests.back()) += single_path;
+                    request.path_length += single_path->get_len();
                 }
             }
         }

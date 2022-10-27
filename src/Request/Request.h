@@ -16,9 +16,9 @@ const int REQUEST_FAIL = -1;
 class Request{
 protected:
     int source, destination;
-    int waiting_time, time_limit;
-    int throughput;
+    int time_limit;
     int status;
+    int send_path_length;
     vector<Path *> paths;                                       //休學
 public:
     Request(int source, int destination, const int& time_limit);
@@ -29,6 +29,7 @@ public:
     int get_source();
     int get_destination();
     int get_throughput();
+    int get_send_path_length();
     vector<Path *> get_paths();
     
     void clear_paths();
@@ -39,7 +40,7 @@ public:
     void send();
     bool is_finished();
     bool is_success();
-    bool next_timeslot();
+    void next_timeslot();
     void operator+=(Path *path);
     void print();
 };

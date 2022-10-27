@@ -373,6 +373,7 @@ void REPS::EPS(){
 
 
 void REPS::path_assignment(){
+    base_test_active();
     //PFT Using Progressive Rounding
     vector<double> t_plum;
     vector<map<pair<int, int>, double>> f_plum;

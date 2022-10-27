@@ -52,6 +52,9 @@ void WholeRequest::try_forward() {
         
         if(is_divide()) {                           //divide into five qubits
             if(finished_qubits >= 5) {
+                if(finished_qubits > 5) {
+                    cerr << "finished_qubits > 5" << endl;
+                }
                 if(status != REQUEST_FAIL && success_qubits >= 4) {
                     status = REQUEST_UNFINISHED;
                 } else {
@@ -68,6 +71,10 @@ void WholeRequest::try_forward() {
             }
         } else {
             if(finished_qubits >= 1) {
+                if(finished_qubits > 1) {
+                    cerr << "finished_qubits > 1, but undivide" << endl;
+                }
+
                 if(status != REQUEST_FAIL && success_qubits >= 1) {
                     status = REQUEST_UNFINISHED;
                 } else {
