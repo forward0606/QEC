@@ -19,6 +19,7 @@ protected:
     int time_limit;
     int status;
     int send_path_length;
+    double fidelity;
     vector<Path *> paths;                                       //休學
 public:
     Request(int source, int destination, const int& time_limit);
@@ -30,6 +31,7 @@ public:
     int get_destination();
     int get_throughput();
     int get_send_path_length();
+    double get_fidelity();
     vector<Path *> get_paths();
     
     void clear_paths();

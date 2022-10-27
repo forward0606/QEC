@@ -167,18 +167,18 @@ vector<vector<int>> MyAlgo::find_5_paths(int src, int dst) {
             }
         }
 
-        remain_qubits[src]--;
-        remain_qubits[dst]--;
+        remain_qubits[src] -= width;
+        remain_qubits[dst] -= width;
         if(remain_qubits[src] <= 0 || remain_qubits[dst] <= 0) {
             break;
         }
 
         for(int i = 1; i < (int)path.size() - 1; i++) {
             int node = path[i];
-            remain_qubits[node] -= 2;
+            remain_qubits[node] -= 2 * width;
             if(remain_qubits[node] <= 1) {
-                for(int neightbor : adjacency_list[node]) {
-                    adjacency_list[neightbor].erase(find(adjacency_list[neightbor].begin(), adjacency_list[neightbor].end(), node));
+                for(int neighbor : adjacency_list[node]) {
+                    adjacency_list[neighbor].erase(find(adjacency_list[neighbor].begin(), adjacency_list[neighbor].end(), node));
                 }
                 adjacency_list[i].clear();
             }
@@ -369,6 +369,7 @@ void MyAlgo::next_time_slot() {
         if(whole_requests[reqno].is_finished()) {
             res["finished_throughputs"]++;
             res["path_length"] += whole_requests[reqno].path_length;
+            res["fidelity"] += whole_requests[reqno].fidelity;
             finished_reqno.push_back(reqno);
             if(whole_requests[reqno].is_success()) {
                 res["throughputs"]++;

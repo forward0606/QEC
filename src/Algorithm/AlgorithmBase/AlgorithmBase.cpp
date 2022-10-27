@@ -30,6 +30,7 @@ void AlgorithmBase::base_next_time_slot(){
         }
         res["finished_throughputs"]++;
         res["path_length"] += requests[reqno].get_send_path_length();
+        res["fidelity"] += requests[reqno].get_fidelity();
         finished_reqno.push_back(reqno);
         if(requests[reqno].is_success()){
             res["throughputs"]++;

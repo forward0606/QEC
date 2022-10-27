@@ -60,8 +60,10 @@ int main(){
     change_parameter["min_fidelity"] = {0.5, 0.75, 0.85, 0.95, 0.99};
     change_parameter["service_time"] = {1, 5, 10};
 
-    vector<string> X_names = {"swap_prob", "entangle_alpha", "min_fidelity", "service_time"};
-    vector<string> Y_names = {"waiting_time", "throughputs", "finished_throughputs", "succ-finished_rate(0)", "succ-finished_rate(1)", "active_timeslot", "path_length"};
+    vector<string> X_names = {"min_fidelity", "swap_prob",  "entangle_alpha", "service_time"};
+    vector<string> Y_names = {"waiting_time", "throughputs", "finished_throughputs", \
+                            "succ-finished_rate(0)", "succ-finished_rate(1)", "active_timeslot", "path_length", "fidelity", \
+                            "divide_cnt", "undivide_cnt"};
     vector<string> algo_names = {"Greedy", "QCAST", "REPS", "MyAlgo"};
     // init result
     for(string X_name : X_names) {
@@ -203,12 +205,11 @@ int main(){
                 for(int T = 0; T < round; T++){
                     succ_request_sum += result[T][algo_name]["throughputs"];                    
                     finished_request_sum += result[T][algo_name]["finished_throughputs"];
-                    path_length_sum += result[T][algo_name]["path_length"];
                     result[T][algo_name]["waiting_time"] /= result[T][algo_name]["total_request"];
                     result[T][algo_name]["succ-finished_rate(1)"] = result[T][algo_name]["throughputs"] / result[T][algo_name]["finished_throughputs"];
+                    result[T][algo_name]["path_length"] /= result[T][algo_name]["path_length"] / result[T][algo_name]["finished_throughputs"];
                 }
                 sum_res[algo_name]["succ-finished_rate(0)"] = succ_request_sum / finished_request_sum;
-                sum_res[algo_name]["path_length"] = path_length_sum / finished_request_sum;
 
             }
 
@@ -219,7 +220,7 @@ int main(){
                 ofs << change_value << ' ';
                 
                 for(string algo_name : algo_names){
-                    if(Y_name == "succ-finished_rate(0)" || Y_name == "path_length"){
+                    if(Y_name == "succ-finished_rate(0)"){
                         ofs << sum_res[algo_name][Y_name] << ' ';
                     }else{
                         for(int T = 0; T < round; T++){

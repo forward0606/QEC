@@ -43,6 +43,14 @@ int Request::get_send_path_length(){
     }
     return send_path_length;
 }
+
+double Request::get_fidelity(){
+    if(status == REQUEST_UNFINISHED){
+        cerr<<"error:\tthe request is unfinished!alkdjf"<<endl;
+        exit(1);
+    }
+    return fidelity;
+}
 vector<Path *> Request::get_paths(){
     return paths;
 }
@@ -92,6 +100,7 @@ void Request::send(){
         return;
     }
     send_path_length = paths[pid]->get_len();
+    fidelity = paths[pid]->fidelity();
     if(paths[pid]->send_data()){
         status = REQUEST_SUCC;
     }else{

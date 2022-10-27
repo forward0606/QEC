@@ -6,6 +6,43 @@ WholeRequest::WholeRequest(int source, int destination, int time_limit, vector<i
     if(DEBUG)cerr<<"new WholeRequest"<<endl;
 }
 
+double calculate_fidelity(vector<double> paths_fidelity) {
+    sort(paths_fidelity.rbegin(), paths_fidelity.rend());
+    vector<double> fidelities;
+    while(fidelities.size() < 5LL) {
+        for(int i = 0; i < (int)paths_fidelity.size() && fidelities.size() < 5LL; i++) {
+            fidelities.push_back(paths_fidelity[i]);
+        }
+    }
+
+    double product = 1;
+    for(double fidelity : fidelities) {
+        product *= fidelity;
+    }
+
+    double sum = product;
+    for(double fidelity : fidelities) {
+        sum += (product / fidelity) * (1 - fidelity);
+    }
+
+    return sum;
+}
+
+double WholeRequest::calculate_subfidelity() {
+    if(subrequests.empty()) return 1;
+
+    vector<double> fidelities;
+    for(SubRequest* subrequest : subrequests) {
+        if(subrequest->get_paths().size() > 1) {
+            cerr << "error subrequest has more than 1 path" << endl;
+        }
+
+        fidelities.push_back(subrequest->get_paths()[0]->fidelity());
+    }
+
+    return calculate_fidelity(fidelities);
+}
+
 int WholeRequest::get_current_temporary() {
     return current_temporary;
 }
@@ -27,6 +64,7 @@ void WholeRequest::set_divide(bool flag) {
 
 void WholeRequest::temporary_forward() {
     current_temporary++;
+    fidelity *= calculate_subfidelity();
     if(is_finished()) {
         if(status == REQUEST_UNFINISHED) {
             status = REQUEST_SUCC;
@@ -51,7 +89,7 @@ void WholeRequest::try_forward() {
         }
     
     }
-    
+
     if(is_divide()) {                           //divide into five qubits
         if(finished_qubits >= 5) {
             if(finished_qubits > 5) {

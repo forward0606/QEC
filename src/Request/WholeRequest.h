@@ -15,9 +15,11 @@ public:
     int finished_qubits;
     int success_qubits;
     double path_length;
+    double fidelity;
     vector<int> trusted_node_path;
     vector<SubRequest*> subrequests;
     WholeRequest(int source, int destination, int time_limit, vector<int> trusted_node_path);
+    double calculate_subfidelity();
     int get_current_temporary();
     bool is_divide();
     bool is_finished();
