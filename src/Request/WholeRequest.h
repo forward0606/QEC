@@ -2,6 +2,7 @@
 #define __WHOLEREQUEST_H
 #include    <iostream>
 #include    <vector>
+#include    <algorithm>
 #include    "../config.h"
 #include    "Request.h"
 using namespace std;

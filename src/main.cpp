@@ -198,7 +198,6 @@ int main(){
             map<string, map<string, double>> sum_res;
             for(string algo_name : algo_names){
                 double finished_request_sum = 0, succ_request_sum = 0;
-                double path_length_sum = 0;
                 for(int T = 0; T < round; T++){
                     succ_request_sum += result[T][algo_name]["throughputs"];                    
                     finished_request_sum += result[T][algo_name]["finished_throughputs"];
