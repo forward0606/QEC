@@ -12,9 +12,9 @@ class WholeRequest:public Request {
     int current_temporary; // index of node in trusted_node_path
     bool divide_to_5_qubits;
 public:
-    int path_length;
     int finished_qubits;
     int success_qubits;
+    double path_length;
     vector<int> trusted_node_path;
     vector<SubRequest*> subrequests;
     WholeRequest(int source, int destination, int time_limit, vector<int> trusted_node_path);

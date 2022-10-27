@@ -267,7 +267,7 @@ vector<int> MyAlgo::find_path_on_Social(int src, int dst) {
     return path_on_trusted;
 }
 
-void MyAlgo::calculate_before_path_assognment() {
+void MyAlgo::calculate_before_path_assignment() {
     if(!whole_requests.empty()) res["active_timeslot"]++;
     res["waiting_time"] += whole_requests.size();
 }
@@ -280,7 +280,7 @@ void MyAlgo::path_assignment() {
     }
     requests.clear();
     
-    calculate_before_path_assognment();
+    calculate_before_path_assignment();
 
     for(WholeRequest &request : whole_requests) {
         if(request.subrequests.empty()) {
@@ -309,6 +309,7 @@ void MyAlgo::path_assignment() {
             
             if(fidelity >= fidelity_threshold) {
                 request.set_divide(true);
+                res["divide_cnt"]++;
                 for(int path_index = 0; path_index < (int)sufficient_paths.size(); path_index++) {
                     request.subrequests.emplace_back(new SubRequest(src, dst, request.get_time_limit()));
                 }
@@ -321,7 +322,9 @@ void MyAlgo::path_assignment() {
                 for(Path* &path : sufficient_paths) {
                     path->release();
                 }
-                if(sufficient_fidelities[0] == get_max_fidelity_1_path(src, dst)) {
+
+                if(sufficient_fidelities[0] >= fidelity_threshold) {
+                    res["undivide_cnt"]++;
                     request.subrequests.emplace_back(new SubRequest(src, dst, request.get_time_limit()));
                     Path* single_path = graph.build_path(paths[first_path_id]);
                     *(request.subrequests.back()) += single_path;
@@ -365,6 +368,7 @@ void MyAlgo::next_time_slot() {
     for(int reqno = 0; reqno < (int)whole_requests.size(); reqno++) {
         if(whole_requests[reqno].is_finished()) {
             res["finished_throughputs"]++;
+            res["path_length"] += whole_requests[reqno].path_length;
             finished_reqno.push_back(reqno);
             if(whole_requests[reqno].is_success()) {
                 res["throughputs"]++;

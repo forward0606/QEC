@@ -49,39 +49,40 @@ void WholeRequest::try_forward() {
                 success_qubits++;
             }
         }
-        
-        if(is_divide()) {                           //divide into five qubits
-            if(finished_qubits >= 5) {
-                if(finished_qubits > 5) {
-                    cerr << "finished_qubits > 5" << endl;
-                }
-                if(status != REQUEST_FAIL && success_qubits >= 4) {
-                    status = REQUEST_UNFINISHED;
-                } else {
-                    status = REQUEST_FAIL;
-                }
-                temporary_forward();
+    
+    }
+    
+    if(is_divide()) {                           //divide into five qubits
+        if(finished_qubits >= 5) {
+            if(finished_qubits > 5) {
+                cerr << "error: finished_qubits > 5" << endl;
+            }
+            if(status != REQUEST_FAIL && success_qubits >= 4) {
+                status = REQUEST_UNFINISHED;
             } else {
-                int need = (5 - finished_qubits);
-                int remove_cnt = (int)subrequests.size() - need;
-                for(int i = 0; i < remove_cnt; i++) {
-                    delete subrequests.back();
-                    subrequests.pop_back();
-                }
+                status = REQUEST_FAIL;
             }
+            temporary_forward();
         } else {
-            if(finished_qubits >= 1) {
-                if(finished_qubits > 1) {
-                    cerr << "finished_qubits > 1, but undivide" << endl;
-                }
-
-                if(status != REQUEST_FAIL && success_qubits >= 1) {
-                    status = REQUEST_UNFINISHED;
-                } else {
-                    status = REQUEST_FAIL;
-                }
-                temporary_forward();
+            int need = (5 - finished_qubits);
+            int remove_cnt = (int)subrequests.size() - need;
+            for(int i = 0; i < remove_cnt; i++) {
+                delete subrequests.back();
+                subrequests.pop_back();
             }
+        }
+    } else {
+        if(finished_qubits >= 1) {
+            if(finished_qubits > 1) {
+                cerr << "error: finished_qubits > 1, but undivide" << endl;
+            }
+
+            if(status != REQUEST_FAIL && success_qubits == 1) {
+                status = REQUEST_UNFINISHED;
+            } else {
+                status = REQUEST_FAIL;
+            }
+            temporary_forward();
         }
     }
 }

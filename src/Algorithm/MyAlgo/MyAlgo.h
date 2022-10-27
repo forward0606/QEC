@@ -20,7 +20,7 @@ class MyAlgo:public AlgorithmBase {
     vector<vector<vector<double>>> fidelity_table;
 
     void build_all_pair_path();
-    void calculate_before_path_assognment();
+    void calculate_before_path_assignment();
     void path_assignment();
     void entangle();
     void swap();
