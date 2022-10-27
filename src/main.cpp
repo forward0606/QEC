@@ -144,9 +144,6 @@ int main(){
                     int request_cnt = unif(generator);
 
                     cout<< "---------generating requests in main.cpp----------" << endl;
-                    for(auto &algo:algorithms){
-                        result[T][algo->get_name()]["total_request"] = 0;
-                    }
                     for(int q = 0; q < request_cnt && t < service_time; q++){
                         Request new_request = generate_new_request(num_of_node, request_time_limit);
                         // Request new_request = generate_new_request(0, 1, request_time_limit);
@@ -182,7 +179,7 @@ int main(){
                 
                 for(auto &algo:algorithms){
                     for(string Y_name : Y_names) {
-                        result[T][algo->get_name()][Y_name] += algo->get_res(Y_name);
+                        result[T][algo->get_name()][Y_name] = algo->get_res(Y_name);
                     }
                 }
                 now = time(0);
