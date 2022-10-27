@@ -52,18 +52,21 @@ int main(){
     default_setting["new_request_max"] = 12;
     default_setting["request_time_limit"] = 7;
     default_setting["total_time_slot"] = 100;
+    default_setting["service_time"] = 10;
 
     map<string, vector<double>> change_parameter;
     change_parameter["swap_prob"] = {0.1, 0.3, 0.5, 0.7, 0.9, 1};
     change_parameter["entangle_alpha"] = {0.02, 0.002, 0};
+    change_parameter["min_fidelity"] = {0.5, 0.75, 0.85, 0.95, 0.99};
+    change_parameter["service_time"] = {1, 5, 10};
 
-    vector<string> X_names = {"swap_prob", "entangle_alpha", "min_fidelity"};
-    vector<string> Y_names = {"waiting_time", "throughputs", "finished_throghputs", "succ-finished_rate"};
+    vector<string> X_names = {"swap_prob", "entangle_alpha", "min_fidelity", "service_time"};
+    vector<string> Y_names = {"waiting_time", "throughputs", "finished_throughputs", "succ-finished_rate"};
     vector<string> algo_names = {"Greedy", "QCAST", "REPS", "MyAlgo"};
     // init result
     for(string X_name : X_names) {
         for(string Y_name : Y_names){
-            string filename = X_name + "_" + Y_name + ".txt";
+            string filename = "ans/" + X_name + "_" + Y_name + ".ans";
             fstream file( file_path + filename, ios::out );
         }
     }
@@ -89,23 +92,24 @@ int main(){
             double swap_prob = input_parameter["swap_prob"], entangle_alpha = input_parameter["entangle_alpha"];
             int node_time_limit = input_parameter["node_time_limit"];
             int new_request_min = input_parameter["new_request_min"], new_request_max = input_parameter["new_request_max"];
+            int service_time = input_parameter["service_time"];
             int request_time_limit = input_parameter["request_time_limit"];
             int total_time_slot = input_parameter["total_time_slot"];
 
             // python generate graph
 
-            // #pragma omp parallel for
+            #pragma omp parallel for
             for(int T = 0; T < round; T++){
                 string round_str = to_string(T);
                 ofstream ofs;
-                ofs.open(file_path + X_name + "_in_" + to_string(change_value) + "_Round_" + round_str + "_log.txt");
+                ofs.open(file_path + "log/" + X_name + "_in_" + to_string(change_value) + "_Round_" + round_str + ".log");
 
                 time_t now = time(0);
                 char* dt = ctime(&now);
                 cerr  << "時間 " << dt << endl << endl; 
                 ofs  << "時間 " << dt << endl << endl; 
 
-                string filename = file_path + "input" + round_str + ".txt";
+                string filename = file_path + "input/round_" + round_str + ".input";
                 string command = "python3 main.py ";
                 string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity) + " " + to_string(social_density);
                 if(system((command + filename + " " + parameter).c_str()) != 0){
@@ -141,7 +145,7 @@ int main(){
                     for(auto &algo:algorithms){
                         result[T][algo->get_name()]["total_request"] = 0;
                     }
-                    for(int q = 0; q < request_cnt && t < 10; q++){
+                    for(int q = 0; q < request_cnt && t < service_time; q++){
                         Request new_request = generate_new_request(num_of_node, request_time_limit);
                         // Request new_request = generate_new_request(0, 1, request_time_limit);
                         cout<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
@@ -196,14 +200,14 @@ int main(){
             for(string algo_name : algo_names){
                 double finished_request_num = 0, succ_request_sum = 0;
                 for(int T = 0; T < round; T++){
-                    succ_request_sum += result[T][algo_name]["throughput"];                    
+                    succ_request_sum += result[T][algo_name]["throughputs"];                    
                     finished_request_num += result[T][algo_name]["finished_throughputs"];
                 }
                 sum_res[algo_name]["succ-finished_rate"] = succ_request_sum / finished_request_num;
             }
 
             for(string Y_name : Y_names) {
-                string filename = X_name + "_" + Y_name + ".txt";
+                string filename = "ans/" + X_name + "_" + Y_name + ".ans";
                 ofstream ofs;
                 ofs.open(file_path + filename, ios::app);
                 ofs << change_value << ' ';

@@ -73,4 +73,6 @@ clean:
 	rm -f config.o config.h.gch
 	find . -type f -name '*.o' -delete
 	find . -type f -name '*.h.gch' -delete
-	rm -f ../data/*.txt
+	rm -f ../data/ans/*
+	rm -f ../data/log/*
+	rm -f ../data/input/*
