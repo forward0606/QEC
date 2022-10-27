@@ -18,7 +18,7 @@ bool WholeRequest::is_finished() {
 }
 
 bool WholeRequest::is_success() {
-    return status;
+    return status == REQUEST_SUCC;
 }
 
 void WholeRequest::set_divide(bool flag) {
