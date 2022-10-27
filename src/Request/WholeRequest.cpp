@@ -67,8 +67,8 @@ void WholeRequest::try_forward() {
                 }
             }
         } else {
-            if(finished_qubits == 1) {
-                if(success_qubits == 1) {
+            if(finished_qubits >= 1) {
+                if(status != REQUEST_FAIL && success_qubits >= 1) {
                     status = REQUEST_UNFINISHED;
                 } else {
                     status = REQUEST_FAIL;
