@@ -28,6 +28,7 @@ void AlgorithmBase::base_next_time_slot(){
         if(!requests[reqno].is_finished()) {
             continue;
         }
+        res["finished_throughputs"]++;
         finished_reqno.push_back(reqno);
         if(requests[reqno].is_success()){
             res["throughputs"]++;

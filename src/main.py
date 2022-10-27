@@ -57,7 +57,7 @@ def genSocialNetwork(self, userNum, density):
                 self.topo.SN[j].append(i)
 
 
-if  len(sys.argv) <= 8:
+if  len(sys.argv) <= 9:
     print("missing argv")
     sys.exit()
 
@@ -70,6 +70,8 @@ min_memory_cnt = int(sys.argv[5])
 max_memory_cnt = int(sys.argv[6])
 min_fidelity = float(sys.argv[7])
 max_fidelity = float(sys.argv[8])
+socail_density = float(sys.argv[9])
+
 
 
 print("--------------generating graph--------------", file=sys.stderr)

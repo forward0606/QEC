@@ -15,6 +15,7 @@ using namespace std;
 
 const bool debug = false;
 
+
 Request generate_new_request(int num_of_node, int time_limit){
     //亂數引擎 
     random_device rd;
@@ -55,10 +56,9 @@ int main(){
     map<string, vector<double>> change_parameter;
     change_parameter["swap_prob"] = {0.1, 0.3, 0.5, 0.7, 0.9, 1};
     change_parameter["entangle_alpha"] = {0.02, 0.002, 0};
-    change_parameter["min_fidelity"] = {0.75, 0.85, 0.95, 0.99};
 
     vector<string> X_names = {"swap_prob", "entangle_alpha", "min_fidelity"};
-    vector<string> Y_names = {"waiting_time", "throughputs"};
+    vector<string> Y_names = {"waiting_time", "throughputs", "finished_throghputs", "succ-finished_rate"};
     vector<string> algo_names = {"Greedy", "QCAST", "REPS", "MyAlgo"};
     // init result
     for(string X_name : X_names) {
@@ -72,21 +72,6 @@ int main(){
     int round = 10;
     for(string X_name : X_names) {
         map<string, double> input_parameter = default_setting;
-        
-        // python generate graph
-        // #pragma omp parallel for
-        for(int T = 0; T < round; T++){
-            string round_str = to_string(T);
-            string filename = file_path + "input" + round_str + ".txt";
-            string command = "python3 main.py ";
-            string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt); 
-            parameter += " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) 
-            parameter += " " + to_string(max_fidelity) + " " + to_string(social_density);
-            if(system((command + filename + " " + parameter).c_str()) != 0){
-                cerr<<"error:\tsystem proccess python error"<<endl;
-                exit(1);
-            }
-        }
 
         for(double change_value : change_parameter[X_name]) {
             vector<map<string, map<string, double>>> result(round);
@@ -107,23 +92,28 @@ int main(){
             int request_time_limit = input_parameter["request_time_limit"];
             int total_time_slot = input_parameter["total_time_slot"];
 
-            
+            // python generate graph
 
             // #pragma omp parallel for
             for(int T = 0; T < round; T++){
-
+                string round_str = to_string(T);
                 ofstream ofs;
                 ofs.open(file_path + X_name + "_in_" + to_string(change_value) + "_Round_" + round_str + "_log.txt");
+
                 time_t now = time(0);
                 char* dt = ctime(&now);
                 cerr  << "時間 " << dt << endl << endl; 
                 ofs  << "時間 " << dt << endl << endl; 
 
+                string filename = file_path + "input" + round_str + ".txt";
+                string command = "python3 main.py ";
+                string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity) + " " + to_string(social_density);
+                if(system((command + filename + " " + parameter).c_str()) != 0){
+                    cerr<<"error:\tsystem proccess python error"<<endl;
+                    exit(1);
+                }
                 if(debug) filename = "debug_graph.txt";
                 int num_of_node;
-                
-                string round_str = to_string(T);
-                string filename = file_path + "input" + round_str + ".txt";
                 ifstream graph_input;
                 graph_input.open (filename);
                 graph_input >> num_of_node;
@@ -148,11 +138,13 @@ int main(){
                     int request_cnt = unif(generator);
 
                     cout<< "---------generating requests in main.cpp----------" << endl;
+                    result[T][algo->get_name()]["total_request"] = 0;
                     for(int q = 0; q < request_cnt && t < 10; q++){
                         Request new_request = generate_new_request(num_of_node, request_time_limit);
                         // Request new_request = generate_new_request(0, 1, request_time_limit);
                         cout<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
                         for(auto &algo:algorithms){
+                            result[T][algo->get_name()]["total_request"]++; 
                             algo->requests.emplace_back(new_request);
                         }
                     }
@@ -197,6 +189,15 @@ int main(){
                 algorithms.clear();
             
             }
+            
+            for(string algo_name : algo_names){
+                double finished_request_num = 0, succ_request_sum = 0;
+                for(int T = 0; T < round; T++){
+                    succ_request_sum += result[T][algo_name]["throughput"];                    
+                    finished_request_num += result[T][algo_name]["finished_throughputs"];
+                }
+                sum_res[algo_name]["succ-finished_rate"] = succ_request_sum / finished_request_num;
+            }
 
             map<string, map<string, double>> sum_res;
             for(string Y_name : Y_names) {
@@ -204,11 +205,16 @@ int main(){
                 ofstream ofs;
                 ofs.open(file_path + filename, ios::app);
                 ofs << change_value << ' ';
+                
                 for(string algo_name : algo_names){
-                    for(int T = 0; T < round; T++){
-                        sum_res[algo_name][Y_name] += result[T][algo_name][Y_name];
+                    if(Y_name == "succ-finished_rate"){
+                        ofs << sum_res[algo_name][Y_name] << ' ';
+                    }else{
+                        for(int T = 0; T < round; T++){
+                            sum_res[algo_name][Y_name] += result[T][algo_name][Y_name];
+                        }
+                        ofs << sum_res[algo_name][Y_name] / round << ' ';
                     }
-                    ofs << sum_res[algo_name][Y_name] / round << ' ';
                 }
                 ofs << endl;
                 ofs.close();

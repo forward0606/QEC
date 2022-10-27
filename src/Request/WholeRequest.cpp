@@ -50,7 +50,7 @@ void WholeRequest::try_forward() {
             }
         }
         
-        if(is_divide()) {
+        if(is_divide()) {                           //divide into five qubits
             if(finished_qubits >= 5) {
                 if(status != REQUEST_FAIL && success_qubits >= 4) {
                     status = REQUEST_UNFINISHED;
@@ -69,7 +69,7 @@ void WholeRequest::try_forward() {
         } else {
             if(finished_qubits == 1) {
                 if(success_qubits == 1) {
-                    status = REQUEST_SUCC;
+                    status = REQUEST_UNFINISHED;
                 } else {
                     status = REQUEST_FAIL;
                 }

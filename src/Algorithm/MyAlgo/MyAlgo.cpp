@@ -353,6 +353,7 @@ void MyAlgo::next_time_slot() {
     vector<int> finished_reqno;
     for(int reqno = 0; reqno < (int)whole_requests.size(); reqno++) {
         if(whole_requests[reqno].is_finished()) {
+            res["finished_throughputs"]++;
             finished_reqno.push_back(reqno);
             if(whole_requests[reqno].is_success()) {
                 res["throughputs"]++;
