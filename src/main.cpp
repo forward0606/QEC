@@ -12,6 +12,9 @@
 #include "Algorithm/MyAlgo/MyAlgo.h"
 using namespace std;
 
+
+const bool debug = false;
+
 Request generate_new_request(int num_of_node, int time_limit){
     //亂數引擎 
     random_device rd;
@@ -34,10 +37,10 @@ int main(){
     map<string, double> default_setting;
     default_setting["num_of_node"] = 100;
     default_setting["social_density"] = 1;
-    default_setting["min_channel_cnt"] = 5;
-    default_setting["max_channel_cnt"] = 10;
-    default_setting["min_memory_cnt"] = 9;
-    default_setting["max_memory_cnt"] = 20;
+    default_setting["min_channel_cnt"] = 3;
+    default_setting["max_channel_cnt"] = 7;
+    default_setting["min_memory_cnt"] = 10;
+    default_setting["max_memory_cnt"] = 14;
     default_setting["min_fidelity"] = 0.85;
     default_setting["max_fidelity"] = 0.99;
 
@@ -52,8 +55,9 @@ int main(){
     map<string, vector<double>> change_parameter;
     change_parameter["swap_prob"] = {0.1, 0.3, 0.5, 0.7, 0.9, 1};
     change_parameter["entangle_alpha"] = {0.02, 0.002, 0};
+    change_parameter["min_fidelity"] = {0.75, 0.85, 0.95, 0.99};
 
-    vector<string> X_names = {"swap_prob", "entangle_alpha"};
+    vector<string> X_names = {"swap_prob", "entangle_alpha", "min_fidelity"};
     vector<string> Y_names = {"waiting_time", "throughputs"};
     vector<string> algo_names = {"Greedy", "QCAST", "REPS", "MyAlgo"};
     // init result
@@ -68,6 +72,21 @@ int main(){
     int round = 10;
     for(string X_name : X_names) {
         map<string, double> input_parameter = default_setting;
+        
+        // python generate graph
+        // #pragma omp parallel for
+        for(int T = 0; T < round; T++){
+            string round_str = to_string(T);
+            string filename = file_path + "input" + round_str + ".txt";
+            string command = "python3 main.py ";
+            string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt); 
+            parameter += " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) 
+            parameter += " " + to_string(max_fidelity) + " " + to_string(social_density);
+            if(system((command + filename + " " + parameter).c_str()) != 0){
+                cerr<<"error:\tsystem proccess python error"<<endl;
+                exit(1);
+            }
+        }
 
         for(double change_value : change_parameter[X_name]) {
             vector<map<string, map<string, double>>> result(round);
@@ -88,29 +107,23 @@ int main(){
             int request_time_limit = input_parameter["request_time_limit"];
             int total_time_slot = input_parameter["total_time_slot"];
 
-            bool debug = false;
-            // python generate graph
+            
 
             // #pragma omp parallel for
             for(int T = 0; T < round; T++){
-                string round_str = to_string(T);
-                ofstream ofs;
-                ofs.open(file_path + X_name + "_Round_" + round_str + "_log.txt");
 
+                ofstream ofs;
+                ofs.open(file_path + X_name + "_in_" + to_string(change_value) + "_Round_" + round_str + "_log.txt");
                 time_t now = time(0);
                 char* dt = ctime(&now);
                 cerr  << "時間 " << dt << endl << endl; 
                 ofs  << "時間 " << dt << endl << endl; 
 
-                string filename = file_path + "input" + round_str + ".txt";
-                string command = "python3 main.py ";
-                string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity) + " " + to_string(social_density);
-                if(system((command + filename + " " + parameter).c_str()) != 0){
-                    cerr<<"error:\tsystem proccess python error"<<endl;
-                    exit(1);
-                }
                 if(debug) filename = "debug_graph.txt";
                 int num_of_node;
+                
+                string round_str = to_string(T);
+                string filename = file_path + "input" + round_str + ".txt";
                 ifstream graph_input;
                 graph_input.open (filename);
                 graph_input >> num_of_node;
