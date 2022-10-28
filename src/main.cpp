@@ -42,8 +42,8 @@ int main(){
     default_setting["channel_cnt_avg"] = 5;
     default_setting["memory_cnt_avg"] = 12;
     default_setting["resource_ratio"] = 1;
-    default_setting["min_fidelity"] = 0.75;
-    default_setting["max_fidelity"] = 0.99;
+    default_setting["min_fidelity"] = 0.7;
+    default_setting["max_fidelity"] = 0.95;
 
     default_setting["swap_prob"] = 1;
     default_setting["entangle_alpha"] = 0;
@@ -57,7 +57,7 @@ int main(){
     map<string, vector<double>> change_parameter;
     change_parameter["swap_prob"] = {0.3, 0.5, 0.7, 0.9, 1};
     change_parameter["entangle_alpha"] = {0.02, 0.002, 0.0002, 0};
-    change_parameter["min_fidelity"] = {0.5, 0.75, 0.85, 0.95, 0.99};
+    change_parameter["min_fidelity"] = {0.5, 0.7, 0.75, 0.85, 0.95};
     change_parameter["resource_ratio"] = {0.5, 1, 2, 10}; 
     change_parameter["service_time"] = {1, 5, 10};
     change_parameter["area_alpha"] = {0.001, 0.01, 0.1}; 
