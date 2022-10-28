@@ -66,17 +66,22 @@ void AlgorithmBase::base_test_active(){
 }
 
 void AlgorithmBase::check_resource(){
+    double use_memory_sum = 0, memory_sum = 0, use_channel_sum = 0, channel_sum = 0;
     for(int i = 0; i < (int)graph.get_size(); i++){
         Node *node_ptr = graph.Node_id2ptr(i);
-        res["use_memory"] += node_ptr->get_memory_cnt() - node_ptr->get_remain();
-        res["total_memory"] += node_ptr->get_memory_cnt();
+        use_memory_sum += node_ptr->get_memory_cnt() - node_ptr->get_remain();
+        memory_sum += node_ptr->get_memory_cnt();
     }
+    res["use_memory"] = max(res["use_memory"], use_memory_sum);
+    res["total_memory"] = memory_sum;
     for(int i = 0; i < (int)graph.get_size(); i++){
         for(int j = i+1; j < (int)graph.get_size(); j++){
-            res["use_channel"] += graph.get_used_channel_size(i, j);
-            res["total_channel"] += graph.get_channel_size(i, j);
+            use_channel_sum += graph.get_used_channel_size(i, j);
+            channel_sum += graph.get_channel_size(i, j);
         }
     }
+    res["use_channel"] = max(res["use_channel"], use_channel_sum);
+    res["total_channel"] = channel_sum;
 }
 
 void AlgorithmBase::run(){
