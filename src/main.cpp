@@ -38,7 +38,7 @@ int main(){
     map<string, double> default_setting;
     default_setting["num_of_node"] = 100;
     default_setting["social_density"] = 0.5;
-    default_setting["area"] = 1;
+    default_setting["area_alpha"] = 0.1;
     default_setting["channel_cnt_avg"] = 5;
     default_setting["memory_cnt_avg"] = 12;
     default_setting["resource_ratio"] = 1;
@@ -60,10 +60,11 @@ int main(){
     change_parameter["min_fidelity"] = {0.5, 0.75, 0.85, 0.95, 0.99};
     change_parameter["resource_ratio"] = {0.5, 1, 2, 10}; 
     change_parameter["service_time"] = {1, 5, 10};
-    change_parameter["area"] = {1, 2, 5, 10}; 
+    // change_parameter["area"] = {1, 10, 100, 1000}; 
+    change_parameter["area_alpha"] = {0.01, 0.05, 0.1}; 
     change_parameter["social_density"] = {0.25, 0.5, 0.75, 1}; 
 
-    vector<string> X_names = {"area", "resource_ratio", "social_density", "min_fidelity", "swap_prob",  "entangle_alpha", "service_time"};
+    vector<string> X_names = {"area_alpha", "resource_ratio", "social_density", "min_fidelity", "swap_prob",  "entangle_alpha", "service_time"};
     vector<string> Y_names = {"waiting_time", "throughputs", "finished_throughputs", \
                             "succ-finished_rate", "active_timeslot", "path_length", "fidelity", \
                             "divide_cnt", "undivide_cnt", "resource_cnt"};
@@ -87,7 +88,7 @@ int main(){
             
             int num_of_node = input_parameter["num_of_node"];
             double social_density = input_parameter["social_density"];
-            double area = input_parameter["area"];
+            double area_alpha = input_parameter["area_alpha"];
             double resource_ratio = input_parameter["resource_ratio"];
             int min_channel_cnt = input_parameter["channel_cnt_avg"] * resource_ratio - 2;
             int max_channel_cnt = input_parameter["channel_cnt_avg"] * resource_ratio + 2;
@@ -118,7 +119,7 @@ int main(){
 
                 string filename = file_path + "input/round_" + round_str + ".input";
                 string command = "python3 main.py ";
-                string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity) + " " + to_string(social_density) + " " + to_string(area);
+                string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity) + " " + to_string(social_density) + " " + to_string(area_alpha);
                 if(system((command + filename + " " + parameter).c_str()) != 0){
                     cerr<<"error:\tsystem proccess python error"<<endl;
                     exit(1);

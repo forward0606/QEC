@@ -73,7 +73,7 @@ max_memory_cnt = int(sys.argv[6])
 min_fidelity = float(sys.argv[7])
 max_fidelity = float(sys.argv[8])
 socail_density = float(sys.argv[9])
-area = float(sys.argv[10])
+area_alpha = float(sys.argv[10])
 
 
 
@@ -86,7 +86,7 @@ print("min_memory_cnt = ", min_memory_cnt, ", max_memory_cnt = ", max_memory_cnt
 
 
 while True:
-    G = nx.waxman_graph(num_of_node, beta=0.85, alpha=0.1, domain=(0, 0, 0.5*area, 1*area))
+    G = nx.waxman_graph(num_of_node, beta=0.85, alpha=area_alpha, domain=(0, 0, 0.5, 1))
     #G = nx.waxman_graph(num_of_node, beta=0.85, alpha=10, domain=(0, 0, 0.5, 1))
 
     positions = nx.get_node_attributes(G, 'pos')
@@ -117,7 +117,7 @@ positions = nx.get_node_attributes(G, 'pos')
 print(num_of_node, file=f)
 for n in G.nodes():
     (p1, p2) = positions[n]
-    print(str(p1 * 20/area) + ' ' + str(p2 * 20/area) + " " + str(ceil(random.random()*(max_memory_cnt-min_memory_cnt)) + min_memory_cnt), file=f)
+    print(str(p1 * 20) + ' ' + str(p2 * 20) + " " + str(ceil(random.random()*(max_memory_cnt-min_memory_cnt)) + min_memory_cnt), file=f)
 cnt = 0
 for e in G.edges():
     if e[0] != e[1]:#file
