@@ -76,7 +76,6 @@ socail_density = float(sys.argv[9])
 area_alpha = float(sys.argv[10])
 
 
-
 print("--------------generating graph--------------", file=sys.stderr)
 print("--------------generating graph--------------")
 print("filename = ", filename, file=sys.stderr)
@@ -117,7 +116,7 @@ positions = nx.get_node_attributes(G, 'pos')
 print(num_of_node, file=f)
 for n in G.nodes():
     (p1, p2) = positions[n]
-    print(str(p1 * 20) + ' ' + str(p2 * 20) + " " + str(ceil(random.random()*(max_memory_cnt-min_memory_cnt)) + min_memory_cnt), file=f)
+    print(str(p1 * 2000) + ' ' + str(p2 * 2000) + " " + str(ceil(random.random()*(max_memory_cnt-min_memory_cnt)) + min_memory_cnt), file=f)
 cnt = 0
 for e in G.edges():
     if e[0] != e[1]:#file

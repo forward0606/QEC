@@ -68,7 +68,14 @@ void AlgorithmBase::base_test_active(){
 void AlgorithmBase::check_resource(){
     for(int i = 0; i < (int)graph.get_size(); i++){
         Node *node_ptr = graph.Node_id2ptr(i);
-        res["resource_cnt"] += node_ptr->get_memory_cnt() - node_ptr->get_remain();
+        res["use_memory"] += node_ptr->get_memory_cnt() - node_ptr->get_remain();
+        res["total_memory"] += node_ptr->get_memory_cnt();
+    }
+    for(int i = 0; i < (int)graph.get_size(); i++){
+        for(int j = i+1; j < (int)graph.get_size(); j++){
+            res["use_channel"] += graph.get_used_channel_size(i, j);
+            res["total_channel"] += graph.get_channel_size(i, j);
+        }
     }
 }
 

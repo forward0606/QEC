@@ -69,6 +69,19 @@ int Graph::get_channel_size(int node1_id, int node2_id){
     const Node &node1 = nodes[node1_id], &node2 = nodes[node2_id];
     return (int)channels[make_pair(node1, node2)].size();
 }
+int Graph::get_used_channel_size(int node1_id, int node2_id){
+    if(nodes[node1_id] > nodes[node2_id]){
+        swap(node1_id, node2_id);
+    }
+    const Node &node1 = nodes[node1_id], &node2 = nodes[node2_id];
+    int cnt = 0;
+    for(auto &c:channels[make_pair(node1, node2)]){
+        if(c.is_used()){
+            cnt++;
+        }
+    }
+    return cnt;
+}
 
 int Graph::get_channel_entangle_succ_cnt(int node1_id, int node2_id){
     if(nodes[node1_id] > nodes[node2_id]){
@@ -119,6 +132,7 @@ void Graph::generate(string filename){
     int node_id1, node_id2;
     int channel_cnt;
     double fidelity;
+    double dis_sum = 0;
     graph_input >> num_of_edge;
     for(int i=0;i<num_of_edge;i++){
         graph_input >> node_id1 >> node_id2 >> channel_cnt >> fidelity;
@@ -135,14 +149,13 @@ void Graph::generate(string filename){
             cerr<<"error:\texist an edge with same node!"<<endl;
             exit(1);
 	    }
-        
+        dis_sum += node1.distance(node2);
         double entangle_prob = exp(-entangle_alpha * (node1.distance(node2))); // e^( -alpha * dis(node1, node2) )
         if(DEBUG) cerr<<"entangle_prob:\t"<<entangle_prob<<endl;
         for(int i = 0; i < channel_cnt; i++){
             channels[make_pair(node1, node2)].emplace_back(&node1, &node2, entangle_prob, fidelity);
         }
     }
-
     int is_trust;
     for(int i = 0; i < num_of_node; i++){
         for(int j = 0; j < num_of_node; j++){
