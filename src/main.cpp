@@ -66,7 +66,7 @@ int main(){
     vector<string> X_names = {"area_alpha", "resource_ratio", "social_density", "min_fidelity", "swap_prob",  "entangle_alpha", "service_time"};
     vector<string> Y_names = {"waiting_time", "throughputs", "finished_throughputs", \
                             "succ-finished_ratio", "active_timeslot", "path_length", "fidelity", \
-                            "divide_cnt", "undivide_cnt", "use_memory_ratio", "use_channel_ratio"};
+                            "divide_cnt", "undivide_cnt", "use_memory_ratio", "use_channel_ratio", "runtime"};
     vector<string> algo_names = {"Greedy", "QCAST", "REPS", "MyAlgo"};
     // init result
     for(string X_name : X_names) {
@@ -165,7 +165,6 @@ int main(){
                         ofs<<"-----------run "<< algo->get_name() << " ---------"<<endl;
                         
                         algo->run();
-                        algo->next_time_slot();
                         ofs<<"total_throughputs : "<<algo->get_res("throughputs")<<endl;
                         ofs<<"-----------run "<<algo->get_name() << " ---------end"<<endl;
                     }

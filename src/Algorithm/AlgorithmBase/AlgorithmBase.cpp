@@ -80,12 +80,18 @@ void AlgorithmBase::check_resource(){
 }
 
 void AlgorithmBase::run(){
+    timeval start;
+    timeval end;
+    gettimeofday(&start, NULL);
     path_assignment();
     check_resource();
     entangle();
     swap();
     send();
     cout<<algorithm_name<<" run end"<<endl;
+    next_time_slot();
+    gettimeofday(&end, NULL);
+    res["runtime"] += (1000000LL * (end.tv_sec - start.tv_sec) + end.tv_usec - start.tv_usec) / 1000000.0;
 }
 
 int AlgorithmBase::find_width(vector<int> path){
