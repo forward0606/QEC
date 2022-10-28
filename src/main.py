@@ -46,11 +46,14 @@ def genSocialNetwork(userNum, density):
 
     SN = {i: [] for i in range(userNum)}  # user to user
     for i in range(userNum):
-        SN[i] = {i: 0 for i in range(userNum)}
+        for j in range(userNum):
+            SN[i].append(0)
     community = community[density]
     for i in range(userNum):
         for j in range(i, userNum):
-            if community[i] == community[j]:
+            owni = i % 20
+            ownj = j % 20
+            if community[owni] == community[ownj]:
                 SN[i][j] = 1
                 SN[j][i] = 1
     return SN
