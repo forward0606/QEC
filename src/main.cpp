@@ -159,7 +159,7 @@ int main(){
                     }
                     cout<< "---------generating requests in main.cpp----------end" << endl;
                     
-                    //#pragma omp parallel for
+                    #pragma omp parallel for
                     for(auto &algo:algorithms){
                         ofs<<"-----------run "<< algo->get_name() << " ---------"<<endl;
                         
