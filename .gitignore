@@ -7,3 +7,5 @@ gg*
 /examples/*
 *.log
 *lp
+*.ans
+*.input
