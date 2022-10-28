@@ -48,7 +48,7 @@ int main(){
     default_setting["swap_prob"] = 1;
     default_setting["entangle_alpha"] = 0;
     default_setting["node_time_limit"] = 7;
-    default_setting["new_request_cnt"] = 10;
+    default_setting["new_request_cnt"] = 5;
     default_setting["request_time_limit"] = 7;
     default_setting["total_time_slot"] = 100;
     default_setting["service_time"] = 100;
