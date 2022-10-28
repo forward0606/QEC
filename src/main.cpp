@@ -51,22 +51,21 @@ int main(){
     default_setting["new_request_cnt"] = 10;
     default_setting["request_time_limit"] = 7;
     default_setting["total_time_slot"] = 100;
-    default_setting["service_time"] = 15;
+    default_setting["service_time"] = 100;
 
     map<string, vector<double>> change_parameter;
     change_parameter["swap_prob"] = {0.3, 0.5, 0.7, 0.9, 1};
     change_parameter["entangle_alpha"] = {0.02, 0.002, 0.0002, 0};
     change_parameter["min_fidelity"] = {0.5, 0.7, 0.75, 0.85, 0.95};
-    change_parameter["resource_ratio"] = {0.5, 1, 2, 10}; 
-    change_parameter["service_time"] = {1, 5, 10};
+    change_parameter["resource_ratio"] = {0.5, 1, 2, 10};
     change_parameter["area_alpha"] = {0.001, 0.01, 0.1}; 
     change_parameter["social_density"] = {0.25, 0.5, 0.75, 1}; 
-    change_parameter["new_request_cnt"] = {5, 10, 15, 20};
+    change_parameter["new_request_cnt"] = {1, 2, 3, 4, 5};
 
-    vector<string> X_names = {"new_request_cnt", "min_fidelity", "service_time", "area_alpha", "resource_ratio", "swap_prob", "entangle_alpha", "social_density"};
+    vector<string> X_names = {"new_request_cnt", "min_fidelity", "area_alpha", "resource_ratio", "social_density", "entangle_alpha", "swap_prob"};
     vector<string> Y_names = {"waiting_time", "throughputs", "finished_throughputs", \
                             "succ-finished_ratio", "active_timeslot", "path_length", "fidelity", \
-                            "divide_cnt", "undivide_cnt", "use_memory", "total_memory", "use_memory_ratio", "use_channel", "total_channel", "use_channel_ratio", "runtime"};
+                            "divide_cnt", "undivide_cnt", "divide_ratio", "use_memory", "total_memory", "use_memory_ratio", "use_channel", "total_channel", "use_channel_ratio", "runtime"};
     vector<string> algo_names = {"Greedy", "QCAST", "REPS", "MyAlgo"};
     // init result
     for(string X_name : X_names) {
@@ -203,6 +202,7 @@ int main(){
             for(string algo_name : algo_names){
                 for(int T = 0; T < round; T++){
                     result[T][algo_name]["waiting_time"] /= result[T][algo_name]["total_request"];
+                    result[T][algo_name]["divide_ratio"] = result[T][algo_name]["divide_cnt"] / (result[T][algo_name]["divide_cnt"] + result[T][algo_name]["undivide_cnt"]);
                     result[T][algo_name]["succ-finished_ratio"] = result[T][algo_name]["throughputs"] / result[T][algo_name]["finished_throughputs"];
                     result[T][algo_name]["path_length"] = result[T][algo_name]["path_length"] / result[T][algo_name]["finished_throughputs"];
                     result[T][algo_name]["use_memory_ratio"] = result[T][algo_name]["use_memory"] / result[T][algo_name]["total_memory"];
