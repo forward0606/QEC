@@ -39,8 +39,8 @@ int main(){
     default_setting["num_of_node"] = 100;
     default_setting["social_density"] = 0.5;
     default_setting["area_alpha"] = 0.1;
-    default_setting["channel_cnt_avg"] = 5;
     default_setting["memory_cnt_avg"] = 12;
+    default_setting["channel_cnt_avg"] = 5;
     default_setting["resource_ratio"] = 1;
     default_setting["min_fidelity"] = 0.7;
     default_setting["max_fidelity"] = 0.95;
@@ -48,11 +48,10 @@ int main(){
     default_setting["swap_prob"] = 1;
     default_setting["entangle_alpha"] = 0;
     default_setting["node_time_limit"] = 7;
-    default_setting["new_request_min"] = 12;
-    default_setting["new_request_max"] = 12;
+    default_setting["new_request_cnt"] = 10;
     default_setting["request_time_limit"] = 7;
     default_setting["total_time_slot"] = 100;
-    default_setting["service_time"] = 10;
+    default_setting["service_time"] = 15;
 
     map<string, vector<double>> change_parameter;
     change_parameter["swap_prob"] = {0.3, 0.5, 0.7, 0.9, 1};
@@ -62,8 +61,9 @@ int main(){
     change_parameter["service_time"] = {1, 5, 10};
     change_parameter["area_alpha"] = {0.001, 0.01, 0.1}; 
     change_parameter["social_density"] = {0.25, 0.5, 0.75, 1}; 
+    change_parameter["new_request_cnt"] = {5, 10, 15, 20};
 
-    vector<string> X_names = {"area_alpha", "resource_ratio", "social_density", "min_fidelity", "swap_prob",  "entangle_alpha", "service_time"};
+    vector<string> X_names = {"new_request_cnt", "min_fidelity", "service_time", "area_alpha", "resource_ratio", "swap_prob", "entangle_alpha", "social_density"};
     vector<string> Y_names = {"waiting_time", "throughputs", "finished_throughputs", \
                             "succ-finished_ratio", "active_timeslot", "path_length", "fidelity", \
                             "divide_cnt", "undivide_cnt", "use_memory", "total_memory", "use_memory_ratio", "use_channel", "total_channel", "use_channel_ratio", "runtime"};
@@ -89,16 +89,16 @@ int main(){
             double social_density = input_parameter["social_density"];
             double area_alpha = input_parameter["area_alpha"];
             double resource_ratio = input_parameter["resource_ratio"];
-            int min_channel_cnt = input_parameter["channel_cnt_avg"] * resource_ratio - 2;
-            int max_channel_cnt = input_parameter["channel_cnt_avg"] * resource_ratio + 2;
             int min_memory_cnt = input_parameter["memory_cnt_avg"] * resource_ratio - 2;
             int max_memory_cnt = input_parameter["memory_cnt_avg"] * resource_ratio + 2;
+            int min_channel_cnt = input_parameter["channel_cnt_avg"] * resource_ratio - 2;
+            int max_channel_cnt = input_parameter["channel_cnt_avg"] * resource_ratio + 2;
             double min_fidelity = input_parameter["min_fidelity"];
             double max_fidelity = input_parameter["max_fidelity"];
 
             double swap_prob = input_parameter["swap_prob"], entangle_alpha = input_parameter["entangle_alpha"];
             int node_time_limit = input_parameter["node_time_limit"];
-            int new_request_min = input_parameter["new_request_min"], new_request_max = input_parameter["new_request_max"];
+            int new_request_cnt = input_parameter["new_request_cnt"];
             int service_time = input_parameter["service_time"];
             int request_time_limit = input_parameter["request_time_limit"];
             int total_time_slot = input_parameter["total_time_slot"];
@@ -143,13 +143,13 @@ int main(){
                 for(int t = 0; t < total_time_slot; t++){
                     ofs<<"---------------in timeslot " <<t<<" -------------" <<endl;
                     //亂數引擎, to decide how many requests received in this timeslot 
-                    random_device rd;
-                    default_random_engine generator = default_random_engine(rd());
-                    uniform_int_distribution<int> unif(new_request_min, new_request_max);
-                    int request_cnt = unif(generator);
+                    // random_device rd;
+                    // default_random_engine generator = default_random_engine(rd());
+                    // uniform_int_distribution<int> unif(new_request_min, new_request_max);
+                    // int request_cnt = unif(generator);
 
                     cout<< "---------generating requests in main.cpp----------" << endl;
-                    for(int q = 0; q < request_cnt && t < service_time; q++){
+                    for(int q = 0; q < new_request_cnt && t < service_time; q++){
                         Request new_request = generate_new_request(num_of_node, request_time_limit);
                         // Request new_request = generate_new_request(0, 1, request_time_limit);
                         cout<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
