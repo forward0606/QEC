@@ -3,6 +3,7 @@
 
 #include<iostream>
 #include<vector>
+#include<algorithm>
 #include"../Network/Node/Node.h"
 #include"../Path/Path.h"
 #include "../config.h"

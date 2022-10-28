@@ -36,7 +36,7 @@ def dist(a, b):
     (q1, q2) = b
     return (q1-p1) * (q1-p1) + (q2-p2) * (q2-p2)
 
-def genSocialNetwork(self, userNum, density):
+def genSocialNetwork(userNum, density):
     # n * n
     community1 = [0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 2, 2, 2, 2, 3, 2, 2, 2, 3, 2]  # 0.25
     community2 = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1]  # 0.50
@@ -44,20 +44,19 @@ def genSocialNetwork(self, userNum, density):
     community4 = [0 for _ in range(20)]                                        # 1.00
     community = {0.25 : community1, 0.50 : community2, 0.75 : community3, 1.00 : community4}
 
-    self.topo.SN = {i: [] for i in range(userNum)}  # user to user
+    SN = {i: [] for i in range(userNum)}  # user to user
+    for i in range(userNum):
+        SN[i] = {i: 0 for i in range(userNum)}
     community = community[density]
     for i in range(userNum):
         for j in range(i, userNum):
-            # p = random.random()
-            # if p <= density:
-            #     self.topo.SN[i].append(j)
-            #     self.topo.SN[j].append(i)
             if community[i] == community[j]:
-                self.topo.SN[i].append(j)
-                self.topo.SN[j].append(i)
+                SN[i][j] = 1
+                SN[j][i] = 1
+    return SN
 
 
-if  len(sys.argv) <= 9:
+if  len(sys.argv) <= 10:
     print("missing argv")
     sys.exit()
 
@@ -71,6 +70,7 @@ max_memory_cnt = int(sys.argv[6])
 min_fidelity = float(sys.argv[7])
 max_fidelity = float(sys.argv[8])
 socail_density = float(sys.argv[9])
+area = float(sys.argv[10])
 
 
 
@@ -83,7 +83,7 @@ print("min_memory_cnt = ", min_memory_cnt, ", max_memory_cnt = ", max_memory_cnt
 
 
 while True:
-    G = nx.waxman_graph(num_of_node, beta=0.85, alpha=0.1, domain=(0, 0, 0.5, 1))
+    G = nx.waxman_graph(num_of_node, beta=0.85, alpha=0.1, domain=(0, 0, 0.5*area, 1*area))
     #G = nx.waxman_graph(num_of_node, beta=0.85, alpha=10, domain=(0, 0, 0.5, 1))
 
     positions = nx.get_node_attributes(G, 'pos')
@@ -114,7 +114,7 @@ positions = nx.get_node_attributes(G, 'pos')
 print(num_of_node, file=f)
 for n in G.nodes():
     (p1, p2) = positions[n]
-    print(str(p1 * 20) + ' ' + str(p2 * 20) + " " + str(ceil(random.random()*(max_memory_cnt-min_memory_cnt)) + min_memory_cnt), file=f)
+    print(str(p1 * 20/area) + ' ' + str(p2 * 20/area) + " " + str(ceil(random.random()*(max_memory_cnt-min_memory_cnt)) + min_memory_cnt), file=f)
 cnt = 0
 for e in G.edges():
     if e[0] != e[1]:#file
@@ -125,18 +125,24 @@ for e in G.edges():
         print(str(e[0]) + ' ' + str(e[1]) + " " + str(ceil(random.random()*(max_channel_cnt-min_channel_cnt)) + min_channel_cnt), str(random.random()*(max_fidelity-min_fidelity) + min_fidelity), file=f)
 
 
-
-
+SN = genSocialNetwork(num_of_node, socail_density)
 for i in range(num_of_node):
     for j in range(num_of_node):
-        if i == j:
-            print(1, end=" ", file=f)
-        else:
-            if random.random() > 0.5:
-                print(1, end=" ", file=f)
-            else:
-                print(0, end=" ", file=f)
+        print(SN[i][j], end=" ", file=f)
     print("", file=f)
+
+
+#random social
+# for i in range(num_of_node):
+#     for j in range(num_of_node):
+#         if i == j:
+#             print(1, end=" ", file=f)
+#         else:
+#             if random.random() > 0.5:
+#                 print(1, end=" ", file=f)
+#             else:
+#                 print(0, end=" ", file=f)
+#     print("", file=f)
 
 print("----------graph generate finished!----------", file=sys.stderr)
 print("----------graph generate finished!----------")

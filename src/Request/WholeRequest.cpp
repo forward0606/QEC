@@ -85,6 +85,8 @@ void WholeRequest::temporary_forward() {
 void WholeRequest::try_forward() {
     for(SubRequest* subrequest : subrequests) {
         if(subrequest->is_finished()) {
+            if(is_divide()) path_length += subrequest->get_paths()[0]->get_len() / (double)5;
+            else path_length += subrequest->get_paths()[0]->get_len();
             finished_qubits++;
             if(subrequest->is_success()) {
                 success_qubits++;

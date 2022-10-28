@@ -38,11 +38,11 @@ int main(){
     map<string, double> default_setting;
     default_setting["num_of_node"] = 100;
     default_setting["social_density"] = 0.5;
-    default_setting["min_channel_cnt"] = 3;
-    default_setting["max_channel_cnt"] = 7;
-    default_setting["min_memory_cnt"] = 10;
-    default_setting["max_memory_cnt"] = 14;
-    default_setting["min_fidelity"] = 0.85;
+    default_setting["area"] = 1;
+    default_setting["channel_cnt_avg"] = 5;
+    default_setting["memory_cnt_avg"] = 12;
+    default_setting["resource_ratio"] = 1;
+    default_setting["min_fidelity"] = 0.75;
     default_setting["max_fidelity"] = 0.99;
 
     default_setting["swap_prob"] = 1;
@@ -58,12 +58,15 @@ int main(){
     change_parameter["swap_prob"] = {0.1, 0.3, 0.5, 0.7, 0.9, 1};
     change_parameter["entangle_alpha"] = {0.02, 0.002, 0};
     change_parameter["min_fidelity"] = {0.5, 0.75, 0.85, 0.95, 0.99};
+    change_parameter["resource_ratio"] = {0.5, 1, 2, 10}; 
     change_parameter["service_time"] = {1, 5, 10};
+    change_parameter["area"] = {1, 2, 5, 10}; 
+    change_parameter["social_density"] = {0.25, 0.5, 0.75, 1}; 
 
-    vector<string> X_names = {"min_fidelity", "swap_prob",  "entangle_alpha", "service_time"};
+    vector<string> X_names = {"area", "resource_ratio", "social_density", "min_fidelity", "swap_prob",  "entangle_alpha", "service_time"};
     vector<string> Y_names = {"waiting_time", "throughputs", "finished_throughputs", \
-                            "succ-finished_rate(0)", "succ-finished_rate(1)", "active_timeslot", "path_length", "fidelity", \
-                            "divide_cnt", "undivide_cnt"};
+                            "succ-finished_rate", "active_timeslot", "path_length", "fidelity", \
+                            "divide_cnt", "undivide_cnt", "resource_cnt"};
     vector<string> algo_names = {"Greedy", "QCAST", "REPS", "MyAlgo"};
     // init result
     for(string X_name : X_names) {
@@ -84,10 +87,12 @@ int main(){
             
             int num_of_node = input_parameter["num_of_node"];
             double social_density = input_parameter["social_density"];
-            int min_channel_cnt = input_parameter["min_channel_cnt"];
-            int max_channel_cnt = input_parameter["max_channel_cnt"];
-            int min_memory_cnt = input_parameter["min_memory_cnt"];
-            int max_memory_cnt = input_parameter["max_memory_cnt"];
+            double area = input_parameter["area"];
+            double resource_ratio = input_parameter["resource_ratio"];
+            int min_channel_cnt = input_parameter["channel_cnt_avg"] * resource_ratio - 2;
+            int max_channel_cnt = input_parameter["channel_cnt_avg"] * resource_ratio + 2;
+            int min_memory_cnt = input_parameter["memory_cnt_avg"] * resource_ratio - 2;
+            int max_memory_cnt = input_parameter["memory_cnt_avg"] * resource_ratio + 2;
             double min_fidelity = input_parameter["min_fidelity"];
             double max_fidelity = input_parameter["max_fidelity"];
 
@@ -113,7 +118,7 @@ int main(){
 
                 string filename = file_path + "input/round_" + round_str + ".input";
                 string command = "python3 main.py ";
-                string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity) + " " + to_string(social_density);
+                string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity) + " " + to_string(social_density) + " " + to_string(area);
                 if(system((command + filename + " " + parameter).c_str()) != 0){
                     cerr<<"error:\tsystem proccess python error"<<endl;
                     exit(1);
@@ -197,16 +202,11 @@ int main(){
             
             map<string, map<string, double>> sum_res;
             for(string algo_name : algo_names){
-                double finished_request_sum = 0, succ_request_sum = 0;
                 for(int T = 0; T < round; T++){
-                    succ_request_sum += result[T][algo_name]["throughputs"];                    
-                    finished_request_sum += result[T][algo_name]["finished_throughputs"];
                     result[T][algo_name]["waiting_time"] /= result[T][algo_name]["total_request"];
                     result[T][algo_name]["succ-finished_rate(1)"] = result[T][algo_name]["throughputs"] / result[T][algo_name]["finished_throughputs"];
                     result[T][algo_name]["path_length"] = result[T][algo_name]["path_length"] / result[T][algo_name]["finished_throughputs"];
                 }
-                sum_res[algo_name]["succ-finished_rate(0)"] = succ_request_sum / finished_request_sum;
-
             }
 
             for(string Y_name : Y_names) {

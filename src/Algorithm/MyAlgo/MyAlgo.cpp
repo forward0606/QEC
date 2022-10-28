@@ -253,7 +253,7 @@ vector<int> MyAlgo::find_path_on_Social(int src, int dst) {
         }
     }
     if(parent[id_to_index[dst]] == -1){
-        cerr<<"no path found!"<<endl;
+        cerr<<"error:\tno path found!"<<endl;
         exit(1);
     }
     int cur_node_index = id_to_index[dst];
@@ -315,7 +315,6 @@ void MyAlgo::path_assignment() {
                 }
                 for(int path_index = 0; path_index < (int)sufficient_paths.size(); path_index++) {
                     *(request.subrequests[path_index]) += sufficient_paths[path_index];
-                    request.path_length += sufficient_paths[path_index]->get_len() / (double)5;
                 }
             } else {
                 request.set_divide(false);
@@ -328,7 +327,6 @@ void MyAlgo::path_assignment() {
                     request.subrequests.emplace_back(new SubRequest(src, dst, request.get_time_limit()));
                     Path* single_path = graph.build_path(paths[first_path_id]);
                     *(request.subrequests.back()) += single_path;
-                    request.path_length += single_path->get_len();
                 }
             }
         }

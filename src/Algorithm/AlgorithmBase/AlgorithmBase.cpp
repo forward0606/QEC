@@ -65,8 +65,16 @@ void AlgorithmBase::base_test_active(){
     res["waiting_time"] += requests.size();
 }
 
+void AlgorithmBase::check_resource(){
+    for(int i = 0; i < (int)graph.get_size(); i++){
+        Node *node_ptr = graph.Node_id2ptr(i);
+        res["resource_cnt"] += node_ptr->get_memory_cnt() - node_ptr->get_remain();
+    }
+}
+
 void AlgorithmBase::run(){
     path_assignment();
+    check_resource();
     entangle();
     swap();
     send();
