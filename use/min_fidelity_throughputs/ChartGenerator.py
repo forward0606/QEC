@@ -37,10 +37,10 @@ class ChartGenerator:
         #     "#900321",
         # ]
         color = [
-            "#FF0000",
             "#00FF00",   
             "#0000FF",
             "#000000",
+            "#FF0000",
             "#900321",
         ]
         # matplotlib.rcParams['text.usetex'] = True
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     #         ChartGenerator(dataFileName, Ylabel, Xlabel)
 
 
-    Xlabel = "min fidelity"
-    Ylabel = "throughput"
+    Xlabel = "Fidelity lower bound"
+    Ylabel = "Throughput"
     dataFileName = "min_fidelity_throughputs.ans"
     ChartGenerator(dataFileName, Ylabel, Xlabel)

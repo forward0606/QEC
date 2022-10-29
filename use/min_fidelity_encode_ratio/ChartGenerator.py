@@ -37,10 +37,10 @@ class ChartGenerator:
         #     "#900321",
         # ]
         color = [
-            "#FF0000",
             "#00FF00",   
             "#0000FF",
             "#000000",
+            "#FF0000",
             "#900321",
         ]
         # matplotlib.rcParams['text.usetex'] = True
@@ -149,19 +149,19 @@ class ChartGenerator:
             Yinterval = 0.2
 
         marker = ['o', 's', 'v', 'x', 'd']
-        for i in range(numOfAlgo):
+        for i in range(numOfAlgo-1, -1, -1):
             ax1.plot(x_data, y[i], color = color[i], lw = 2.5, linestyle = "-", marker = marker[i], markersize = 15, markerfacecolor = "none", markeredgewidth = 2.5)
         # plt.show()
 
         plt.xticks(fontsize = Xticks_fontsize)
         plt.yticks(fontsize = Yticks_fontsize)
         
-        AlgoName = ["socail:0.25", "socail:0.50", "socail:0.75", "social:1.00"]
+        AlgoName = ["Soc. Den.0.25 ", "Soc. Den.0.50 ", "Soc. Den.0.75", "Soc. Den.1.00"]
 
         leg = plt.legend(
             AlgoName,
             loc = 10,
-            bbox_to_anchor = (0.4, 1.25),
+            bbox_to_anchor = (0.3, 1.25),
             prop = {"size": fontsize, "family": "Times New Roman"},
             frameon = "False",
             labelspacing = 0.2,
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     #         ChartGenerator(dataFileName, Ylabel, Xlabel)
 
 
-    Xlabel = "min fidelity"
-    Ylabel = "encode ratio(%)"
+    Xlabel = "Fidelity lower bound"
+    Ylabel = "Encode Ratio (%)"
     dataFileName = "min_fidelity_encode_rate.ans"
     ChartGenerator(dataFileName, Ylabel, Xlabel)

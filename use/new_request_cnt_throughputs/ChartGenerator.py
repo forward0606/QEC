@@ -37,10 +37,10 @@ class ChartGenerator:
         #     "#900321",
         # ]
         color = [
-            "#FF0000",
             "#00FF00",   
             "#0000FF",
             "#000000",
+            "#FF0000",
             "#900321",
         ]
         # matplotlib.rcParams['text.usetex'] = True
@@ -216,6 +216,6 @@ if __name__ == "__main__":
 
 
     Xlabel = "# Req. per Round"
-    Ylabel = "throughput"
+    Ylabel = "Throughput"
     dataFileName = "new_request_cnt_throughputs.ans"
     ChartGenerator(dataFileName, Ylabel, Xlabel)

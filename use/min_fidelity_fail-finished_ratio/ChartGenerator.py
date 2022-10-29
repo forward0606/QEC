@@ -37,10 +37,10 @@ class ChartGenerator:
         #     "#900321",
         # ]
         color = [
-            "#FF0000",
             "#00FF00",   
             "#0000FF",
             "#000000",
+            "#FF0000",
             "#900321",
         ]
         # matplotlib.rcParams['text.usetex'] = True
@@ -168,7 +168,7 @@ class ChartGenerator:
 
         leg.get_frame().set_linewidth(0.0)
         #Ylabel += self.genMultiName(Ypow)
-        Ylabel += "(%)"
+        Ylabel += " (%)"
         Xlabel += self.genMultiName(Xpow)
         plt.subplots_adjust(top = 0.75)
         plt.subplots_adjust(left = 0.3)
@@ -210,7 +210,7 @@ if __name__ == "__main__":
     #         ChartGenerator(dataFileName, Ylabel, Xlabel)
 
 
-    Xlabel = "min fidelity"
-    Ylabel = "fail finished rate"
+    Xlabel = "Fidelity lower bound"
+    Ylabel = "Failed Ratio"
     dataFileName = "min_fidelity_fail-finished_ratio.ans"
     ChartGenerator(dataFileName, Ylabel, Xlabel)
