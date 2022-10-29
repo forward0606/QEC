@@ -49,7 +49,9 @@ double WholeRequest::calculate_subfidelity() {
 int WholeRequest::get_current_temporary() {
     return current_temporary;
 }
-
+int WholeRequest::get_trust_node_path_length(){
+    return trusted_node_path.size();
+}
 bool WholeRequest::is_divide() {
     return divide_to_5_qubits;
 }

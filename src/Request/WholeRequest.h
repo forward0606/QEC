@@ -23,6 +23,7 @@ public:
     WholeRequest(int source, int destination, int time_limit, vector<int> trusted_node_path);
     double calculate_subfidelity();
     int get_current_temporary();
+    int get_trust_node_path_length();
     bool is_divide();
     bool is_finished();
     bool is_success();

@@ -66,7 +66,8 @@ int main(){
     vector<string> X_names = {"num_of_node", "min_fidelity", "new_request_cnt", "area_alpha", "resource_ratio", "social_density", "entangle_alpha", "swap_prob"};
     vector<string> Y_names = {"waiting_time", "throughputs", "finished_throughputs", \
                             "succ-finished_ratio", "fail-finished_ratio", "active_timeslot", "path_length", "fidelity", \
-                            "divide_cnt", "undivide_cnt", "divide_ratio", "use_memory", "total_memory", "use_memory_ratio", "use_channel", "total_channel", "use_channel_ratio", "runtime"};
+                            "encode_cnt", "unencode_cnt", "encode_ratio", "use_memory", "total_memory", "use_memory_ratio",\
+                            "use_channel", "total_channel", "use_channel_ratio", "runtime", "divide_cnt"};
     vector<string> algo_names = {"Greedy", "QCAST", "REPS", "MyAlgo"};
     // init result
     for(string X_name : X_names) {
@@ -204,7 +205,7 @@ int main(){
             for(string algo_name : algo_names){
                 for(int T = 0; T < round; T++){
                     result[T][algo_name]["waiting_time"] /= result[T][algo_name]["total_request"];
-                    result[T][algo_name]["divide_ratio"] = result[T][algo_name]["divide_cnt"] / (result[T][algo_name]["divide_cnt"] + result[T][algo_name]["undivide_cnt"]);
+                    result[T][algo_name]["encode_ratio"] = result[T][algo_name]["encode_cnt"] / (result[T][algo_name]["encode_cnt"] + result[T][algo_name]["unencode_cnt"]);
                     result[T][algo_name]["succ-finished_ratio"] = result[T][algo_name]["throughputs"] / result[T][algo_name]["finished_throughputs"];
                     result[T][algo_name]["fail-finished_ratio"] = 1 - result[T][algo_name]["succ-finished_ratio"];
                     result[T][algo_name]["path_length"] = result[T][algo_name]["path_length"] / result[T][algo_name]["finished_throughputs"];

@@ -205,7 +205,7 @@ if __name__ == "__main__":
     # ChartGenerator("numOfnodes_waitingTime.txt", "need #round", "#Request of a round", 0, 0, 25, 5)
     Xlabels = ["num_of_node", "area_alpha", "resource_ratio", "social_density", "min_fidelity", "swap_prob",  "entangle_alpha", "service_time"]
     Ylabels = ["waiting_time", "throughputs", "succ-finished_ratio", "active_timeslot", "path_length", "fidelity",\
-                "use_memory_ratio", "use_channel_ratio", "runtime", "divide_ratio", "fail-finished_ratio"]
+                "use_memory_ratio", "use_channel_ratio", "runtime", "encode_ratio", "divide_cnt", "fail-finished_ratio"]
     
     for Xlabel in Xlabels:
         for Ylabel in Ylabels:

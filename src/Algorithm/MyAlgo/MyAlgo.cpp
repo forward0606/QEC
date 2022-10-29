@@ -277,6 +277,7 @@ void MyAlgo::path_assignment() {
     for(Request &request : requests) {
         int src = request.get_source(), dst = request.get_destination();
         whole_requests.emplace_back(request.get_source(), request.get_destination(), request.get_time_limit(), find_path_on_Social(src, dst));
+        res["divide_cnt"] += whole_requests.back().get_trust_node_path_length();
     }
     requests.clear();
     
@@ -309,7 +310,7 @@ void MyAlgo::path_assignment() {
             
             if(fidelity >= fidelity_threshold) {
                 request.set_divide(true);
-                res["divide_cnt"]++;
+                res["encode_cnt"]++;
                 for(int path_index = 0; path_index < (int)sufficient_paths.size(); path_index++) {
                     request.subrequests.emplace_back(new SubRequest(src, dst, request.get_time_limit()));
                 }
@@ -323,7 +324,7 @@ void MyAlgo::path_assignment() {
                 }
 
                 if(sufficient_fidelities[0] >= fidelity_threshold) {
-                    res["undivide_cnt"]++;
+                    res["unencode_cnt"]++;
                     request.subrequests.emplace_back(new SubRequest(src, dst, request.get_time_limit()));
                     Path* single_path = graph.build_path(paths[first_path_id]);
                     *(request.subrequests.back()) += single_path;
