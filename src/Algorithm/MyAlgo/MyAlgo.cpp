@@ -369,6 +369,15 @@ void MyAlgo::next_time_slot() {
             res["finished_throughputs"]++;
             res["path_length"] += whole_requests[reqno].path_length;
             res["fidelity"] += whole_requests[reqno].fidelity;
+            map<int, int> num_of_path_count = whole_requests[reqno].get_use_path_count();
+            double sum = 0;
+            for(auto e:num_of_path_count){
+                sum += e.second;
+            }
+            if(sum != 0){
+                res["encode_use_one_path_rate"] += num_of_path_count[1] / sum;
+                res["encode_num"] += 1;
+            }
             finished_reqno.push_back(reqno);
             if(whole_requests[reqno].is_success()) {
                 res["throughputs"]++;

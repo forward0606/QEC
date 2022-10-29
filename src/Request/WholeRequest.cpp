@@ -52,6 +52,9 @@ int WholeRequest::get_current_temporary() {
 int WholeRequest::get_trust_node_path_length(){
     return trusted_node_path.size();
 }
+map<int, int> WholeRequest::get_use_path_count(){
+    return use_path_count;
+}
 bool WholeRequest::is_divide() {
     return divide_to_5_qubits;
 }
@@ -85,8 +88,10 @@ void WholeRequest::temporary_forward() {
 }
 
 void WholeRequest::try_forward() {
-    for(SubRequest* subrequest : subrequests) {
+    for(int i=0;i<(int)subrequests.size();i++) {
+        SubRequest* subrequest = subrequests[i];
         if(subrequest->is_finished()) {
+            path_count.insert(i);
             if(is_divide()) path_length += subrequest->get_paths()[0]->get_len() / (double)5;
             else path_length += subrequest->get_paths()[0]->get_len();
             finished_qubits++;
@@ -107,6 +112,8 @@ void WholeRequest::try_forward() {
             } else {
                 status = REQUEST_FAIL;
             }
+            use_path_count[path_count.size()]++;
+            path_count.clear();
             temporary_forward();
         } else {
             int need = (5 - finished_qubits);

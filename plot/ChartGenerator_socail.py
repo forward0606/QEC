@@ -8,7 +8,7 @@ import matplotlib.transforms
 import matplotlib
 from matplotlib.offsetbox import AnchoredOffsetbox, TextArea, HPacker, VPacker
 
-directory_path = "../ans/"
+directory_path = "../data/"
 
 class ChartGenerator:
     # data檔名 Y軸名稱 X軸名稱 Y軸要除多少(10的多少次方) Y軸起始座標 Y軸終止座標 Y軸座標間的間隔
@@ -121,10 +121,12 @@ class ChartGenerator:
         for i in range(-10, -1, 1):
             if float(x[numOfData - 1]) <= 10 ** i:
                 Xpow = (i - 2)
-
+        
+        Ypow = -2
         Ydiv = float(10 ** Ypow)
         Xdiv = float(10 ** Xpow)
         
+
         for i in range(numOfData):
             x[i] = float(x[i]) / Xdiv
 
@@ -154,7 +156,7 @@ class ChartGenerator:
         plt.xticks(fontsize = Xticks_fontsize)
         plt.yticks(fontsize = Yticks_fontsize)
         
-        AlgoName = ["Greedy", "Q-CAST", "REPS", "MONEY"]
+        AlgoName = ["socail:0.25", "socail:0.50", "socail:0.75", "social:1.00"]
 
         leg = plt.legend(
             AlgoName,
@@ -203,9 +205,9 @@ class ChartGenerator:
 if __name__ == "__main__":
     # data檔名 Y軸名稱 X軸名稱 Y軸要除多少(10的多少次方) Y軸起始座標 Y軸終止座標 Y軸座標間的間隔
     # ChartGenerator("numOfnodes_waitingTime.txt", "need #round", "#Request of a round", 0, 0, 25, 5)
-    Xlabels = ["num_of_node", "area_alpha", "resource_ratio", "social_density", "min_fidelity", "swap_prob",  "entangle_alpha", "service_time"]
-    Ylabels = ["waiting_time", "throughputs", "succ-finished_ratio", "active_timeslot", "path_length", "fidelity",\
-                "use_memory_ratio", "use_channel_ratio", "runtime", "encode_ratio", "divide_cnt", "fail-finished_ratio"]
+    Xlabels = ["min_fidelity", "new_request_cnt"]
+    #Ylabels = ["encode_cnt", "unencode_cnt", "encode_ratio", "divide_cnt", "finished_throughputs", "encode_use_one_path_rate"]
+    Ylabels = ["encode_ratio", "divide_cnt", "encode_use_one_path_rate", "use_channel_ratio", "use_memory_ratio"]
     
     for Xlabel in Xlabels:
         for Ylabel in Ylabels:
