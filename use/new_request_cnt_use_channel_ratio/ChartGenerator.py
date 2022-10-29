@@ -143,8 +143,8 @@ class ChartGenerator:
         # Yinterval = 20
 
         marker = ['o', 's', 'v', 'x', 'd']
-        for i in range(numOfAlgo):
-            ax1.plot(x_data, y[i], color = color[i], lw = 2.5, linestyle = "-", marker = marker[i], markersize = 15, markerfacecolor = "none", markeredgewidth = 2.5)
+        for i in range(numOfAlgo-1, -1, -1):
+            ax1.plot(x_data, y[i], color = color[i], lw = 2.5, linestyle = "-", marker = marker[i], markersize = 15, markerfacecolor = "none", markeredgewidth = 2.5, zorder=i)
         # plt.show()
 
         plt.xticks(fontsize = Xticks_fontsize)
