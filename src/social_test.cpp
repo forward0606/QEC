@@ -64,7 +64,7 @@ int main(){
     change_parameter["num_of_node"] = {100, 200, 300, 400, 500};
 
     vector<string> X_names = {"min_fidelity"};
-    vector<string> Y_names = {"encode_cnt", "unencode_cnt", "encode_ratio", "divide_cnt", "finished_throughputs", "encode_use_one_path_rate", "encode_num", "use_memory", "total_memory", "use_memory_ratio",\
+    vector<string> Y_names = {"encode_cnt", "throughputs", "waiting_time", "unencode_cnt", "encode_ratio", "divide_cnt", "finished_throughputs", "encode_use_one_path_rate", "encode_num", "use_memory", "total_memory", "use_memory_ratio",\
                             "use_channel", "total_channel", "use_channel_ratio"};
     vector<string> algo_names = {"social:0.25", "social:0.50", "social:0.75", "social:1.00"};
     // init result
