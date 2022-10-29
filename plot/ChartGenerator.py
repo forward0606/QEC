@@ -203,8 +203,9 @@ class ChartGenerator:
 if __name__ == "__main__":
     # data檔名 Y軸名稱 X軸名稱 Y軸要除多少(10的多少次方) Y軸起始座標 Y軸終止座標 Y軸座標間的間隔
     # ChartGenerator("numOfnodes_waitingTime.txt", "need #round", "#Request of a round", 0, 0, 25, 5)
-    Xlabels = ["area_alpha", "resource_ratio", "social_density", "min_fidelity", "swap_prob",  "entangle_alpha", "service_time"]
-    Ylabels = ["waiting_time", "throughputs", "finished_throughputs", "succ-finished_ratio", "active_timeslot", "path_length", "fidelity", "divide_cnt", "undivide_cnt", "use_memory", "total_memory", "use_memory_ratio", "use_channel", "total_channel", "use_channel_ratio", "runtime"]
+    Xlabels = ["num_of_node", "area_alpha", "resource_ratio", "social_density", "min_fidelity", "swap_prob",  "entangle_alpha", "service_time"]
+    Ylabels = ["waiting_time", "throughputs", "succ-finished_ratio", "active_timeslot", "path_length", "fidelity",\
+                "use_memory_ratio", "use_channel_ratio", "runtime", "divide_ratio", "fail-finished_ratio"]
     
     for Xlabel in Xlabels:
         for Ylabel in Ylabels:
