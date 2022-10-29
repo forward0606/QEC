@@ -66,7 +66,7 @@ int main(){
     vector<string> X_names = {"min_fidelity"};
     vector<string> Y_names = {"encode_cnt", "unencode_cnt", "encode_ratio", "divide_cnt", "finished_throughputs", "encode_use_one_path_rate", "encode_num", "use_memory", "total_memory", "use_memory_ratio",\
                             "use_channel", "total_channel", "use_channel_ratio"};
-    vector<string> algo_names = {"socail:0.25", "socail:0.50", "socail:0.75", "social:1.00"};
+    vector<string> algo_names = {"social:0.25", "social:0.50", "social:0.75", "social:1.00"};
     // init result
     for(string X_name : X_names) {
         for(string Y_name : Y_names){

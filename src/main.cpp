@@ -61,7 +61,7 @@ int main(){
     change_parameter["area_alpha"] = {0.001, 0.01, 0.1}; 
     change_parameter["social_density"] = {0.25, 0.5, 0.75, 1}; 
     change_parameter["new_request_cnt"] = {1, 2, 3, 4, 5};
-    change_parameter["num_of_node"] = {100, 200, 300, 400, 500};
+    change_parameter["num_of_node"] = {50, 100, 150, 200, 250};
 
     vector<string> X_names = {"num_of_node", "min_fidelity", "new_request_cnt", "area_alpha", "resource_ratio", "social_density", "entangle_alpha", "swap_prob"};
     vector<string> Y_names = {"waiting_time", "throughputs", "finished_throughputs", \
