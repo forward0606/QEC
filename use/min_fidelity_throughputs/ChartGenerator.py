@@ -157,7 +157,7 @@ class ChartGenerator:
         plt.yticks(fontsize = Yticks_fontsize)
         
         AlgoName = ["Greedy", "Q-CAST", "REPS", "MONEY"]
-
+        AlgoName.reverse()
         leg = plt.legend(
             AlgoName,
             loc = 10,
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     #         ChartGenerator(dataFileName, Ylabel, Xlabel)
 
 
-    Xlabel = "Fidelity lower bound"
+    Xlabel = "Fidelity Lower Bound"
     Ylabel = "Throughput"
     dataFileName = "min_fidelity_throughputs.ans"
     ChartGenerator(dataFileName, Ylabel, Xlabel)

@@ -151,7 +151,7 @@ class ChartGenerator:
         plt.yticks(fontsize = Yticks_fontsize)
         
         AlgoName = ["Greedy", "Q-CAST", "REPS", "MONEY"]
-
+        AlgoName.reverse()
         leg = plt.legend(
             AlgoName,
             loc = 10,
@@ -210,7 +210,7 @@ if __name__ == "__main__":
     #         ChartGenerator(dataFileName, Ylabel, Xlabel)
 
 
-    Xlabel = "# Req. per Round"
+    Xlabel = "# Req. per Time Slot"
     Ylabel = "Memory Utilization"
     dataFileName = "new_request_cnt_use_memory_ratio.ans"
     ChartGenerator(dataFileName, Ylabel, Xlabel)

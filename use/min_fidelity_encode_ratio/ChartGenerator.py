@@ -149,7 +149,7 @@ class ChartGenerator:
             Yinterval = 0.2
 
         marker = ['o', 's', 'v', 'x', 'd']
-        for i in range(numOfAlgo-1, -1, -1):
+        for i in range(numOfAlgo):
             ax1.plot(x_data, y[i], color = color[i], lw = 2.5, linestyle = "-", marker = marker[i], markersize = 15, markerfacecolor = "none", markeredgewidth = 2.5, zorder=i)
         # plt.show()
 
@@ -157,7 +157,7 @@ class ChartGenerator:
         plt.yticks(fontsize = Yticks_fontsize)
         
         AlgoName = ["Soc. Den.0.25 ", "Soc. Den.0.50 ", "Soc. Den.0.75", "Soc. Den.1.00"]
-
+        
         leg = plt.legend(
             AlgoName,
             loc = 10,
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     #         ChartGenerator(dataFileName, Ylabel, Xlabel)
 
 
-    Xlabel = "Fidelity lower bound"
+    Xlabel = "Fidelity Lower Bound"
     Ylabel = "Encode Ratio (%)"
     dataFileName = "min_fidelity_encode_rate.ans"
     ChartGenerator(dataFileName, Ylabel, Xlabel)
