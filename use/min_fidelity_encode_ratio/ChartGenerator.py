@@ -41,7 +41,6 @@ class ChartGenerator:
             "#0000FF",
             "#000000",
             "#FF0000",
-            "#900321",
         ]
         # matplotlib.rcParams['text.usetex'] = True
 
@@ -149,6 +148,8 @@ class ChartGenerator:
             Yinterval = 0.2
 
         marker = ['o', 's', 'v', 'x', 'd']
+        color.reverse()
+        marker.reverse()
         for i in range(numOfAlgo):
             ax1.plot(x_data, y[i], color = color[i], lw = 2.5, linestyle = "-", marker = marker[i], markersize = 15, markerfacecolor = "none", markeredgewidth = 2.5, zorder=i)
         # plt.show()

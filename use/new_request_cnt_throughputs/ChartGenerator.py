@@ -66,10 +66,12 @@ class ChartGenerator:
         "ytick.labelsize": 20,
         "axes.labelsize": 20,
         "axes.titlesize": 20,
+        "mathtext.fontset": "custom",
         "font.family": "Times New Roman",
+        "mathtext.default": "default",
         "mathtext.it": "Times New Roman:italic",
+        "mathtext.cal": "Times New Roman:italic",
         # "mathtext.default": "regular",
-        "mathtext.fontset": "custom"
         # "mathtext.fontset": "custom"
         # "figure.autolayout": True
         # "text.usetex": True,
@@ -156,7 +158,7 @@ class ChartGenerator:
         plt.xticks(fontsize = Xticks_fontsize)
         plt.yticks(fontsize = Yticks_fontsize)
         
-        AlgoName = ["Greedy", "Q-CAST", "REPS", "MONEY"]
+        AlgoName = ["Greedy", "Q-CAST", "REPS", "WARM"]
         AlgoName.reverse()
         leg = plt.legend(
             AlgoName,
@@ -215,7 +217,7 @@ if __name__ == "__main__":
     #         ChartGenerator(dataFileName, Ylabel, Xlabel)
 
 
-    Xlabel = "# Req. per Time Slot"
+    Xlabel = "$\\it{\\beta}$ (# Req. per Time Slot)"
     Ylabel = "Throughput"
     dataFileName = "new_request_cnt_throughputs.ans"
     ChartGenerator(dataFileName, Ylabel, Xlabel)
