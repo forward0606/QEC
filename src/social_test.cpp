@@ -56,8 +56,7 @@ int main(){
     map<string, vector<double>> change_parameter;
     change_parameter["swap_prob"] = {0.3, 0.5, 0.7, 0.9, 1};
     change_parameter["entangle_alpha"] = {0.02, 0.002, 0.0002, 0};
-    //change_parameter["min_fidelity"] = {0.5, 0.7, 0.75, 0.85, 0.95};
-    change_parameter["min_fidelity"] = {0.7};
+    change_parameter["min_fidelity"] = {0.5, 0.7, 0.75, 0.85, 0.95};
     change_parameter["resource_ratio"] = {0.5, 1, 2, 10};
     change_parameter["area_alpha"] = {0.001, 0.01, 0.1}; 
     change_parameter["social_density"] = {0, 0.25, 0.5, 0.75, 1}; 
@@ -67,14 +66,15 @@ int main(){
     vector<string> X_names = {"min_fidelity"};
     vector<string> Y_names = {"encode_cnt", "throughputs", "waiting_time", "unencode_cnt", "encode_ratio", "divide_cnt", "finished_throughputs", "encode_use_one_path_rate", "encode_num", "use_memory", "total_memory", "use_memory_ratio",\
                             "use_channel", "total_channel", "use_channel_ratio"};
-    vector<string> algo_names = {"social:0", "social:0.25", "social:0.50", "social:0.75", "social:1.00"};
-    // init result
-    for(string X_name : X_names) {
-        for(string Y_name : Y_names){
-            string filename = "ans/" + X_name + "_" + Y_name + ".ans";
-            fstream file( file_path + filename, ios::out );
-        }
-    }
+    //vector<string> algo_names = {"social:0", "social:0.25", "social:0.50", "social:0.75", "social:1.00"};
+    vector<string> algo_names = {"min_f0.5", "min_f0.7", "min_f0.75", "min_f0.85", "min_f0.95"};
+    // // init result
+    // for(string X_name : X_names) {
+    //     for(string Y_name : Y_names){
+    //         string filename = "ans/" + X_name + "_" + Y_name + ".ans";
+    //         fstream file( file_path + filename, ios::out );
+    //     }
+    // }
     
 
     int round = 10;
@@ -84,6 +84,7 @@ int main(){
         for(double change_value : change_parameter[X_name]) {
             vector<map<string, map<string, double>>> result(round);
             vector<map<string, map<int, double>>> path_length_encode_avg(round);
+            vector<map<string, map<int, double>>> encode_ratio(round);
             input_parameter[X_name] = change_value;
             
             int num_of_node = input_parameter["num_of_node"];
@@ -94,9 +95,9 @@ int main(){
             int max_memory_cnt = input_parameter["memory_cnt_avg"] * resource_ratio + 2;
             int min_channel_cnt = input_parameter["channel_cnt_avg"] * resource_ratio - 2;
             int max_channel_cnt = input_parameter["channel_cnt_avg"] * resource_ratio + 2;
-            double min_fidelity = input_parameter["min_fidelity"];
+            //double min_fidelity = input_parameter["min_fidelity"];
             double max_fidelity = input_parameter["max_fidelity"];
-
+            double social_density = input_parameter["social_density"];
             double swap_prob = input_parameter["swap_prob"], entangle_alpha = input_parameter["entangle_alpha"];
             int node_time_limit = input_parameter["node_time_limit"];
             int new_request_cnt = input_parameter["new_request_cnt"];
@@ -118,7 +119,7 @@ int main(){
                 ofs  << "時間 " << dt << endl << endl; 
                 vector<MyAlgo*> algorithms;
 
-                for(double social_density:change_parameter["social_density"]){
+                for(double min_fidelity:change_parameter["min_fidelity"]){
                     string filename = file_path + "input/round_" + round_str + ".input";
                     string command = "python3 main.py ";
                     string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity) + " " + to_string(social_density) + " " + to_string(area_alpha);
@@ -180,6 +181,14 @@ int main(){
                     for(auto e:path_length_encode){
                         path_length_encode_avg[T][algo_names[algo_idx]][e.first] = e.second*1.0 / path_length_cnt[e.first];
                     }
+                    auto encode_cnt = algo->num_of_path_count;
+                    double number_of_count = 0;
+                    for(auto e:encode_cnt){
+                        number_of_count += e.second;
+                    }
+                    for(auto e:encode_cnt){
+                        encode_ratio[T][algo_names[algo_idx]][e.first] = e.second * 1.0 / number_of_count;
+                    }
                 }
                 now = time(0);
                 dt = ctime(&now);
@@ -194,50 +203,71 @@ int main(){
             
             }
             
-            map<string, map<string, double>> sum_res;
-            for(string algo_name : algo_names){
-                for(int T = 0; T < round; T++){
-                    result[T][algo_name]["encode_ratio"] = result[T][algo_name]["encode_cnt"] / (result[T][algo_name]["encode_cnt"] + result[T][algo_name]["unencode_cnt"]);
-                    result[T][algo_name]["divide_cnt"] = result[T][algo_name]["divide_cnt"] / result[T][algo_name]["total_request"];
-                    result[T][algo_name]["use_memory_ratio"] = result[T][algo_name]["use_memory"] / result[T][algo_name]["total_memory"];
-                    result[T][algo_name]["use_channel_ratio"] = result[T][algo_name]["use_channel"] / result[T][algo_name]["total_channel"];
-                    result[T][algo_name]["encode_use_one_path_rate"] /= result[T][algo_name]["encode_num"];
-                }
-            }
+            // map<string, map<string, double>> sum_res;
+            // for(string algo_name : algo_names){
+            //     for(int T = 0; T < round; T++){
+            //         result[T][algo_name]["encode_ratio"] = result[T][algo_name]["encode_cnt"] / (result[T][algo_name]["encode_cnt"] + result[T][algo_name]["unencode_cnt"]);
+            //         result[T][algo_name]["divide_cnt"] = result[T][algo_name]["divide_cnt"] / result[T][algo_name]["total_request"];
+            //         result[T][algo_name]["use_memory_ratio"] = result[T][algo_name]["use_memory"] / result[T][algo_name]["total_memory"];
+            //         result[T][algo_name]["use_channel_ratio"] = result[T][algo_name]["use_channel"] / result[T][algo_name]["total_channel"];
+            //         result[T][algo_name]["encode_use_one_path_rate"] /= result[T][algo_name]["encode_num"];
+            //     }
+            // }
 
-            for(string Y_name : Y_names) {
-                string filename = "ans/" + X_name + "_" + Y_name + ".ans";
-                ofstream ofs;
-                ofs.open(file_path + filename, ios::app);
-                ofs << change_value << ' ';
+            // for(string Y_name : Y_names) {
+            //     string filename = "ans/" + X_name + "_" + Y_name + ".ans";
+            //     ofstream ofs;
+            //     ofs.open(file_path + filename, ios::app);
+            //     ofs << change_value << ' ';
                 
-                for(string algo_name : algo_names){
-                    for(int T = 0; T < round; T++){
-                        sum_res[algo_name][Y_name] += result[T][algo_name][Y_name];
-                    }
-                    ofs << sum_res[algo_name][Y_name] / round << ' ';
-                }
-                ofs << endl;
-                ofs.close();
-            }
+            //     for(string algo_name : algo_names){
+            //         for(int T = 0; T < round; T++){
+            //             sum_res[algo_name][Y_name] += result[T][algo_name][Y_name];
+            //         }
+            //         ofs << sum_res[algo_name][Y_name] / round << ' ';
+            //     }
+            //     ofs << endl;
+            //     ofs.close();
+            // }
 
             
-            string filename = "ans/GG.ans";
-            ofstream ofs;
-            ofs.open(file_path + filename, ios::app);
+            // string filename = "ans/GG.ans";
+            // ofstream ofs;
+            // ofs.open(file_path + filename);
+
+            // for(int T = 1; T < round; T++){
+            //     for(int algi=1;algi<5;algi++){
+            //         for(auto e:path_length_encode_avg[T][algo_names[algi]]){
+            //             path_length_encode_avg[0][algo_names[algi]][e.first] += e.second;
+            //         }
+            //     }
+            // }
+            
+            // for(int path_length=3;path_length<9;path_length++){
+            //     ofs<<path_length<<" ";
+            //     for(int algi=1;algi<5;algi++){
+            //         ofs<<path_length_encode_avg[0][algo_names[algi]][path_length] / round<<" ";
+            //     }
+            //     ofs<<endl;
+            // }
+            // ofs << endl;
+            // ofs.close();
+
+            filename = "ans/GG2.ans";
+            ofs.open(file_path + filename);
 
             for(int T = 1; T < round; T++){
-                for(int algi=1;algi<5;algi++){
-                    for(auto e:path_length_encode_avg[T][algo_names[algi]]){
-                        path_length_encode_avg[0][algo_names[algi]][e.first] += e.second;
+                for(int algi=0;algi<5;algi++){
+                    for(auto e:encode_ratio[T][algo_names[algi]]){
+                        encode_ratio[0][algo_names[algi]][e.first] += e.second;
                     }
                 }
             }
             
-            for(int path_length=3;path_length<9;path_length++){
+            for(int i=1;i<=5;i++){
                 ofs<<path_length<<" ";
-                for(int algi=1;algi<5;algi++){
-                    ofs<<path_length_encode_avg[0][algo_names[algi]][path_length] / round<<" ";
+                for(int algi=0;algi<5;algi++){
+                    ofs<<encode_ratio[0][algo_names[algi]][i] / round<<" ";
                 }
                 ofs<<endl;
             }
