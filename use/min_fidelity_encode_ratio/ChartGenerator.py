@@ -218,6 +218,6 @@ if __name__ == "__main__":
 
 
     Xlabel = "Fidelity Lower Bound"
-    Ylabel = "Encode Ratio (%)"
+    Ylabel = "Encoded Ratio (%)"
     dataFileName = "min_fidelity_encode_rate.ans"
     ChartGenerator(dataFileName, Ylabel, Xlabel)
