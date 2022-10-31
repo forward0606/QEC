@@ -26,9 +26,12 @@ int main(){
 		cout<<(y[2][3] - y[2][i]) * 1.0 / y[2][3] * 100<<" ";
 	}
 	cout<<endl;
+	double avg = 0;
 	for(int i=0;i<3;i++){
 		cout<<sum[i] / t<<" ";
+		avg += sum[i] / t;
 	}
 	cout<<endl;
+	cout<<"avg: "<<avg / 3<<endl;
 	return 0;
 }
