@@ -16,8 +16,18 @@ int main(){
 		}
 		t++;
 	}
+	vector<double> sum(5);
+	for(int g=0;g<t;g++){
+		for(int i=0;i<3;i++){
+			sum[i] += (y[g][3] - y[g][i]) * 1.0 / y[g][3] * 100;
+		}
+	}
 	for(int i=0;i<3;i++){
-		cout<<((y[2][3] - y[2][i]) * 1.0 / y[2][3]) * 100<<"\t";
+		cout<<(y[2][3] - y[2][i]) * 1.0 / y[2][3] * 100<<" ";
+	}
+	cout<<endl;
+	for(int i=0;i<3;i++){
+		cout<<sum[i] / t<<" ";
 	}
 	cout<<endl;
 	return 0;
