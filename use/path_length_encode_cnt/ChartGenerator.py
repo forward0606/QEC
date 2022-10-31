@@ -184,7 +184,7 @@ class ChartGenerator:
 
         plt.yticks(np.arange(Ystart, Yend + Yinterval, step = Yinterval), fontsize = Yticks_fontsize)
         plt.xticks(x_data, x)
-        plt.ylabel(Ylabel, fontsize = Ylabel_fontsize, labelpad = 35)
+        plt.ylabel(Ylabel, fontsize = Ylabel_fontsize, labelpad = 25)
         plt.xlabel(Xlabel, fontsize = Xlabel_fontsize, labelpad = 10)
         ax1.yaxis.set_label_coords(-0.3, 0.5)
         ax1.xaxis.set_label_coords(0.45, -0.27)
