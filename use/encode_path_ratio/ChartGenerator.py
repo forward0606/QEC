@@ -136,7 +136,7 @@ class ChartGenerator:
                 minData = min(minData, y[i][j])
 
         Yend = math.ceil(maxData)
-        Ystart = 0
+        Ystart = 90
         Yinterval = (Yend - Ystart) / 5
 
         if maxData > 1.1:
