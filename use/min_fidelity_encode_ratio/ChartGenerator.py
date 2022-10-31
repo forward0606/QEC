@@ -37,10 +37,10 @@ class ChartGenerator:
         #     "#900321",
         # ]
         color = [
-            "#00FF00",   
-            "#0000FF",
-            "#000000",
+            "#AA3311",   
             "#FF0000",
+            "#FF6600",
+            "#901231",
         ]
         # matplotlib.rcParams['text.usetex'] = True
 
@@ -147,11 +147,12 @@ class ChartGenerator:
             Ystart = 0
             Yinterval = 0.2
 
-        marker = ['o', 's', 'v', 'x', 'd']
-        color.reverse()
-        marker.reverse()
+        marker = ['o', 'x', 's', 'v']
+        line_style = ["-.", "-", ":", "--"]
+        # color.reverse()
+        # marker.reverse()
         for i in range(numOfAlgo):
-            ax1.plot(x_data, y[i], color = color[i], lw = 2.5, linestyle = "-", marker = marker[i], markersize = 15, markerfacecolor = "none", markeredgewidth = 2.5, zorder=i)
+            ax1.plot(x_data, y[i], color = color[i], lw = 2.5, linestyle = line_style[i], marker = marker[i], markersize = 15, markerfacecolor = "none", markeredgewidth = 2.5, zorder=i)
         # plt.show()
 
         plt.xticks(fontsize = Xticks_fontsize)
