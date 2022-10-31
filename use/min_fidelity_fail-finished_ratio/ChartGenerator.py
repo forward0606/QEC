@@ -150,7 +150,7 @@ class ChartGenerator:
         plt.xticks(fontsize = Xticks_fontsize)
         plt.yticks(fontsize = Yticks_fontsize)
         
-        AlgoName = ["Greedy", "Q-CAST", "REPS", "WARM"]
+        AlgoName = ["GREEDY", "Q-CAST", "REPS", "WARM"]
         AlgoName.reverse()
         leg = plt.legend(
             AlgoName,
