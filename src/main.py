@@ -37,26 +37,29 @@ def dist(a, b):
     return (q1-p1) * (q1-p1) + (q2-p2) * (q2-p2)
 
 def genSocialNetwork(userNum, density):
-    # n * n
-    community1 = [0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 2, 2, 2, 2, 3, 2, 2, 2, 3, 2]  # 0.25
-    community2 = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1]  # 0.50
-    community3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0]  # 0.75
-    community4 = [0 for _ in range(20)]                                        # 1.00
-    community = {0.25 : community1, 0.50 : community2, 0.75 : community3, 1.00 : community4}
-
-    SN = {i: [] for i in range(userNum)}  # user to user
-    for i in range(userNum):
-        for j in range(userNum):
-            SN[i].append(0)
-    community = community[density]
-    for i in range(userNum):
-        for j in range(i, userNum):
-            owni = i % 20
-            ownj = j % 20
-            if community[owni] == community[ownj]:
-                SN[i][j] = 1
-                SN[j][i] = 1
-    return SN
+	# n * n
+	community0 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] #0
+	community1 = [0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 2, 2, 2, 2, 3, 2, 2, 2, 3, 2]  # 0.25
+	community2 = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1]  # 0.50
+	community3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0]  # 0.75
+	community4 = [0 for _ in range(20)]                                        # 1.00
+	community = {0.0 : community0, 0.25 : community1, 0.50 : community2, 0.75 : community3, 1.00 : community4}
+	SN = {i: [] for i in range(userNum)}  # user to user
+	for i in range(userNum):
+		for j in range(userNum):
+			SN[i].append(0)
+	community = community[density]
+	for i in range(userNum):
+		for j in range(i, userNum):
+			owni = i % 20
+			ownj = j % 20
+			if community[owni] == community[ownj]:
+				SN[i][j] = 1
+				SN[j][i] = 1
+			if density == 0.0:
+				SN[i][j] = 0
+				SN[j][i] = 0
+	return SN
 
 
 if  len(sys.argv) <= 10:

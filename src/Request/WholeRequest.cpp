@@ -2,7 +2,7 @@
 
 WholeRequest::WholeRequest(int source, int destination, int time_limit, vector<int> trusted_node_path)
     :Request(source, destination, time_limit), current_temporary(0), divide_to_5_qubits(false),
-     finished_qubits(0), success_qubits(0), path_length(0), fidelity(1), trusted_node_path(trusted_node_path) {
+     encode_cnt(0), finished_qubits(0), success_qubits(0), path_length(0), fidelity(1), trusted_node_path(trusted_node_path){
     if(DEBUG)cerr<<"new WholeRequest"<<endl;
 }
 
@@ -55,6 +55,10 @@ int WholeRequest::get_trust_node_path_length(){
 map<int, int> WholeRequest::get_use_path_count(){
     return use_path_count;
 }
+int WholeRequest::get_encode_cnt(){
+    return encode_cnt;
+}
+
 bool WholeRequest::is_divide() {
     return divide_to_5_qubits;
 }
@@ -112,6 +116,7 @@ void WholeRequest::try_forward() {
             } else {
                 status = REQUEST_FAIL;
             }
+            encode_cnt++;
             use_path_count[path_count.size()]++;
             path_count.clear();
             temporary_forward();

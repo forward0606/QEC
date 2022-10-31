@@ -44,6 +44,8 @@ class MyAlgo:public AlgorithmBase {
     vector<vector<int>> get_paths(int src, int dst);
 
 public:
+    map<int, int> path_length_encode;
+    map<int, int> path_length_cnt;
     MyAlgo(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha);
     ~MyAlgo();
 };

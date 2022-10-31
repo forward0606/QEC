@@ -17,6 +17,7 @@ class WholeRequest:public Request {
     bool divide_to_5_qubits;
     map<int, int> use_path_count;
     set<int> path_count;
+    int encode_cnt;
 public:
     int finished_qubits;
     int success_qubits;
@@ -28,6 +29,7 @@ public:
     double calculate_subfidelity();
     int get_current_temporary();
     int get_trust_node_path_length();
+    int get_encode_cnt();
     map<int, int> get_use_path_count();
     bool is_divide();
     bool is_finished();

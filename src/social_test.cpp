@@ -56,17 +56,18 @@ int main(){
     map<string, vector<double>> change_parameter;
     change_parameter["swap_prob"] = {0.3, 0.5, 0.7, 0.9, 1};
     change_parameter["entangle_alpha"] = {0.02, 0.002, 0.0002, 0};
-    change_parameter["min_fidelity"] = {0.5, 0.7, 0.75, 0.85, 0.95};
+    //change_parameter["min_fidelity"] = {0.5, 0.7, 0.75, 0.85, 0.95};
+    change_parameter["min_fidelity"] = {0.7};
     change_parameter["resource_ratio"] = {0.5, 1, 2, 10};
     change_parameter["area_alpha"] = {0.001, 0.01, 0.1}; 
-    change_parameter["social_density"] = {0.25, 0.5, 0.75, 1}; 
+    change_parameter["social_density"] = {0, 0.25, 0.5, 0.75, 1}; 
     change_parameter["new_request_cnt"] = {1, 2, 3, 4, 5};
     change_parameter["num_of_node"] = {100, 200, 300, 400, 500};
 
     vector<string> X_names = {"min_fidelity"};
     vector<string> Y_names = {"encode_cnt", "throughputs", "waiting_time", "unencode_cnt", "encode_ratio", "divide_cnt", "finished_throughputs", "encode_use_one_path_rate", "encode_num", "use_memory", "total_memory", "use_memory_ratio",\
                             "use_channel", "total_channel", "use_channel_ratio"};
-    vector<string> algo_names = {"social:0.25", "social:0.50", "social:0.75", "social:1.00"};
+    vector<string> algo_names = {"social:0", "social:0.25", "social:0.50", "social:0.75", "social:1.00"};
     // init result
     for(string X_name : X_names) {
         for(string Y_name : Y_names){
@@ -82,6 +83,7 @@ int main(){
 
         for(double change_value : change_parameter[X_name]) {
             vector<map<string, map<string, double>>> result(round);
+            vector<map<string, map<int, double>>> path_length_encode_avg(round);
             input_parameter[X_name] = change_value;
             
             int num_of_node = input_parameter["num_of_node"];
@@ -114,7 +116,7 @@ int main(){
                 char* dt = ctime(&now);
                 cerr  << "時間 " << dt << endl << endl; 
                 ofs  << "時間 " << dt << endl << endl; 
-                vector<AlgorithmBase*> algorithms;
+                vector<MyAlgo*> algorithms;
 
                 for(double social_density:change_parameter["social_density"]){
                     string filename = file_path + "input/round_" + round_str + ".input";
@@ -173,6 +175,11 @@ int main(){
                     for(string Y_name : Y_names) {
                         result[T][algo_names[algo_idx]][Y_name] = algo->get_res(Y_name);
                     }
+                    auto path_length_encode = algo->path_length_encode;
+                    auto path_length_cnt = algo->path_length_cnt;
+                    for(auto e:path_length_encode){
+                        path_length_encode_avg[T][algo_names[algo_idx]][e.first] = e.second*1.0 / path_length_cnt[e.first];
+                    }
                 }
                 now = time(0);
                 dt = ctime(&now);
@@ -213,7 +220,37 @@ int main(){
                 ofs << endl;
                 ofs.close();
             }
+
+            
+            string filename = "ans/GG.ans";
+            ofstream ofs;
+            ofs.open(file_path + filename, ios::app);
+
+            for(int T = 1; T < round; T++){
+                for(int algi=1;algi<5;algi++){
+                    for(auto e:path_length_encode_avg[T][algo_names[algi]]){
+                        path_length_encode_avg[0][algo_names[algi]][e.first] += e.second;
+                    }
+                }
+            }
+            
+            for(int path_length=3;path_length<9;path_length++){
+                ofs<<path_length<<" ";
+                for(int algi=1;algi<5;algi++){
+                    ofs<<path_length_encode_avg[0][algo_names[algi]][path_length] / round<<" ";
+                }
+                ofs<<endl;
+            }
+            ofs << endl;
+            ofs.close();
         }
     }
     return 0;
 }
+
+// 5.95375 5.99068 13.6879 20.6011
+// 7.33758 8.7139 20.234 29.5734 
+// 10.3517 12.6671 27.2966 38.8212 
+// 12.859 14.7601 36.7725 48.1671 
+// 10.9736 19.7771 46.1463 58.287 
+// 3.75 11.7778 52.1444 66.6111 
