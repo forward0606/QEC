@@ -218,6 +218,6 @@ if __name__ == "__main__":
 
 
     Xlabel = "Path Length"
-    Ylabel = "Avg. # Encoding Processes"
+    Ylabel = "Avg. # Enc. Processes"
     dataFileName = "path_length_encode_cnt.ans"
     ChartGenerator(dataFileName, Ylabel, Xlabel)
