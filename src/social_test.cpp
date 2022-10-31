@@ -253,7 +253,8 @@ int main(){
             // ofs << endl;
             // ofs.close();
 
-            filename = "ans/GG2.ans";
+            string filename = "ans/GG2.ans";
+            ofstream ofs;
             ofs.open(file_path + filename);
 
             for(int T = 1; T < round; T++){
@@ -265,7 +266,7 @@ int main(){
             }
             
             for(int i=1;i<=5;i++){
-                ofs<<path_length<<" ";
+                ofs<<i<<" ";
                 for(int algi=0;algi<5;algi++){
                     ofs<<encode_ratio[0][algo_names[algi]][i] / round<<" ";
                 }
