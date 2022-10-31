@@ -206,7 +206,7 @@ if __name__ == "__main__":
     #         ChartGenerator(dataFileName, Ylabel, Xlabel)
 
 
-    Xlabel = "# Node"
+    Xlabel = "# Nodes"
     Ylabel = "Throughput"
     dataFileName = "num_of_node_throughputs.ans"
     ChartGenerator(dataFileName, Ylabel, Xlabel)

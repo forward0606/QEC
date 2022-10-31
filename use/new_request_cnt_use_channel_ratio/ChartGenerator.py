@@ -212,7 +212,7 @@ if __name__ == "__main__":
     #         ChartGenerator(dataFileName, Ylabel, Xlabel)
 
 
-    Xlabel = "$\\it{\\beta}$ (# Req. per Time Slot)"
+    Xlabel = "$\\it{\\beta}$ (# Reqs. per Time Slot)"
     Ylabel = "Channel Utilization"
     dataFileName = "new_request_cnt_use_channel_ratio.ans"
     ChartGenerator(dataFileName, Ylabel, Xlabel)

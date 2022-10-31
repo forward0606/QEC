@@ -214,7 +214,7 @@ if __name__ == "__main__":
     #         ChartGenerator(dataFileName, Ylabel, Xlabel)
 
 
-    Xlabel = "$\\it{\\beta}$ (# Req. per Time Slot)"
+    Xlabel = "$\\it{\\beta}$ (# Reqs. per Time Slot)"
     Ylabel = "Runtime (sec)"
     dataFileName = "new_request_cnt_runtime.ans"
     ChartGenerator(dataFileName, Ylabel, Xlabel)
