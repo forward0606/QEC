@@ -63,7 +63,7 @@ int main(){
     change_parameter["new_request_cnt"] = {1, 2, 3, 4, 5};
     change_parameter["num_of_node"] = {100, 200, 300, 400, 500};
 
-    vector<string> X_names = {"min_fidelity"};
+    vector<string> X_names = {"min_fidelity"}; //阿可能是這個沒改到QQ不過不知道 X 軸要放甚麼 但老師要的x軸不就是這個嗎
     vector<string> Y_names = {"encode_cnt", "throughputs", "waiting_time", "unencode_cnt", "encode_ratio", "divide_cnt", "finished_throughputs", "encode_use_one_path_rate", "encode_num", "use_memory", "total_memory", "use_memory_ratio",\
                             "use_channel", "total_channel", "use_channel_ratio"};
     //vector<string> algo_names = {"social:0", "social:0.25", "social:0.50", "social:0.75", "social:1.00"};
@@ -85,6 +85,7 @@ int main(){
             vector<map<string, map<string, double>>> result(round);
             vector<map<string, map<int, double>>> path_length_encode_avg(round);
             vector<map<string, map<int, double>>> encode_ratio(round);
+            vector<map<string, map<int, 
             input_parameter[X_name] = change_value;
             
             int num_of_node = input_parameter["num_of_node"];
