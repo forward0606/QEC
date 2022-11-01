@@ -38,6 +38,8 @@ public:
     void refresh();
     void print();
     double fidelity();
+    bool operator==(const Path &r)const;
+    bool operator<(const Path &r)const;
 };
 
 #endif

@@ -174,6 +174,22 @@ double Path::fidelity(){
     }
     return fidelity;
 }
+
+bool Path::operator==(const Path &r)const{
+    if(nodes.size() != r.nodes.size()) return false;
+    for(int i=0;i<(int)nodes.size();i++){
+        if(nodes[i] != r.nodes[i]) return false;
+    }
+    return true;
+}
+
+bool Path::operator<(const Path &r)const{
+    if(nodes.size() != r.nodes.size()) return nodes.size() < r.nodes.size();
+    for(int i=0;i<(int)nodes.size();i++){
+        if(nodes[i] != r.nodes[i])  return nodes[i]->get_id() < r.nodes[i]->get_id();
+    }
+    return nodes.back() == r.nodes.back();
+}
 // double compute_weight(){
     
 // }

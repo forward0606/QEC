@@ -6,9 +6,6 @@
 #include <omp.h>
 #include "Network/Graph/Graph.h"
 #include "Algorithm/AlgorithmBase/AlgorithmBase.h"
-#include "Algorithm/Greedy/Greedy.h"
-#include "Algorithm/QCAST/QCAST.h"
-#include "Algorithm/REPS/REPS.h"
 #include "Algorithm/MyAlgo/MyAlgo.h"
 using namespace std;
 
@@ -85,7 +82,7 @@ int main(){
             vector<map<string, map<string, double>>> result(round);
             vector<map<string, map<int, double>>> path_length_encode_avg(round);
             vector<map<string, map<int, double>>> encode_ratio(round);
-            vector<map<string, map<int, 
+            // vector<map<string, map<int, 
             input_parameter[X_name] = change_value;
             
             int num_of_node = input_parameter["num_of_node"];

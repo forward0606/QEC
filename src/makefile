@@ -5,8 +5,8 @@ gurobi_path = /opt/gurobi952/linux64
 
 
 all: a.out
-social.out: social_test.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/REPS/REPS.o Algorithm/MyAlgo/MyAlgo.o Request/WholeRequest.o
-	g++ -fopenmp -g -Wall -Wextra -O3 social_test.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/MyAlgo/MyAlgo.o Request/WholeRequest.o Algorithm/REPS/REPS.o -I$(gurobi_path)/include/ -L$(gurobi_path)/lib -lgurobi_c++ -lgurobi95 -lm -o social.out
+social.out: social_test.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Request/Request.o config.o Algorithm/MyAlgo/MyAlgo.o Request/WholeRequest.o
+	g++ -fopenmp -g -Wall -Wextra -O3 social_test.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Request/Request.o config.o Algorithm/MyAlgo/MyAlgo.o Request/WholeRequest.o
 a.out: main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/REPS/REPS.o Algorithm/MyAlgo/MyAlgo.o Request/WholeRequest.o
 	g++ -fopenmp -g -Wall -Wextra -O3 main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/MyAlgo/MyAlgo.o Request/WholeRequest.o Algorithm/REPS/REPS.o -I$(gurobi_path)/include/ -L$(gurobi_path)/lib -lgurobi_c++ -lgurobi95 -lm 
 	

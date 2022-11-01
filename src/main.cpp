@@ -13,7 +13,7 @@
 using namespace std;
 
 
-const bool debug = false;
+
 
 
 Request generate_new_request(int num_of_node, int time_limit){
@@ -39,7 +39,7 @@ int main(){
     default_setting["num_of_node"] = 100;
     default_setting["social_density"] = 0.5;
     default_setting["area_alpha"] = 0.1;
-    default_setting["memory_cnt_avg"] = 12;
+    default_setting["memory_cnt_avg"] = 30;
     default_setting["channel_cnt_avg"] = 5;
     default_setting["resource_ratio"] = 1;
     default_setting["min_fidelity"] = 0.7;
@@ -48,22 +48,22 @@ int main(){
     default_setting["swap_prob"] = 1;
     default_setting["entangle_alpha"] = 0;
     default_setting["node_time_limit"] = 7;
-    default_setting["new_request_cnt"] = 5;
+    default_setting["new_request_cnt"] = 10;
     default_setting["request_time_limit"] = 7;
     default_setting["total_time_slot"] = 100;
     default_setting["service_time"] = 100;
 
     map<string, vector<double>> change_parameter;
-    change_parameter["swap_prob"] = {0.3, 0.5, 0.7, 0.9, 1};
-    change_parameter["entangle_alpha"] = {0.02, 0.002, 0.0002, 0};
+    // change_parameter["swap_prob"] = {0.3, 0.5, 0.7, 0.9, 1};
+    // change_parameter["entangle_alpha"] = {0.02, 0.002, 0.0002, 0};
     change_parameter["min_fidelity"] = {0.5, 0.7, 0.75, 0.85, 0.95};
     change_parameter["resource_ratio"] = {0.5, 1, 2, 10};
     change_parameter["area_alpha"] = {0.001, 0.01, 0.1}; 
     change_parameter["social_density"] = {0.25, 0.5, 0.75, 1}; 
-    change_parameter["new_request_cnt"] = {1, 2, 3, 4, 5};
-    change_parameter["num_of_node"] = {50, 100, 150, 200, 250};
+    change_parameter["new_request_cnt"] = {1, 5, 10, 20};
+    change_parameter["num_of_node"] = {50, 100, 150, 200};
 
-    vector<string> X_names = {"num_of_node", "min_fidelity", "new_request_cnt", "area_alpha", "resource_ratio", "social_density", "entangle_alpha", "swap_prob"};
+    vector<string> X_names = {"num_of_node", "min_fidelity", "new_request_cnt", "social_density"}//, "area_alpha", "resource_ratio", "entangle_alpha", "swap_prob"};
     vector<string> Y_names = {"waiting_time", "throughputs", "finished_throughputs", \
                             "succ-finished_ratio", "fail-finished_ratio", "active_timeslot", "path_length", "fidelity", \
                             "encode_cnt", "unencode_cnt", "encode_ratio", "use_memory", "total_memory", "use_memory_ratio",\
@@ -78,7 +78,7 @@ int main(){
     }
     
 
-    int round = 10;
+    int round = 50;
     for(string X_name : X_names) {
         map<string, double> input_parameter = default_setting;
 
@@ -124,16 +124,7 @@ int main(){
                     cerr<<"error:\tsystem proccess python error"<<endl;
                     exit(1);
                 }
-                if(debug) filename = "debug_graph.txt";
-                int num_of_node;
-                ifstream graph_input;
-                graph_input.open (filename);
-                graph_input >> num_of_node;
-                graph_input.close();
-                // Graph graph("input.txt", num_of_node, min_channel, max_channel, min_memory_cnt, max_memory_cnt, node_time_limit, swap_prob, entangle_alpha, true);
-                // Greedy greedy(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
-                // QCAST qcast(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
-                // REPS reps(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha);
+                
                 vector<AlgorithmBase*> algorithms;
                 algorithms.emplace_back(new Greedy(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
                 algorithms.emplace_back(new QCAST(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
@@ -143,16 +134,9 @@ int main(){
                 ofs<<"---------------in round " <<T<<" -------------" <<endl;
                 for(int t = 0; t < total_time_slot; t++){
                     ofs<<"---------------in timeslot " <<t<<" -------------" <<endl;
-                    //亂數引擎, to decide how many requests received in this timeslot 
-                    // random_device rd;
-                    // default_random_engine generator = default_random_engine(rd());
-                    // uniform_int_distribution<int> unif(new_request_min, new_request_max);
-                    // int request_cnt = unif(generator);
-
                     cout<< "---------generating requests in main.cpp----------" << endl;
                     for(int q = 0; q < new_request_cnt && t < service_time; q++){
                         Request new_request = generate_new_request(num_of_node, request_time_limit);
-                        // Request new_request = generate_new_request(0, 1, request_time_limit);
                         cout<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
                         for(auto &algo:algorithms){
                             result[T][algo->get_name()]["total_request"]++; 

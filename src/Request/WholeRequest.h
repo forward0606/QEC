@@ -17,6 +17,8 @@ class WholeRequest:public Request {
     bool divide_to_5_qubits;
     map<int, int> use_path_count;
     set<int> path_count;
+    set<int> node_path_count;
+    map<int, int> use_node_path_count;
     int encode_cnt;
 public:
     int finished_qubits;
