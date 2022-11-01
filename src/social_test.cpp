@@ -36,7 +36,7 @@ int main(){
     default_setting["num_of_node"] = 100;
     default_setting["social_density"] = 0.5;
     default_setting["area_alpha"] = 0.1;
-    default_setting["memory_cnt_avg"] = 12;
+    default_setting["memory_cnt_avg"] = 30;
     default_setting["channel_cnt_avg"] = 5;
     default_setting["resource_ratio"] = 1;
     default_setting["min_fidelity"] = 0.7;
@@ -45,7 +45,7 @@ int main(){
     default_setting["swap_prob"] = 1;
     default_setting["entangle_alpha"] = 0;
     default_setting["node_time_limit"] = 7;
-    default_setting["new_request_cnt"] = 5;
+    default_setting["new_request_cnt"] = 10;
     default_setting["request_time_limit"] = 7;
     default_setting["total_time_slot"] = 100;
     default_setting["service_time"] = 100;
@@ -57,7 +57,7 @@ int main(){
     change_parameter["resource_ratio"] = {0.5, 1, 2, 10};
     change_parameter["area_alpha"] = {0.001, 0.01, 0.1}; 
     change_parameter["social_density"] = {0, 0.25, 0.5, 0.75, 1}; 
-    change_parameter["new_request_cnt"] = {1, 2, 3, 4, 5};
+    change_parameter["new_request_cnt"] = {1, 5, 10, 20, 30};
     change_parameter["num_of_node"] = {100, 200, 300, 400, 500};
 
     vector<string> X_names = {"min_fidelity"}; //阿可能是這個沒改到QQ不過不知道 X 軸要放甚麼 但老師要的x軸不就是這個嗎
@@ -90,7 +90,7 @@ int main(){
             input_parameter[X_name] = change_value;
             
             int num_of_node = input_parameter["num_of_node"];
-            //double social_density = input_parameter["social_density"];
+            double social_density = input_parameter["social_density"];
             double area_alpha = input_parameter["area_alpha"];
             double resource_ratio = input_parameter["resource_ratio"];
             int min_memory_cnt = input_parameter["memory_cnt_avg"] * resource_ratio - 2;
@@ -279,7 +279,7 @@ int main(){
                     }
                 }
             }
-            
+            ofs<<change_value<<" ";
             for(int algi=0;algi<5;algi++){
                 ofs<<encode_ratio[0][algo_names[algi]][5] / round<<" ";
             }
