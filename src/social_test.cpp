@@ -64,7 +64,8 @@ int main(){
     vector<string> Y_names = {"encode_cnt", "throughputs", "waiting_time", "unencode_cnt", "encode_ratio", "divide_cnt", "finished_throughputs", "encode_use_one_path_rate", "encode_num", "use_memory", "total_memory", "use_memory_ratio",\
                             "use_channel", "total_channel", "use_channel_ratio"};
     //vector<string> algo_names = {"social:0", "social:0.25", "social:0.50", "social:0.75", "social:1.00"};
-    vector<string> algo_names = {"min_f0.5", "min_f0.7", "min_f0.75", "min_f0.85", "min_f0.95"};
+    //vector<string> algo_names = {"min_f0.5", "min_f0.7", "min_f0.75", "min_f0.85", "min_f0.95"};
+    vector<string> algo_names = {"beta:1", "beta:5", "beta:10", "beta:20", "beta:30"};
     // // init result
     // for(string X_name : X_names) {
     //     for(string Y_name : Y_names){
@@ -72,7 +73,10 @@ int main(){
     //         fstream file( file_path + filename, ios::out );
     //     }
     // }
-    
+    {
+        string filename = "ans/GG2.ans";
+        fstream file( file_path + filename, ios::out );
+    }
 
     int round = 10;
     for(string X_name : X_names) {
@@ -93,12 +97,12 @@ int main(){
             int max_memory_cnt = input_parameter["memory_cnt_avg"] * resource_ratio + 2;
             int min_channel_cnt = input_parameter["channel_cnt_avg"] * resource_ratio - 2;
             int max_channel_cnt = input_parameter["channel_cnt_avg"] * resource_ratio + 2;
-            //double min_fidelity = input_parameter["min_fidelity"];
+            double min_fidelity = input_parameter["min_fidelity"];
             double max_fidelity = input_parameter["max_fidelity"];
             double social_density = input_parameter["social_density"];
             double swap_prob = input_parameter["swap_prob"], entangle_alpha = input_parameter["entangle_alpha"];
             int node_time_limit = input_parameter["node_time_limit"];
-            int new_request_cnt = input_parameter["new_request_cnt"];
+            //int new_request_cnt = input_parameter["new_request_cnt"];
             int service_time = input_parameter["service_time"];
             int request_time_limit = input_parameter["request_time_limit"];
             int total_time_slot = input_parameter["total_time_slot"];
@@ -117,27 +121,40 @@ int main(){
                 ofs  << "時間 " << dt << endl << endl; 
                 vector<MyAlgo*> algorithms;
 
-                for(double min_fidelity:change_parameter["min_fidelity"]){
-                    string filename = file_path + "input/round_" + round_str + ".input";
-                    string command = "python3 main.py ";
-                    string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity) + " " + to_string(social_density) + " " + to_string(area_alpha);
-                    if(system((command + filename + " " + parameter).c_str()) != 0){
-                        cerr<<"error:\tsystem proccess python error"<<endl;
-                        exit(1);
-                    }
-                    algorithms.emplace_back(new MyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
+                // for(double min_fidelity:change_parameter["min_fidelity"]){
+                //     string filename = file_path + "input/round_" + round_str + ".input";
+                //     string command = "python3 main.py ";
+                //     string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity) + " " + to_string(social_density) + " " + to_string(area_alpha);
+                //     if(system((command + filename + " " + parameter).c_str()) != 0){
+                //         cerr<<"error:\tsystem proccess python error"<<endl;
+                //         exit(1);
+                //     }
+                //     algorithms.emplace_back(new MyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
+                // }
+
+                string filename = file_path + "input/round_" + round_str + ".input";
+                string command = "python3 main.py ";
+                string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity) + " " + to_string(social_density) + " " + to_string(area_alpha);
+                if(system((command + filename + " " + parameter).c_str()) != 0){
+                    cerr<<"error:\tsystem proccess python error"<<endl;
+                    exit(1);
                 }
-                
+                algorithms.emplace_back(new MyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
+                algorithms.emplace_back(new MyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
+                algorithms.emplace_back(new MyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
+                algorithms.emplace_back(new MyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
+                algorithms.emplace_back(new MyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
 
                 ofs<<"---------------in round " <<T<<" -------------" <<endl;
                 for(int t = 0; t < total_time_slot; t++){
                     ofs<<"---------------in timeslot " <<t<<" -------------" <<endl;
 
                     cout<< "---------generating requests in main.cpp----------" << endl;
-                    for(int q = 0; q < new_request_cnt && t < service_time; q++){
-                        Request new_request = generate_new_request(num_of_node, request_time_limit);
-                        cout<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
-                        for(int algo_idx = 0;algo_idx < (int)algorithms.size();algo_idx++){
+                    for(int algo_idx = 0;algo_idx < (int)algorithms.size();algo_idx++){
+                        int new_request_cnt = change_parameter["new_request_cnt"][algo_idx];
+                        for(int q = 0; q < new_request_cnt && t < service_time; q++){
+                            Request new_request = generate_new_request(num_of_node, request_time_limit);
+                            cout<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
                             auto algo = algorithms[algo_idx];
                             result[T][algo_names[algo_idx]]["total_request"]++; 
                             algo->requests.emplace_back(new_request);
@@ -253,7 +270,7 @@ int main(){
 
             string filename = "ans/GG2.ans";
             ofstream ofs;
-            ofs.open(file_path + filename);
+            ofs.open(file_path + filename, ios::app);
 
             for(int T = 1; T < round; T++){
                 for(int algi=0;algi<5;algi++){
@@ -263,14 +280,10 @@ int main(){
                 }
             }
             
-            for(int i=1;i<=5;i++){
-                ofs<<i<<" ";
-                for(int algi=0;algi<5;algi++){
-                    ofs<<encode_ratio[0][algo_names[algi]][i] / round<<" ";
-                }
-                ofs<<endl;
+            for(int algi=0;algi<5;algi++){
+                ofs<<encode_ratio[0][algo_names[algi]][5] / round<<" ";
             }
-            ofs << endl;
+            ofs<<endl;
             ofs.close();
         }
     }
