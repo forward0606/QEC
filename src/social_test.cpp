@@ -78,7 +78,7 @@ int main(){
         fstream file( file_path + filename, ios::out );
     }
 
-    int round = 10;
+    int round = 50;
     for(string X_name : X_names) {
         map<string, double> input_parameter = default_setting;
 
