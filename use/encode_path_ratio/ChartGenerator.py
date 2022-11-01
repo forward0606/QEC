@@ -41,6 +41,7 @@ class ChartGenerator:
             "#FF0000",
             "#FF6600",
             "#901231",
+            "#000000"
         ]
         # matplotlib.rcParams['text.usetex'] = True
 
@@ -136,7 +137,7 @@ class ChartGenerator:
                 minData = min(minData, y[i][j])
 
         Yend = math.ceil(maxData)
-        Ystart = 90
+        Ystart = 65
         Yinterval = (Yend - Ystart) / 5
 
         if maxData > 1.1:
@@ -147,8 +148,8 @@ class ChartGenerator:
             Ystart = 0
             Yinterval = 0.2
 
-        marker = ['o', 'x', 's', 'v']
-        line_style = ["-.", "-", ":", "--"]
+        marker = ['o', 'x', 's', 'v', 'd']
+        line_style = ["-.", "-", ":", "--", '-']
         # color.reverse()
         # marker.reverse()
         for i in range(numOfAlgo):
@@ -158,7 +159,7 @@ class ChartGenerator:
         plt.xticks(fontsize = Xticks_fontsize)
         plt.yticks(fontsize = Yticks_fontsize)
         
-        AlgoName = ["Fid L.B. 0.7", "Fid L.B. 0.75 ", "Fid L.B. 0.85", "Fid L.B. 0.9", "Fid L.B. 0.95"]
+        AlgoName = ["$\\it{\\beta}$ :1", "$\\it{\\beta}$ :5 ", "$\\it{\\beta}$ :10", "$\\it{\\beta}$ :20", "$\\it{\\beta}$ :30"]
         
         leg = plt.legend(
             AlgoName,
@@ -170,7 +171,7 @@ class ChartGenerator:
             handletextpad = 0.2,
             handlelength = 1,
             columnspacing = 0.2,
-            ncol = 2,
+            ncol = 3,
             facecolor = "None",
         )
 
@@ -217,7 +218,7 @@ if __name__ == "__main__":
     #         ChartGenerator(dataFileName, Ylabel, Xlabel)
 
 
-    Xlabel = "Encode Path Cnt"
-    Ylabel = "Ratio (%)"
+    Xlabel = "Fidelity Lower Bound"
+    Ylabel = "5 Diff. Path Ratio  (%)"
     dataFileName = "encode_path_ratio.ans"
     ChartGenerator(dataFileName, Ylabel, Xlabel)
