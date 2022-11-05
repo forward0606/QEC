@@ -159,12 +159,12 @@ class ChartGenerator:
         plt.xticks(fontsize = Xticks_fontsize)
         plt.yticks(fontsize = Yticks_fontsize)
         
-        AlgoName = ["$\\it{\\beta}$ :1", "$\\it{\\beta}$ :5 ", "$\\it{\\beta}$ :10", "$\\it{\\beta}$ :20", "$\\it{\\beta}$ :30"]
+        AlgoName = ["$\\it{\\beta}$ :1 ", "$\\it{\\beta}$ :5 ", "$\\it{\\beta}$ :10 ", "$\\it{\\beta}$ :20 ", "$\\it{\\beta}$ :30"]
         
         leg = plt.legend(
             AlgoName,
             loc = 10,
-            bbox_to_anchor = (0.3, 1.25),
+            bbox_to_anchor = (0.5, 1.25),
             prop = {"size": fontsize, "family": "Times New Roman"},
             frameon = "False",
             labelspacing = 0.2,

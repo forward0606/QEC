@@ -145,9 +145,9 @@ class ChartGenerator:
             Yend = 1
             Ystart = 0
             Yinterval = 0.2
-        Yend = 500
-        Ystart = 0
-        Yinterval = 100
+        # Yend = 500
+        Ystart = 180
+        # Yinterval = 100
         marker = ['o', 's', 'v', 'x', 'd']
         for i in range(numOfAlgo-1, -1, -1):
             ax1.plot(x_data, y[i], color = color[i], lw = 2.5, linestyle = "-", marker = marker[i], markersize = 15, markerfacecolor = "none", markeredgewidth = 2.5, zorder=i)

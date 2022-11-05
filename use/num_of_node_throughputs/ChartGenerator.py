@@ -134,9 +134,20 @@ class ChartGenerator:
                 maxData = max(maxData, y[i][j])
                 minData = min(minData, y[i][j])
 
-        Yend = 400
-        Ystart = 150
+        Yend = math.ceil(maxData)
+        Ystart = 0
         Yinterval = (Yend - Ystart) / 5
+
+        if maxData > 1.1:
+            Yinterval = int(math.ceil(Yinterval))
+            Yend = int(Yend)
+        else:
+            Yend = 1
+            Ystart = 0
+            Yinterval = 0.2
+        # Yend = 400
+        Ystart = 300
+        # Yinterval = (Yend - Ystart) / 5
 
 
         marker = ['o', 's', 'v', 'x', 'd']

@@ -8,7 +8,7 @@ import matplotlib.transforms
 import matplotlib
 from matplotlib.offsetbox import AnchoredOffsetbox, TextArea, HPacker, VPacker
 
-directory_path = "min_fidelity_encode_ratio/"
+directory_path = "min_fidelity_encode_rate/"
 
 class ChartGenerator:
     # data檔名 Y軸名稱 X軸名稱 Y軸要除多少(10的多少次方) Y軸起始座標 Y軸終止座標 Y軸座標間的間隔
