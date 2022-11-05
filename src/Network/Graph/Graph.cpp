@@ -107,6 +107,34 @@ Node* Graph::Node_id2ptr(int id){
     return &nodes[id];
 }
 
+void Graph::store_at(int node_id, int cnt){
+    if(node_id > nodes.size() || node_id < 0){
+        cerr<<"err:\tin Graph::store at error, id out of range"<<endl;
+        exit(1);
+    }
+    if(cnt <= 0){
+        cerr<<"err:\t Graph::store at error, cnt <= 0"<<endl;
+        exit(1);
+    }
+    while(cnt--){
+        nodes[node_id]--;
+    }
+}
+void Graph::release_at(int node_id, int cnt){
+    if(node_id > nodes.size() || node_id < 0){
+        cerr<<"err:\tin Graph::store at error, id out of range"<<endl;
+        exit(1);
+    }
+    if(cnt <= 0){
+        cerr<<"err:\t Graph::store at error, cnt <= 0"<<endl;
+        exit(1);
+    }
+    while(cnt--){
+        nodes[node_id]--;
+    }
+}
+
+
 /*
 c++ call system to run python (waxman)
 python generate graph, and then write to file
@@ -220,6 +248,7 @@ int Graph::remain_resource_cnt(int node1_id, int node2_id, bool is1_repeater /*=
 
 
 Path* Graph::build_path(vector<int> nodes_id){
+    nodes[nodes_id]--; 
     if(nodes_id.size() < 2) cerr << "err:\ttry to build a path with len < 2\n";
     vector<Node *> path_nodes;
     vector<Channel*> path_channels;

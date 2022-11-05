@@ -37,6 +37,8 @@ public:
 	bool is_trusted(int node1_id, int node2_id);
 	Node* Node_id2ptr(int id);
 
+	void store_at(int node_id, int cnt);
+	void release_at(int node_id, int cnt);
 	void generate(string);
 	void refresh();
 	void release();

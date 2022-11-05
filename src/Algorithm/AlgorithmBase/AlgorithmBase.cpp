@@ -112,6 +112,8 @@ int AlgorithmBase::find_width(vector<int> path){
         width = min(width, graph.remain_resource_cnt(path[i-1], path[i]));
     }
     width = min(width, graph.remain_resource_cnt(path[path_size-2], path[path_size-1], true, false));
+    int source_memory_count = graph.Node_id2ptr(path[0])->get_remain()-1;
+    width = min(width, source_memory_count);
     return width;
 }
 

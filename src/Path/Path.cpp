@@ -137,6 +137,7 @@ bool Path::send_data_succ(){
 
 void Path::release(){
     if(DEBUG)cerr<<"release()"<<endl;
+    *(nodes[0])++;
     for(auto &channel:channels){
         channel->release();
     }
