@@ -10,7 +10,7 @@ void MyGreedyAlgo::path_assignment(){
     for(int reqno = 0; reqno < (int)requests.size(); reqno++){
         Request &request = requests[reqno];
         vector<int> path = Dijkstra(request.get_source(), request.get_destination());
-        if(path.size() == 0) continue;
+        if(path.size() == 0 && find_width(path) == 0) continue;
         requests[reqno] += graph.build_path(path);
     }
 }
@@ -50,7 +50,7 @@ vector<int> MyGreedyAlgo::Dijkstra(int src, int dst) {
         used[cur_node] = true;
         auto neighbors = graph.get_neighbors_id(cur_node);
         for(int neighbor : neighbors) {
-            if(distance[cur_node] + get_weight(cur_node, neighbor) < distance[neighbor]) {
+            if(graph.remain_resource_cnt(cur_node, neighbor) > 0 && distance[cur_node] + get_weight(cur_node, neighbor) < distance[neighbor]) {
                 distance[neighbor] = distance[cur_node] + get_weight(cur_node, neighbor);
                 parent[neighbor] = cur_node;
                 pq.push({distance[neighbor], neighbor});

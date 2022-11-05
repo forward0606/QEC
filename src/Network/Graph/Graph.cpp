@@ -34,6 +34,7 @@ Channel* Graph::assign_channel(Node &node1, Node &node2){
     }
 
     cerr << "err:\tassign channel but no channel is assignable." << endl;
+    abort();
     if(DEBUG){
         cerr<< "---------show graph in assign channel----------" << endl;
         for(auto& n:nodes){
