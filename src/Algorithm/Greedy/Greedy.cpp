@@ -2,7 +2,7 @@
 
 Greedy::Greedy(string filename, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha)
     :AlgorithmBase(filename, "Greedy", request_time_limit, node_time_limit, swap_prob, entangle_alpha){
-    if(DEBUG) cerr<<"new QCAST"<<endl;
+    if(DEBUG) cerr<<"new Greedy"<<endl;
 }
 
 void Greedy::path_assignment(){

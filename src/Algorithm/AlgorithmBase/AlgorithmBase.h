@@ -21,9 +21,9 @@ protected:
     int time_limit;
     double swap_prob;
     map<string, double> res;
+    vector<Request> requests;
     //Request* generate_new_request();
 public:
-    vector<Request> requests;
     Graph graph;
     AlgorithmBase(string filename, string algorithm_name, int request_time_limit, int node_time_limit, double swap_prob, double entangle_alpha);
     virtual~AlgorithmBase();
@@ -45,7 +45,9 @@ public:
     virtual void swap()=0;
     virtual void send()=0;
     virtual void next_time_slot()=0;
+
     void run();
+    void add_new_request(Request new_request);
     int total_throughput();
 
     Path *find_swap_path(vector<int> path_nodes, map<pair<int, int>, vector<Channel*>> &remain_channels);

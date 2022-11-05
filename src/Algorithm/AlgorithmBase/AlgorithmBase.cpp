@@ -99,6 +99,13 @@ void AlgorithmBase::run(){
     res["runtime"] += (1000000LL * (end.tv_sec - start.tv_sec) + end.tv_usec - start.tv_usec) / 1000000.0;
 }
 
+void AlgorithmBase::add_new_request(Request new_request){
+    int src = new_request.get_source();
+    if(graph.Node_id2ptr(src)->get_remain() >= 1) {
+        requests.push_back(new_request);
+    }
+}
+
 int AlgorithmBase::find_width(vector<int> path){
     if(path.size() < 2){
         return 0x3f3f3f3f;

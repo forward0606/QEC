@@ -140,7 +140,7 @@ int main(){
                         cout<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
                         for(auto &algo:algorithms){
                             result[T][algo->get_name()]["total_request"]++; 
-                            algo->requests.emplace_back(new_request);
+                            algo->add_new_request(new_request);
                         }
                     }
                     cout<< "---------generating requests in main.cpp----------end" << endl;

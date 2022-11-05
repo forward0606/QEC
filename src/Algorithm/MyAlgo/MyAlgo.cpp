@@ -308,8 +308,12 @@ void MyAlgo::path_assignment() {
             double fidelity = calculate_fidelity(sufficient_fidelities);
             double fidelity_threshold = max(get_max_fidelity_1_path(src, dst), calculate_fidelity(fidelity_table[src][dst]));
             
-            if(fidelity >= fidelity_threshold) {
-                request.set_divide(true);
+            if(fidelity >= fidelity_threshold && graph.Node_id2ptr(src)->get_remain() >= 5 && \
+                (int)sufficient_paths.size() + graph.Node_id2ptr(dst)->get_remain() >= 5) {
+                request.set_encode(true);
+                (*graph.Node_id2ptr(src)) -= 4;
+                (*graph.Node_id2ptr(dst)) -= (5 - (int)sufficient_paths.size());
+
                 res["encode_cnt"]++;
                 for(int path_index = 0; path_index < (int)sufficient_paths.size(); path_index++) {
                     request.subrequests.emplace_back(new SubRequest(src, dst, request.get_time_limit()));
@@ -318,7 +322,7 @@ void MyAlgo::path_assignment() {
                     *(request.subrequests[path_index]) += sufficient_paths[path_index];
                 }
             } else {
-                request.set_divide(false);
+                request.set_encode(false);
                 for(Path* &path : sufficient_paths) {
                     path->release();
                 }

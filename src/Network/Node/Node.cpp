@@ -102,6 +102,20 @@ const Node Node::operator++(int){
     return tmp;
 }
 
+const Node Node::operator+=(int cnt) {
+    for(int i = 0; i < cnt; i++) {
+        (*this)++;
+    }
+    return *this;
+}
+
+const Node Node::operator-=(int cnt) {
+    for(int i = 0; i < cnt; i++) {
+        (*this)--;
+    }
+    return *this;
+}
+
 void Node::print()const{
     if(!DEBUG)  return;
     cerr << "this is a Node" << endl;

@@ -14,7 +14,7 @@ using SubRequest = Request;                 //genius
 
 class WholeRequest:public Request {
     int current_temporary; // index of node in trusted_node_path
-    bool divide_to_5_qubits;
+    bool encode_to_5_qubits;
     map<int, int> use_path_count;
     set<int> path_count;
     set<int> node_path_count;
@@ -33,10 +33,10 @@ public:
     int get_trust_node_path_length();
     int get_encode_cnt();
     map<int, int> get_use_path_count();
-    bool is_divide();
+    bool is_encoding();
     bool is_finished();
     bool is_success();
-    void set_divide(bool status);
+    void set_encode(bool status);
     void try_forward();
     void temporary_forward();
     void clear();

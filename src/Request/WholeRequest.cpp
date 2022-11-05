@@ -1,7 +1,7 @@
 #include "WholeRequest.h"
 
 WholeRequest::WholeRequest(int source, int destination, int time_limit, vector<int> trusted_node_path)
-    :Request(source, destination, time_limit), current_temporary(0), divide_to_5_qubits(false),
+    :Request(source, destination, time_limit), current_temporary(0), encode_to_5_qubits(false),
      encode_cnt(0), finished_qubits(0), success_qubits(0), path_length(0), fidelity(1), trusted_node_path(trusted_node_path){
     if(DEBUG)cerr<<"new WholeRequest"<<endl;
 }
@@ -31,7 +31,7 @@ double calculate_fidelity(vector<double> paths_fidelity) {
 
 double WholeRequest::calculate_subfidelity() {
     if(subrequests.empty()) return 1;
-    if(!is_divide()) return subrequests[0]->get_paths()[0]->fidelity();
+    if(!is_encoding()) return subrequests[0]->get_paths()[0]->fidelity();
 
     vector<double> fidelities;
     for(SubRequest* subrequest : subrequests) {
@@ -59,8 +59,8 @@ int WholeRequest::get_encode_cnt(){
     return encode_cnt;
 }
 
-bool WholeRequest::is_divide() {
-    return divide_to_5_qubits;
+bool WholeRequest::is_encoding() {
+    return encode_to_5_qubits;
 }
 bool WholeRequest::is_finished() {
     return current_temporary == (int)trusted_node_path.size() - 1;
@@ -70,8 +70,8 @@ bool WholeRequest::is_success() {
     return status == REQUEST_SUCC;
 }
 
-void WholeRequest::set_divide(bool flag) {
-    divide_to_5_qubits = flag;
+void WholeRequest::set_encode(bool flag) {
+    encode_to_5_qubits = flag;
 }
 
 void WholeRequest::temporary_forward() {
@@ -82,11 +82,13 @@ void WholeRequest::temporary_forward() {
             status = REQUEST_SUCC;
         }
     }
-    divide_to_5_qubits = false;
+    encode_to_5_qubits = false;
     finished_qubits = 0;
     success_qubits = 0;
     for(SubRequest* subrequest : subrequests) {
+        Node *dst = subrequests.back()->get_paths()[0]->get_nodes().back();
         delete subrequest;
+        (*dst)--;
     }
     subrequests.clear();
 }
@@ -96,9 +98,11 @@ void WholeRequest::try_forward() {
         SubRequest* subrequest = subrequests[i];
         if(subrequest->is_finished()) {
             path_count.insert(i);
-            if(is_divide()) path_length += subrequest->get_paths()[0]->get_len() / (double)5;
+            if(is_encoding()) path_length += subrequest->get_paths()[0]->get_len() / (double)5;
             else path_length += subrequest->get_paths()[0]->get_len();
             finished_qubits++;
+            Node *src = subrequest->get_paths()[0]->get_nodes()[0];
+            (*src)++;
             if(subrequest->is_success()) {
                 success_qubits++;
             }
@@ -106,7 +110,7 @@ void WholeRequest::try_forward() {
     
     }
 
-    if(is_divide()) {                           //divide into five qubits
+    if(is_encoding()) {                           //divide into five qubits
         if(finished_qubits >= 5) {
             if(finished_qubits > 5) {
                 cerr << "error: finished_qubits > 5" << endl;
@@ -124,8 +128,10 @@ void WholeRequest::try_forward() {
             int need = (5 - finished_qubits);
             int remove_cnt = (int)subrequests.size() - need;
             for(int i = 0; i < remove_cnt; i++) {
+                Node *dst = subrequests.back()->get_paths()[0]->get_nodes().back();
                 delete subrequests.back();
                 subrequests.pop_back();
+                (*dst)--;
             }
         }
     } else {

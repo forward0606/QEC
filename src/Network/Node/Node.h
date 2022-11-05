@@ -36,7 +36,9 @@ public:
     bool operator>(const Node &right)const;
 	bool operator>=(const Node &right)const;
     const Node operator--(int);                  //delete one remain memory
-    const Node operator++(int); 
+    const Node operator++(int);
+    const Node operator+=(int);
+    const Node operator-=(int);
 };
 
 #endif
