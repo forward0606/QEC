@@ -81,8 +81,6 @@ void WholeRequest::temporary_forward() {
         if(status == REQUEST_UNFINISHED) {
             status = REQUEST_SUCC;
         }
-        Node *dst = subrequests.back()->get_paths()[0]->get_nodes().back();
-        (*dst)++;
     }
     Node *dst = subrequests.back()->get_paths()[0]->get_nodes().back();
     for(SubRequest* subrequest : subrequests) {
@@ -90,10 +88,14 @@ void WholeRequest::temporary_forward() {
         (*dst)--;
     }
 
+    if(is_finished()) {
+        (*dst)++;
+    }
+    
     if(encode_to_5_qubits) {
         dst += 4;
     }
-    
+
     encode_to_5_qubits = false;
     finished_qubits = 0;
     success_qubits = 0;
