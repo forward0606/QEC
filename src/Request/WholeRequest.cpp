@@ -91,9 +91,9 @@ void WholeRequest::temporary_forward() {
     if(is_finished()) {
         (*dst)++;
     }
-    
+
     if(encode_to_5_qubits) {
-        dst += 4;
+        (*dst) += 4;
     }
 
     encode_to_5_qubits = false;
