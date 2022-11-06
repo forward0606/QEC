@@ -81,15 +81,22 @@ void WholeRequest::temporary_forward() {
         if(status == REQUEST_UNFINISHED) {
             status = REQUEST_SUCC;
         }
-    }
-    encode_to_5_qubits = false;
-    finished_qubits = 0;
-    success_qubits = 0;
-    for(SubRequest* subrequest : subrequests) {
         Node *dst = subrequests.back()->get_paths()[0]->get_nodes().back();
+        (*dst)++;
+    }
+    Node *dst = subrequests.back()->get_paths()[0]->get_nodes().back();
+    for(SubRequest* subrequest : subrequests) {
         delete subrequest;
         (*dst)--;
     }
+
+    if(encode_to_5_qubits) {
+        dst += 4;
+    }
+    
+    encode_to_5_qubits = false;
+    finished_qubits = 0;
+    success_qubits = 0;
     subrequests.clear();
 }
 
@@ -120,6 +127,7 @@ void WholeRequest::try_forward() {
             } else {
                 status = REQUEST_FAIL;
             }
+
             encode_cnt++;
             use_path_count[path_count.size()]++;
             path_count.clear();

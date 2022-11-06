@@ -375,8 +375,8 @@ void MyAlgo::next_time_slot() {
             path_length_encode[whole_requests[reqno].path_length] += whole_requests[reqno].get_encode_cnt();
             path_length_cnt[whole_requests[reqno].path_length] += 1;
             res["fidelity"] += whole_requests[reqno].fidelity;
-            map<int, int> qqqqqqqq = whole_requests[reqno].get_use_path_count();
-            for(auto e:qqqqqqqq){
+            map<int, int> single_path_count = whole_requests[reqno].get_use_path_count();
+            for(auto e : single_path_count){
                 num_of_path_count[e.first] += e.second;
             }
             
