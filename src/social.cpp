@@ -10,8 +10,10 @@
 using namespace std;
 
 
-const bool debug = false;
 
+//X : min fidelity      Path Length
+//Y : encoded Ratio     Avg Enco Proc
+//Z : Social Density    Social Density
 
 Request generate_new_request(int num_of_node, int time_limit){
     //亂數引擎 
@@ -27,6 +29,9 @@ Request generate_new_request(int num_of_node, int time_limit){
 Request generate_new_request(int node1, int node2, int time_limit){//demo
     return Request(node1, node2, time_limit);
 }
+
+
+
 
 
 int main(){
@@ -57,24 +62,23 @@ int main(){
     change_parameter["resource_ratio"] = {0.5, 1, 2, 10};
     change_parameter["area_alpha"] = {0.001, 0.01, 0.1}; 
     change_parameter["social_density"] = {0, 0.25, 0.5, 0.75, 1}; 
-    change_parameter["new_request_cnt"] = {1, 5, 10, 20, 30};
+    change_parameter["new_request_cnt"] = {1, 5, 10, 15, 20};
     change_parameter["num_of_node"] = {100, 200, 300, 400, 500};
 
-    vector<string> X_names = {"min_fidelity"}; //阿可能是這個沒改到QQ不過不知道 X 軸要放甚麼 但老師要的x軸不就是這個嗎
+    vector<string> X_names = {"min_fidelity"}; 
     vector<string> Y_names = {"encode_cnt", "throughputs", "waiting_time", "unencode_cnt", "encode_ratio", "divide_cnt", "finished_throughputs", "encode_use_one_path_rate", "encode_num", "use_memory", "total_memory", "use_memory_ratio",\
                             "use_channel", "total_channel", "use_channel_ratio"};
-    //vector<string> algo_names = {"social:0", "social:0.25", "social:0.50", "social:0.75", "social:1.00"};
-    //vector<string> algo_names = {"min_f0.5", "min_f0.7", "min_f0.75", "min_f0.85", "min_f0.95"};
-    vector<string> algo_names = {"beta:1", "beta:5", "beta:10", "beta:20", "beta:30"};
-    // // init result
-    // for(string X_name : X_names) {
-    //     for(string Y_name : Y_names){
-    //         string filename = "ans/" + X_name + "_" + Y_name + ".ans";
-    //         fstream file( file_path + filename, ios::out );
-    //     }
-    // }
+    vector<string> algo_names = {"social:0", "social:0.25", "social:0.50", "social:0.75", "social:1.00"};
+
+    // init result
+    for(string X_name : X_names) {
+        for(string Y_name : Y_names){
+            string filename = "ans/" + X_name + "_" + Y_name + ".ans";
+            fstream file( file_path + filename, ios::out );
+        }
+    }
     {
-        string filename = "ans/GG2.ans";
+        string filename = "ans/path_length_encode_cnt.ans";
         fstream file( file_path + filename, ios::out );
     }
 
@@ -86,7 +90,7 @@ int main(){
             vector<map<string, map<string, double>>> result(round);
             vector<map<string, map<int, double>>> path_length_encode_avg(round);
             vector<map<string, map<int, double>>> encode_ratio(round);
-            // vector<map<string, map<int, 
+            
             input_parameter[X_name] = change_value;
             
             int num_of_node = input_parameter["num_of_node"];
@@ -101,7 +105,7 @@ int main(){
             double social_density = input_parameter["social_density"];
             double swap_prob = input_parameter["swap_prob"], entangle_alpha = input_parameter["entangle_alpha"];
             int node_time_limit = input_parameter["node_time_limit"];
-            //int new_request_cnt = input_parameter["new_request_cnt"];
+            int new_request_cnt = input_parameter["new_request_cnt"];
             int service_time = input_parameter["service_time"];
             int request_time_limit = input_parameter["request_time_limit"];
             int total_time_slot = input_parameter["total_time_slot"];
@@ -120,29 +124,17 @@ int main(){
                 ofs  << "時間 " << dt << endl << endl; 
                 vector<MyAlgo*> algorithms;
 
-                // for(double min_fidelity:change_parameter["min_fidelity"]){
-                //     string filename = file_path + "input/round_" + round_str + ".input";
-                //     string command = "python3 main.py ";
-                //     string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity) + " " + to_string(social_density) + " " + to_string(area_alpha);
-                //     if(system((command + filename + " " + parameter).c_str()) != 0){
-                //         cerr<<"error:\tsystem proccess python error"<<endl;
-                //         exit(1);
-                //     }
-                //     algorithms.emplace_back(new MyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
-                // }
-
-                string filename = file_path + "input/round_" + round_str + ".input";
-                string command = "python3 main.py ";
-                string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity) + " " + to_string(social_density) + " " + to_string(area_alpha);
-                if(system((command + filename + " " + parameter).c_str()) != 0){
-                    cerr<<"error:\tsystem proccess python error"<<endl;
-                    exit(1);
+                for(double min_fidelity:change_parameter["social_density"]){
+                    string filename = file_path + "input/round_" + round_str + ".input";
+                    string command = "python3 main.py ";
+                    string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity) + " " + to_string(social_density) + " " + to_string(area_alpha);
+                    if(system((command + filename + " " + parameter).c_str()) != 0){
+                        cerr<<"error:\tsystem proccess python error"<<endl;
+                        exit(1);
+                    }
+                    algorithms.emplace_back(new MyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
                 }
-                algorithms.emplace_back(new MyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
-                algorithms.emplace_back(new MyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
-                algorithms.emplace_back(new MyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
-                algorithms.emplace_back(new MyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
-                algorithms.emplace_back(new MyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
+
 
                 ofs<<"---------------in round " <<T<<" -------------" <<endl;
                 for(int t = 0; t < total_time_slot; t++){
@@ -150,13 +142,12 @@ int main(){
 
                     cout<< "---------generating requests in main.cpp----------" << endl;
                     for(int algo_idx = 0;algo_idx < (int)algorithms.size();algo_idx++){
-                        int new_request_cnt = change_parameter["new_request_cnt"][algo_idx];
                         for(int q = 0; q < new_request_cnt && t < service_time; q++){
                             Request new_request = generate_new_request(num_of_node, request_time_limit);
                             cout<<q << ". source: " << new_request.get_source()<<", destination: "<<new_request.get_destination()<<endl;
                             auto algo = algorithms[algo_idx];
                             result[T][algo_names[algo_idx]]["total_request"]++; 
-                            algo->requests.emplace_back(new_request);
+                            algo->add_new_request(new_request);
                         }
                     }
                     cout<< "---------generating requests in main.cpp----------end" << endl;
@@ -217,81 +208,58 @@ int main(){
             
             }
             
-            // map<string, map<string, double>> sum_res;
-            // for(string algo_name : algo_names){
-            //     for(int T = 0; T < round; T++){
-            //         result[T][algo_name]["encode_ratio"] = result[T][algo_name]["encode_cnt"] / (result[T][algo_name]["encode_cnt"] + result[T][algo_name]["unencode_cnt"]);
-            //         result[T][algo_name]["divide_cnt"] = result[T][algo_name]["divide_cnt"] / result[T][algo_name]["total_request"];
-            //         result[T][algo_name]["use_memory_ratio"] = result[T][algo_name]["use_memory"] / result[T][algo_name]["total_memory"];
-            //         result[T][algo_name]["use_channel_ratio"] = result[T][algo_name]["use_channel"] / result[T][algo_name]["total_channel"];
-            //         result[T][algo_name]["encode_use_one_path_rate"] /= result[T][algo_name]["encode_num"];
-            //     }
-            // }
-
-            // for(string Y_name : Y_names) {
-            //     string filename = "ans/" + X_name + "_" + Y_name + ".ans";
-            //     ofstream ofs;
-            //     ofs.open(file_path + filename, ios::app);
-            //     ofs << change_value << ' ';
-                
-            //     for(string algo_name : algo_names){
-            //         for(int T = 0; T < round; T++){
-            //             sum_res[algo_name][Y_name] += result[T][algo_name][Y_name];
-            //         }
-            //         ofs << sum_res[algo_name][Y_name] / round << ' ';
-            //     }
-            //     ofs << endl;
-            //     ofs.close();
-            // }
-
-            
-            // string filename = "ans/GG.ans";
-            // ofstream ofs;
-            // ofs.open(file_path + filename);
-
-            // for(int T = 1; T < round; T++){
-            //     for(int algi=1;algi<5;algi++){
-            //         for(auto e:path_length_encode_avg[T][algo_names[algi]]){
-            //             path_length_encode_avg[0][algo_names[algi]][e.first] += e.second;
-            //         }
-            //     }
-            // }
-            
-            // for(int path_length=3;path_length<9;path_length++){
-            //     ofs<<path_length<<" ";
-            //     for(int algi=1;algi<5;algi++){
-            //         ofs<<path_length_encode_avg[0][algo_names[algi]][path_length] / round<<" ";
-            //     }
-            //     ofs<<endl;
-            // }
-            // ofs << endl;
-            // ofs.close();
-
-            string filename = "ans/GG2.ans";
-            ofstream ofs;
-            ofs.open(file_path + filename, ios::app);
-
-            for(int T = 1; T < round; T++){
-                for(int algi=0;algi<5;algi++){
-                    for(auto e:encode_ratio[T][algo_names[algi]]){
-                        encode_ratio[0][algo_names[algi]][e.first] += e.second;
-                    }
+            map<string, map<string, double>> sum_res;
+            for(string algo_name : algo_names){
+                for(int T = 0; T < round; T++){
+                    result[T][algo_name]["encode_ratio"] = result[T][algo_name]["encode_cnt"] / (result[T][algo_name]["encode_cnt"] + result[T][algo_name]["unencode_cnt"]);
+                    result[T][algo_name]["divide_cnt"] = result[T][algo_name]["divide_cnt"] / result[T][algo_name]["total_request"];
+                    result[T][algo_name]["use_memory_ratio"] = result[T][algo_name]["use_memory"] / result[T][algo_name]["total_memory"];
+                    result[T][algo_name]["use_channel_ratio"] = result[T][algo_name]["use_channel"] / result[T][algo_name]["total_channel"];
+                    result[T][algo_name]["encode_use_one_path_rate"] /= result[T][algo_name]["encode_num"];
                 }
             }
-            ofs<<change_value<<" ";
-            for(int algi=0;algi<5;algi++){
-                ofs<<encode_ratio[0][algo_names[algi]][5] / round<<" ";
+
+            for(string Y_name : Y_names) {
+                string filename = "ans/" + X_name + "_" + Y_name + ".ans";
+                ofstream ofs;
+                ofs.open(file_path + filename, ios::app);
+                ofs << change_value << ' ';
+                
+                for(string algo_name : algo_names){
+                    for(int T = 0; T < round; T++){
+                        sum_res[algo_name][Y_name] += result[T][algo_name][Y_name];
+                    }
+                    ofs << sum_res[algo_name][Y_name] / round << ' ';
+                }
+                ofs << endl;
+                ofs.close();
             }
-            ofs<<endl;
-            ofs.close();
+
+            if(change_value == 0.75){
+                string filename = "ans/path_length_encode_cnt.ans";
+                ofstream ofs;
+                ofs.open(file_path + filename);
+
+                for(int T = 1; T < round; T++){
+                    for(int algi=1;algi<5;algi++){
+                        for(auto e:path_length_encode_avg[T][algo_names[algi]]){
+                            path_length_encode_avg[0][algo_names[algi]][e.first] += e.second;
+                        }
+                    }
+                }
+                
+                for(int path_length=3;path_length<9;path_length++){
+                    ofs<<path_length<<" ";
+                    for(int algi=1;algi<5;algi++){
+                        ofs<<path_length_encode_avg[0][algo_names[algi]][path_length] / round<<" ";
+                    }
+                    ofs<<endl;
+                }
+                ofs << endl;
+                ofs.close();
+            }
         }
     }
     return 0;
 }
 
-// 5.95375 5.99068 13.6879 20.6011
-// 7.33758 8.7139 20.234 29.5734 
-// 10.3517 12.6671 27.2966 38.8212 
-// 12.859 14.7601 36.7725 48.1671 
-// 10.9736 19.7771 46.1463 58.287 
-// 3.75 11.7778 52.1444 66.6111 
