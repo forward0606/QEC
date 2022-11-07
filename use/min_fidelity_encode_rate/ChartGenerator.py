@@ -144,7 +144,7 @@ class ChartGenerator:
             Yend = int(Yend)
         else:
             Yend = 1
-            Ystart = 0
+            Ystart = 20
             Yinterval = 0.2
 
         marker = ['o', 'x', 's', 'v']

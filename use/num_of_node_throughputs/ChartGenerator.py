@@ -145,9 +145,9 @@ class ChartGenerator:
             Yend = 1
             Ystart = 0
             Yinterval = 0.2
-        # Yend = 400
+        Yend = 800
         Ystart = 300
-        # Yinterval = (Yend - Ystart) / 5
+        Yinterval = 100
 
 
         marker = ['o', 's', 'v', 'x', 'd']

@@ -99,6 +99,7 @@ void Request::send(){
     if(pid == -1){
         return;
     }
+    paths[pid]->get_nodes()[0]++;
     send_path_length = paths[pid]->get_len();
     fidelity = paths[pid]->fidelity();
     if(paths[pid]->send_data()){

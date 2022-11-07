@@ -137,7 +137,7 @@ class ChartGenerator:
                 minData = min(minData, y[i][j])
 
         Yend = math.ceil(maxData)
-        Ystart = 65
+        Ystart = 80
         Yinterval = (Yend - Ystart) / 5
 
         if maxData > 1.1:
@@ -159,7 +159,7 @@ class ChartGenerator:
         plt.xticks(fontsize = Xticks_fontsize)
         plt.yticks(fontsize = Yticks_fontsize)
         
-        AlgoName = ["$\\it{\\beta}$ :1 ", "$\\it{\\beta}$ :5 ", "$\\it{\\beta}$ :10 ", "$\\it{\\beta}$ :20 ", "$\\it{\\beta}$ :30"]
+        AlgoName = ["$\\it{\\beta}$ :1 ", "$\\it{\\beta}$ :5 ", "$\\it{\\beta}$ :10 ", "$\\it{\\beta}$ :15 ", "$\\it{\\beta}$ :20"]
         
         leg = plt.legend(
             AlgoName,

@@ -140,9 +140,9 @@ class ChartGenerator:
         Ystart = 0
         Yinterval = (Yend - Ystart) / 5
 
-        # Yend = 100
-        # Ystart = 0
-        # Yinterval = 20
+        Yend = 100
+        Ystart = 0
+        Yinterval = 20
 
         marker = ['o', 's', 'v', 'x', 'd']
         for i in range(numOfAlgo-1, -1, -1):
