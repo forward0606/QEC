@@ -102,7 +102,7 @@ int main(){
             int max_channel_cnt = input_parameter["channel_cnt_avg"] * resource_ratio + 2;
             double min_fidelity = input_parameter["min_fidelity"];
             double max_fidelity = input_parameter["max_fidelity"];
-            double social_density = input_parameter["social_density"];
+            //double social_density = input_parameter["social_density"];
             double swap_prob = input_parameter["swap_prob"], entangle_alpha = input_parameter["entangle_alpha"];
             int node_time_limit = input_parameter["node_time_limit"];
             int new_request_cnt = input_parameter["new_request_cnt"];
@@ -124,7 +124,7 @@ int main(){
                 ofs  << "時間 " << dt << endl << endl; 
                 vector<MyAlgo*> algorithms;
 
-                for(double min_fidelity:change_parameter["social_density"]){
+                for(double social_density:change_parameter["social_density"]){
                     string filename = file_path + "input/round_" + round_str + ".input";
                     string command = "python3 main.py ";
                     string parameter = to_string(num_of_node) + " " + to_string(min_channel_cnt) + " " + to_string(max_channel_cnt) + " " + to_string(min_memory_cnt) + " " + to_string(max_memory_cnt) + " " + to_string(min_fidelity) + " " + to_string(max_fidelity) + " " + to_string(social_density) + " " + to_string(area_alpha);

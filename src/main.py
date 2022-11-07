@@ -85,6 +85,7 @@ print("filename = ", filename, file=sys.stderr)
 print("number_of_node = ", num_of_node, file=sys.stderr)
 print("min_channel_cnt = ", min_channel_cnt, ", max_channel_cnt = ", max_channel_cnt, file=sys.stderr)
 print("min_memory_cnt = ", min_memory_cnt, ", max_memory_cnt = ", max_memory_cnt, file=sys.stderr)
+print("socail density = ", socail_density, file=sys.stderr)
 
 
 while True:
