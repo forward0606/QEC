@@ -7,8 +7,9 @@ index_array=("min_fidelity_throughputs" "min_fidelity_fail-finished_ratio" "new_
 
 for i in ${index_array[@]}
 do
-    rm $i/*eps
+    #rm $i/*eps
     python3 $i/ChartGenerator.py
     cp $i/*.eps eps/QEC_$i.eps 
     cp $i/*.jpg jpg/QEC_$i.jpg 
+    
 done
