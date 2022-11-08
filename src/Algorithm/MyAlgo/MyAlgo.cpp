@@ -325,6 +325,7 @@ void MyAlgo::path_assignment() {
                 request.set_encode(false);
                 for(Path* &path : sufficient_paths) {
                     path->release();
+                    delete path;
                 }
 
                 if(sufficient_fidelities[0] >= fidelity_threshold) {
