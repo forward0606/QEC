@@ -116,7 +116,7 @@ double MyAlgo2::encode_fidelity(int src, int dst) {
     for(int i=0;i<5;i++){
         encode_fidelity *= first;
     }
-    return encode_fidelity + encode_fidelity / first * (1 - first);
+    return encode_fidelity + 5 * encode_fidelity / first * (1 - first);
     
 }
 
