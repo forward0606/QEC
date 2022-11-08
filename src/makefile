@@ -3,17 +3,18 @@ gurobi_path = /opt/gurobi952/linux64
 # on server
 #gurobi_path=/home/oba/danger/gurobi951/linux64/
 
+dependency = Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Request/Request.o config.o
 
 all: a.out
-social.out: social.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Request/Request.o config.o Algorithm/MyAlgo/MyAlgo.o Request/WholeRequest.o
+social.out: social.cpp $(dependency) Algorithm/MyAlgo/MyAlgo.o Request/WholeRequest.o
 	g++ -fopenmp -g -Wall -Wextra -O3 social.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Request/Request.o config.o Algorithm/MyAlgo/MyAlgo.o Request/WholeRequest.o -o social.out
 encode_path.out: encode_path_ratio.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Request/Request.o config.o Algorithm/MyAlgo/MyAlgo.o Request/WholeRequest.o
 	g++ -fopenmp -g -Wall -Wextra -O3 encode_path_ratio.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Request/Request.o config.o Algorithm/MyAlgo/MyAlgo.o Request/WholeRequest.o -o encode_path.out
 
 a.out: main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/REPS/REPS.o Algorithm/MyAlgo/MyAlgo.o Request/WholeRequest.o Algorithm/MyGreedyAlgo/MyGreedyAlgo.o
 	g++ -fopenmp -g -Wall -Wextra -O3 main.cpp Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o Algorithm/Greedy/Greedy.o Algorithm/QCAST/QCAST.o Request/Request.o config.o Algorithm/MyAlgo/MyAlgo.o Algorithm/MyGreedyAlgo/MyGreedyAlgo.o Request/WholeRequest.o Algorithm/REPS/REPS.o -I$(gurobi_path)/include/ -L$(gurobi_path)/lib -lgurobi_c++ -lgurobi95 -lm 
-
-
+fight_with_local_opt.out: fight_with_local_opt.cpp $(dependency) Algorithm/MyAlgo/MyAlgo.o  Algorithm/MyAlgo2/MyAlgo2.o Algorithm/MyGreedyAlgo/MyGreedyAlgo.o Request/WholeRequest.o 
+	g++ -fopenmp -g -Wall -Wextra -O3 fight_with_local_opt.cpp $(dependency) Algorithm/MyAlgo/MyAlgo.o  Algorithm/MyAlgo2/MyAlgo2.o Algorithm/MyGreedyAlgo/MyGreedyAlgo.o Request/WholeRequest.o -o fight_with_local_opt.out
 
 # qcast.out: Network/Node/Node.o Network/Channel/Channel.o Path/Path.o Network/Graph/Graph.o Algorithm/AlgorithmBase/AlgorithmBase.o
 Network/Node/Node.o: Network/Node/Node.cpp Network/Node/Node.h config.h
@@ -57,6 +58,9 @@ Algorithm/REPS/REPS.o: Algorithm/REPS/REPS.h Algorithm/REPS/REPS.cpp config.h
 Algorithm/MyAlgo/MyAlgo.o: Algorithm/MyAlgo/MyAlgo.h Algorithm/MyAlgo/MyAlgo.cpp config.h
 	g++ -c -g -Wall -Wextra -O3 --static Algorithm/MyAlgo/MyAlgo.h Algorithm/MyAlgo/MyAlgo.cpp config.h
 	mv MyAlgo.o Algorithm/MyAlgo/MyAlgo.o
+Algorithm/MyAlgo2/MyAlgo2.o: Algorithm/MyAlgo2/MyAlgo2.h Algorithm/MyAlgo2/MyAlgo2.cpp config.h
+	g++ -c -g -Wall -Wextra -O3 Algorithm/MyAlgo2/MyAlgo2.h Algorithm/MyAlgo2/MyAlgo2.cpp config.h
+	mv MyAlgo2.o Algorithm/MyAlgo2/MyAlgo2.o
 
 Algorithm/MyGreedyAlgo/MyGreedyAlgo.o: Algorithm/MyGreedyAlgo/MyGreedyAlgo.h Algorithm/MyGreedyAlgo/MyGreedyAlgo.cpp config.h
 	g++ -c -g -Wall -Wextra -O3 --static Algorithm/MyGreedyAlgo/MyGreedyAlgo.h Algorithm/MyGreedyAlgo/MyGreedyAlgo.cpp config.h

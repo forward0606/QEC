@@ -31,13 +31,12 @@ class MyAlgo2:public AlgorithmBase {
     int find_width(vector<int> &path, vector<vector<int>> &capacity, vector<int> &remain_qubits);
     double get_weight(int node1_id, int node2_id);
     double get_max_fidelity_1_path(int src, int dst);
-    double get_fidelity_of_only_first_path(int src, int dst);
+    double encode_fidelity(int src, int dst);
 
     double calculate_fidelity(vector<double> paths_fidelity);
     double calculate_path_fidelity(vector<int> &path);
 
-    vector<int> get_5_path(int src, int dst);
-    vector<int> get_path(int src, int dst);
+    
     vector<int> Dijkstra(int src, int dst, vector<vector<int>> &capacity);
     vector<int> find_path_on_Social(int src, int dst);
 

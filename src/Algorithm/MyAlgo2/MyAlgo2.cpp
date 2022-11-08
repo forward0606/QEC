@@ -108,7 +108,7 @@ void MyAlgo2::build_all_pair_path() {
 }
 
 
-double MyAlgo2::get_fidelity_of_only_first_path(int src, int dst) {
+double MyAlgo2::encode_fidelity(int src, int dst) {
 
     double first = fidelity_table[src][dst];
     
@@ -161,7 +161,7 @@ vector<int> MyAlgo2::find_path_on_Social(int src, int dst) {
         for(int next_index = 0; next_index < (int)subgraph_node.size(); next_index++) {
             if(next_index == node_index) continue;
             int cur_node = subgraph_node[node_index], next_node = subgraph_node[next_index];
-            double fidelity_this_path = fidelity[node_index] * max(get_max_fidelity_1_path(cur_node, next_node), get_fidelity_of_only_first_path(cur_node, next_node));
+            double fidelity_this_path = fidelity[node_index] * max(get_max_fidelity_1_path(cur_node, next_node), encode_fidelity(cur_node, next_node));
             if(fidelity[next_index] < fidelity_this_path) {
                 fidelity[next_index] = fidelity_this_path;
                 parent[next_index] = node_index;
@@ -206,7 +206,7 @@ void MyAlgo2::path_assignment() {
             int temp = request.get_current_temporary();
             int src = request.trusted_node_path[temp], dst = request.trusted_node_path[temp + 1];
 
-            vector<int> path = get_path(src, dst);
+            vector<int> path = path_table[src][dst];
             vector<Path*> sufficient_paths;
             vector<double> sufficient_fidelities;
 
@@ -220,8 +220,8 @@ void MyAlgo2::path_assignment() {
 
             if(sufficient_paths.empty()) continue;
 
-            double fidelity = calculate_fidelity(sufficient_fidelities);
-            double fidelity_threshold = max(get_max_fidelity_1_path(src, dst), get_fidelity_of_only_first_path(src, dst));
+            double fidelity = encode_fidelity(src, dst);
+            double fidelity_threshold = max(get_max_fidelity_1_path(src, dst), encode_fidelity(src, dst));
             
             if(fidelity >= fidelity_threshold && graph.Node_id2ptr(src)->get_remain() >= 5 && \
                 (int)sufficient_paths.size() + graph.Node_id2ptr(dst)->get_remain() >= 5) {
