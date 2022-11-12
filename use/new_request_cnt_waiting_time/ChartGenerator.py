@@ -38,7 +38,7 @@ class ChartGenerator:
         # ]
         color = [
             "#FF0000",
-            "#0000FF",
+            "#FF00FF",
             "#00FF00",   
             "#000000",
             "#900321",
@@ -149,7 +149,7 @@ class ChartGenerator:
         plt.xticks(fontsize = Xticks_fontsize)
         plt.yticks(fontsize = Yticks_fontsize)
         
-        AlgoName = ["WARM", "LOCAL OPT"]
+        AlgoName = ["WARM", "Fidelity-First"]
         leg = plt.legend(
             AlgoName,
             loc = 10,

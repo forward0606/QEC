@@ -8,7 +8,7 @@ import matplotlib.transforms
 import matplotlib
 from matplotlib.offsetbox import AnchoredOffsetbox, TextArea, HPacker, VPacker
 
-directory_path = "min_fidelity_waiting_time/"
+directory_path = "min_fidelity_throughputs_opt/"
 
 class ChartGenerator:
     # data檔名 Y軸名稱 X軸名稱 Y軸要除多少(10的多少次方) Y軸起始座標 Y軸終止座標 Y軸座標間的間隔
@@ -37,10 +37,10 @@ class ChartGenerator:
         #     "#900321",
         # ]
         color = [
-            "#FF0000",
-            "#FF00FF",
             "#00FF00",   
+            "#0000FF",
             "#000000",
+            "#FF0000",
             "#900321",
         ]
         # matplotlib.rcParams['text.usetex'] = True
@@ -66,12 +66,10 @@ class ChartGenerator:
         "ytick.labelsize": 20,
         "axes.labelsize": 20,
         "axes.titlesize": 20,
-        "mathtext.fontset": "custom",
         "font.family": "Times New Roman",
-        "mathtext.default": "default",
         "mathtext.it": "Times New Roman:italic",
-        "mathtext.cal": "Times New Roman:italic",
         # "mathtext.default": "regular",
+        "mathtext.fontset": "custom"
         # "mathtext.fontset": "custom"
         # "figure.autolayout": True
         # "text.usetex": True,
@@ -123,7 +121,7 @@ class ChartGenerator:
         for i in range(-10, -1, 1):
             if float(x[numOfData - 1]) <= 10 ** i:
                 Xpow = (i - 2)
-        #Ypow = -2
+        
         Ydiv = float(10 ** Ypow)
         Xdiv = float(10 ** Xpow)
         
@@ -137,19 +135,29 @@ class ChartGenerator:
                 minData = min(minData, y[i][j])
 
         Yend = math.ceil(maxData)
-        Ystart = 2
-        Yinterval = 0.5
+        Ystart = 600
+        Yinterval = math.ceil(Yend - Ystart) / 5
 
-
-        marker = ['x', 'o']
-        for i in range(numOfAlgo):
+        if maxData > 1.1:
+            Yinterval = int(math.ceil(Yinterval))
+            Yend = int(Yend)
+        else:
+            Yend = 1
+            Ystart = 0
+            Yinterval = 0.2
+        # Yend = 500
+        #Ystart = 180
+        # Yinterval = 100
+        marker = ['o', 's', 'v', 'x', 'd']
+        for i in range(numOfAlgo-1, -1, -1):
             ax1.plot(x_data, y[i], color = color[i], lw = 2.5, linestyle = "-", marker = marker[i], markersize = 15, markerfacecolor = "none", markeredgewidth = 2.5, zorder=i)
         # plt.show()
 
         plt.xticks(fontsize = Xticks_fontsize)
         plt.yticks(fontsize = Yticks_fontsize)
         
-        AlgoName = ["WARM", "Fidelity-First"]
+        AlgoName = ["GREEDY", "Q-CAST", "Fidelity-First", "WARM"]
+        AlgoName.reverse()
         leg = plt.legend(
             AlgoName,
             loc = 10,
@@ -165,8 +173,7 @@ class ChartGenerator:
         )
 
         leg.get_frame().set_linewidth(0.0)
-        #Ylabel += self.genMultiName(Ypow)
-        #Ylabel += " (%)"
+        Ylabel += self.genMultiName(Ypow)
         Xlabel += self.genMultiName(Xpow)
         plt.subplots_adjust(top = 0.75)
         plt.subplots_adjust(left = 0.3)
@@ -209,6 +216,6 @@ if __name__ == "__main__":
 
 
     Xlabel = "Fidelity Lower Bound"
-    Ylabel = "Waiting Time"
-    dataFileName = "min_fidelity_waiting_time.ans"
+    Ylabel = "Throughput"
+    dataFileName = "min_fidelity_throughputs_opt.ans"
     ChartGenerator(dataFileName, Ylabel, Xlabel)
