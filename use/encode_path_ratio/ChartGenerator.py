@@ -219,6 +219,6 @@ if __name__ == "__main__":
 
 
     Xlabel = "Fidelity Lower Bound"
-    Ylabel = "5 Diff. Path Ratio  (%)"
+    Ylabel = "5 Qubits in Parallel Ratio (%)"
     dataFileName = "encode_path_ratio.ans"
     ChartGenerator(dataFileName, Ylabel, Xlabel)

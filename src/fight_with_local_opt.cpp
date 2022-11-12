@@ -68,7 +68,7 @@ int main(){
                             "succ-finished_ratio", "fail-finished_ratio", "active_timeslot", "path_length", "fidelity", \
                             "encode_cnt", "unencode_cnt", "encode_ratio", "use_memory", "total_memory", "use_memory_ratio",\
                             "use_channel", "total_channel", "use_channel_ratio", "runtime", "divide_cnt"};
-    vector<string> algo_names = {"MyAlgo", "MyAlgo2", "MyGreedyAlgo"};
+    vector<string> algo_names = {"MyAlgo", "MyAlgo2"};
     
     // init result
     for(string X_name : X_names) {
@@ -128,7 +128,6 @@ int main(){
                 vector<AlgorithmBase*> algorithms;
                 algorithms.emplace_back(new MyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
                 algorithms.emplace_back(new MyAlgo2(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
-                algorithms.emplace_back(new MyGreedyAlgo(filename, request_time_limit, node_time_limit, swap_prob, entangle_alpha));
                 
                 ofs<<"---------------in round " <<T<<" -------------" <<endl;
                 for(int t = 0; t < total_time_slot; t++){
