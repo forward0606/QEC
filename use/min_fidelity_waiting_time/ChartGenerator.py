@@ -8,6 +8,10 @@ import matplotlib.transforms
 import matplotlib
 from matplotlib.offsetbox import AnchoredOffsetbox, TextArea, HPacker, VPacker
 
+import sys
+sys.path.append("./")
+import config
+
 directory_path = "min_fidelity_waiting_time/"
 
 class ChartGenerator:
@@ -150,6 +154,7 @@ class ChartGenerator:
         plt.yticks(fontsize = Yticks_fontsize)
         
         AlgoName = ["WARM", "Fidelity-First"]
+        AlgoName[0] = config.myalgoName
         leg = plt.legend(
             AlgoName,
             loc = 10,

@@ -8,6 +8,10 @@ import matplotlib.transforms
 import matplotlib
 from matplotlib.offsetbox import AnchoredOffsetbox, TextArea, HPacker, VPacker
 
+import sys
+sys.path.append("./")
+import config
+
 directory_path = "num_of_node_throughputs/"
 
 class ChartGenerator:
@@ -158,7 +162,8 @@ class ChartGenerator:
         plt.xticks(fontsize = Xticks_fontsize)
         plt.yticks(fontsize = Yticks_fontsize)
         
-        AlgoName = ["GREEDY", "Q-CAST", "REPS", "WARM"]
+        AlgoName = ["GREEDY", "Q-CAST", "REPS"]
+        AlgoName.append(config.myalgoName)
         AlgoName.reverse()
         leg = plt.legend(
             AlgoName,

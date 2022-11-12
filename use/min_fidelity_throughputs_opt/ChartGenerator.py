@@ -8,6 +8,10 @@ import matplotlib.transforms
 import matplotlib
 from matplotlib.offsetbox import AnchoredOffsetbox, TextArea, HPacker, VPacker
 
+import sys
+sys.path.append("./")
+import config
+
 directory_path = "min_fidelity_throughputs_opt/"
 
 class ChartGenerator:
@@ -156,7 +160,8 @@ class ChartGenerator:
         plt.xticks(fontsize = Xticks_fontsize)
         plt.yticks(fontsize = Yticks_fontsize)
         
-        AlgoName = ["GREEDY", "Q-CAST", "Fidelity-First", "WARM"]
+        AlgoName = ["GREEDY", "Q-CAST", "Fidelity-First"]
+        AlgoName.append(config.myalgoName)
         AlgoName.reverse()
         leg = plt.legend(
             AlgoName,
