@@ -44,7 +44,7 @@ class ChartGenerator:
         ]
         # matplotlib.rcParams['text.usetex'] = True
 
-        fontsize = 32
+        fontsize = 30
         Xlabel_fontsize = fontsize
         Ylabel_fontsize = fontsize
         Xticks_fontsize = fontsize
@@ -83,7 +83,7 @@ class ChartGenerator:
         # ax1.spines['left'].set_linewidth(1.5)
         ax1.tick_params(direction = "in")
         ax1.tick_params(bottom = True, top = True, left = True, right = True)
-        ax1.tick_params(pad = 20)
+        ax1.tick_params(pad = 10)
 
 
         ##data start##
@@ -149,21 +149,21 @@ class ChartGenerator:
 
         marker = ['o', 'x', 's', 'v']
         line_style = ["-.", "-", ":", "--"]
+        AlgoName = ["Fidelity", "Waiting Time"]
         # color.reverse()
         # marker.reverse()
-        for i in range(numOfAlgo):
-            ax1.plot(x_data, y[i], color = color[i], lw = 2.5, linestyle = line_style[i], marker = marker[i], markersize = 15, markerfacecolor = "none", markeredgewidth = 2.5, zorder=i)
+        #for i in range(numOfAlgo):
+        line_plot = []
+        line_plot.append(ax1.plot(x_data, y[0], color = color[0], lw = 2.5, linestyle = line_style[0], marker = marker[0], markersize = 15, markerfacecolor = "none", markeredgewidth = 2.5, zorder=0, label=AlgoName[0]))
         # plt.show()
 
         plt.xticks(fontsize = Xticks_fontsize)
         plt.yticks(fontsize = Yticks_fontsize)
         
-        AlgoName = ["Fidelity", ]
-        
         leg = plt.legend(
-            AlgoName,
+            ["Fidelity"],
             loc = 10,
-            bbox_to_anchor = (0.3, 1.25),
+            bbox_to_anchor = (0.15, 1.25),
             prop = {"size": fontsize, "family": "Times New Roman"},
             frameon = "False",
             labelspacing = 0.2,
@@ -175,21 +175,48 @@ class ChartGenerator:
         )
 
         leg.get_frame().set_linewidth(0.0)
+        
+        
         #Ylabel += self.genMultiName(Ypow)
         Xlabel += self.genMultiName(Xpow)
         plt.subplots_adjust(top = 0.75)
-        plt.subplots_adjust(left = 0.3)
-        plt.subplots_adjust(right = 0.95)
+        plt.subplots_adjust(left = 0.225)
+        plt.subplots_adjust(right = 0.825)
         plt.subplots_adjust(bottom = 0.25)
 
         plt.yticks(np.arange(Ystart, Yend + Yinterval, step = Yinterval), fontsize = Yticks_fontsize)
         plt.xticks(x_data, x)
-        plt.ylabel(Ylabel, fontsize = Ylabel_fontsize, labelpad = 35)
+        plt.ylabel(Ylabel, fontsize = Ylabel_fontsize, labelpad = 15)
         plt.xlabel(Xlabel, fontsize = Xlabel_fontsize, labelpad = 10)
-        ax1.yaxis.set_label_coords(-0.3, 0.5)
+        ax1.yaxis.set_label_coords(-0.225, 0.5)
         ax1.xaxis.set_label_coords(0.45, -0.27)
         # plt.show()
         # plt.tight_layout()
+
+        ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+
+        
+        ax2.set_ylabel('Waiting Time', fontsize = Ylabel_fontsize, labelpad = 15, rotation=-90)  # we already handled the x-label with ax1
+        line_plot.append(ax2.plot(x_data, y[1], color = color[1], lw = 2.5, linestyle = line_style[1], marker = marker[1], markersize = 15, markerfacecolor = "none", markeredgewidth = 2.5, zorder=1, label=AlgoName[1]))
+        ax2.yaxis.set_label_coords(1.25, 0.5)
+        plt.yticks(fontsize=Ylabel_fontsize)
+
+        leg = plt.legend(
+            ["Waiting Time"],
+            loc = 10,
+            bbox_to_anchor = (0.75, 1.25),
+            prop = {"size": fontsize, "family": "Times New Roman"},
+            frameon = "False",
+            labelspacing = 0.2,
+            handletextpad = 0.2,
+            handlelength = 1,
+            columnspacing = 0.2,
+            ncol = 2,
+            facecolor = "None",
+        )
+
+        leg.get_frame().set_linewidth(0.0)
+
         pdfName = dataName[0:-4]
         plt.savefig(directory_path + '{}.eps'.format(pdfName)) 
         plt.savefig(directory_path + '{}.jpg'.format(pdfName)) 
