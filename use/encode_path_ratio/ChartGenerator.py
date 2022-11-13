@@ -38,8 +38,8 @@ class ChartGenerator:
         # ]
         color = [
             "#AA3311",   
-            "#FF0000",
             "#FF6600",
+            "#FF0000",
             "#901231",
             "#000000"
         ]
@@ -148,8 +148,8 @@ class ChartGenerator:
             Ystart = 0
             Yinterval = 0.2
 
-        marker = ['o', 'x', 's', 'v', 'd']
-        line_style = ["-.", "-", ":", "--", '-']
+        marker = ['o', 's', 'x', 'v', 'd']
+        line_style = ["-.", ":", "-", "--", "-."]
         # color.reverse()
         # marker.reverse()
         for i in range(numOfAlgo):
